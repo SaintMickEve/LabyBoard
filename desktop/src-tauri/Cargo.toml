@@ -1,0 +1,25 @@
+[package]
+name = "labyrinthe-battleboard"
+version = "1.8.0"
+description = "Labyrinthe Battleboard Generator - Windows desktop app"
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-single-instance = "2"
+
+[features]
+# Always build the production app (pages served from inside the .exe, not from a dev server).
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

@@ -1,0 +1,19 @@
+Labyrinthe Battleboard Generator (RC 1.8) - Windows app
+========================================================
+
+OPENING IT
+Use the Start menu (or the desktop shortcut, if you added one). The generator opens
+in its own window. Close the window when you've finished.
+
+YOUR BOARDS
+- Your board is saved automatically and is still there next time you open the app.
+- Export saves a copy as a .json file wherever you choose. You can Import it again
+  here, or on the website at labynoob.info/BB, and boards exported from the website
+  import here too.
+- Print / PDF opens the Windows print dialog. Choose "Microsoft Print to PDF" or
+  "Save as PDF" to make a PDF. Use A4, margins None and scale 100%.
+
+GOOD TO KNOW
+- Everything runs on your own computer. Nothing is sent over the internet.
+- Uninstalling (Settings > Apps) keeps your saved board, so reinstalling or
+  upgrading won't lose it.

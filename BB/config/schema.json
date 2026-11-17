@@ -1,0 +1,329 @@
+{
+    "app": "battleboard",
+    "version": 1,
+    "text": {
+        "name": 60,
+        "classes": 140,
+        "races": 80,
+        "tblpLine": 60,
+        "powerLine": 60,
+        "innateName": 48,
+        "consumableName": 48,
+        "colourText": 30,
+        "immunityText": 40,
+        "reduction": 4,
+        "notes": 800,
+        "powLabel": 12,
+        "standing": 50,
+        "poolName": 14
+    },
+    "int": {
+        "tblp": [
+            1,
+            999
+        ],
+        "powerValue": [
+            0,
+            999
+        ],
+        "armour": [
+            0,
+            24
+        ],
+        "locHits": [
+            1,
+            999
+        ],
+        "locAc": [
+            0,
+            24
+        ],
+        "resist": [
+            0,
+            99
+        ],
+        "pipCount": [
+            1,
+            8
+        ],
+        "immunityNumber": [
+            0,
+            99
+        ],
+        "powValue": [
+            0,
+            999
+        ],
+        "resChance": [
+            0,
+            100
+        ],
+        "ltm": [
+            1,
+            999
+        ],
+        "castingStam": [
+            0,
+            999
+        ],
+        "points": [
+            0,
+            99999
+        ],
+        "tblpRows": [
+            2,
+            8
+        ],
+        "poolValue": [
+            0,
+            999
+        ]
+    },
+    "rows": {
+        "tblpLines": 8,
+        "powerLines": 5,
+        "colourResist": [
+            0,
+            5
+        ],
+        "immunities": [
+            0,
+            12
+        ]
+    },
+    "defaultRows": {
+        "colourResist": 3,
+        "immunities": 4
+    },
+    "powerTypes": [
+        "Mana",
+        "Spirits",
+        "EP",
+        "Mantic Mana",
+        "Mantic Spirits"
+    ],
+    "fractionPattern": "^[0-9]{1,2}/[1-9][0-9]?$",
+    "armour": [
+        "pac",
+        "dac",
+        "sac",
+        "mac",
+        "nac"
+    ],
+    "locations": {
+        "head": "Head",
+        "larm": "Left Arm",
+        "chest": "Chest",
+        "torso": "Torso",
+        "rarm": "Right Arm",
+        "abdomen": "Abdomen",
+        "lleg": "Left Leg",
+        "rleg": "Right Leg"
+    },
+    "resistances": {
+        "epower": "E Power",
+        "magic": "Magic",
+        "neuronic": "Neuronic",
+        "physical": "Physical",
+        "spirits": "Spirits"
+    },
+    "resistDefault": 8,
+    "reductions": {
+        "numerical": "Numerical",
+        "percentile": "Percentile",
+        "fractional": "Fractional"
+    },
+    "powLabelDefault": "Pow",
+    "alignments": [
+        "GL",
+        "GN",
+        "GC",
+        "NL",
+        "NN",
+        "NC",
+        "EL",
+        "EN",
+        "EC"
+    ],
+    "themes": {
+        "parchment": "Parchment",
+        "blue": "Pastel blue",
+        "red": "Pastel red",
+        "green": "Pastel green",
+        "yellow": "Pastel yellow",
+        "lavender": "Pastel lavender"
+    },
+    "themeDefault": "parchment",
+    "watermarks": {
+        "none": "None",
+        "fire": "Fire",
+        "water": "Water",
+        "nature": "Nature",
+        "angels": "Angels",
+        "demons": "Demons",
+        "mind": "Mind Powers",
+        "combat": "Combat",
+        "lightning": "Lightning",
+        "stone": "Stone"
+    },
+    "watermarkDefault": "none",
+    "tblpRowsDefault": 8,
+    "dolls": {
+        "default": "Default",
+        "snowflake": "Special Snow(man)flake",
+        "ghost": "Woo I'm a ghost"
+    },
+    "dollDefault": "default",
+    "dollHidden": {
+        "default": [
+            "torso"
+        ],
+        "snowflake": [
+            "chest",
+            "abdomen"
+        ],
+        "ghost": [
+            "head",
+            "larm",
+            "chest",
+            "torso",
+            "rarm",
+            "abdomen",
+            "lleg",
+            "rleg"
+        ]
+    },
+    "layoutDefault": "basic",
+    "layouts": {
+        "basic": {
+            "label": "Basic Layout",
+            "description": "The standard board. You choose how many T.B.L.P. lines (2–8).",
+            "tblpRows": null,
+            "powerRows": 5,
+            "pools": false,
+            "innateRowMm": 4.8,
+            "consumableRowMm": 4.8,
+            "innates": [
+                0,
+                25
+            ],
+            "consumables": [
+                0,
+                12
+            ],
+            "pipRowsCombined": 25,
+            "defaultInnates": 16,
+            "defaultConsumables": 4,
+            "fill": null,
+            "innatesSolo": 29
+        },
+        "poolPrincess": {
+            "label": "Pool Princess",
+            "description": "3 T.B.L.P. lines, 3 Power lines and three named pools.",
+            "tblpRows": 3,
+            "powerRows": 3,
+            "pools": true,
+            "innateRowMm": 4.8,
+            "consumableRowMm": 4.8,
+            "innates": [
+                0,
+                28
+            ],
+            "consumables": [
+                0,
+                12
+            ],
+            "pipRowsCombined": 28,
+            "defaultInnates": 18,
+            "defaultConsumables": 5,
+            "fill": null,
+            "innatesSolo": 33
+        },
+        "innatelyGifted": {
+            "label": "Innately Gifted",
+            "description": "4 T.B.L.P. lines, 3 Power lines and many more innates in smaller print.",
+            "tblpRows": 4,
+            "powerRows": 3,
+            "pools": false,
+            "innateRowMm": 3.9,
+            "consumableRowMm": 4.8,
+            "innates": [
+                0,
+                35
+            ],
+            "consumables": [
+                0,
+                10
+            ],
+            "pipRowsCombined": 35,
+            "defaultInnates": 13,
+            "defaultConsumables": 3,
+            "fill": "innates",
+            "innatesSolo": 38
+        },
+        "brimful": {
+            "label": "Brimful of Asher",
+            "description": "3 T.B.L.P. and Power lines, 10 smaller innates and as many consumables as fit.",
+            "tblpRows": 3,
+            "powerRows": 3,
+            "pools": false,
+            "innateRowMm": 3.9,
+            "consumableRowMm": 3.9,
+            "innates": [
+                0,
+                19
+            ],
+            "consumables": [
+                0,
+                34
+            ],
+            "pipRowsCombined": 37,
+            "defaultInnates": 10,
+            "defaultConsumables": 3,
+            "fill": "consumables",
+            "innatesSolo": 40
+        },
+        "battlemaster": {
+            "label": "Battlemaster",
+            "description": "For characters with no power: the Power box is removed and the boxes below move up. Otherwise like the Basic Layout.",
+            "tblpRows": null,
+            "powerRows": 0,
+            "power": false,
+            "pools": false,
+            "innateRowMm": 4.8,
+            "consumableRowMm": 4.8,
+            "innates": [
+                0,
+                32
+            ],
+            "consumables": [
+                0,
+                16
+            ],
+            "pipRowsCombined": 32,
+            "defaultInnates": 22,
+            "defaultConsumables": 6,
+            "fill": null,
+            "innatesSolo": 39
+        }
+    },
+    "dollDescriptions": {
+        "default": "Separate chest and abdomen locations.",
+        "snowflake": "Chest and abdomen combined into one Torso location.",
+        "ghost": "For characters with no locations: one ghost-shaped area, no T.B.L.P. box, and room for more Colour Resist and Immunities/Resistances."
+    },
+    "dollLimits": {
+        "ghost": {
+            "colourResist": 9,
+            "immunities": 20
+        }
+    },
+    "immunitiesCompact": {
+        "rowMm": 4.0,
+        "limits": {
+            "default": 17,
+            "snowflake": 17,
+            "ghost": 28
+        }
+    }
+}

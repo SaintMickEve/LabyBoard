@@ -1,0 +1,35 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Labyrinthe Battleboard Generator",
+  "mainBinaryName": "LabyrintheBattleboard",
+  "version": "1.8.0",
+  "identifier": "info.labynoob.battleboard",
+  "build": {
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Labyrinthe Battleboard Generator (RC 1.8)",
+        "url": "BB/index.html",
+        "width": 1440,
+        "height": 920,
+        "minWidth": 380,
+        "minHeight": 500,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+    }
+  },
+  "bundle": {
+    "active": false,
+    "publisher": "labynoob.info",
+    "copyright": "Labyrinthe Battleboard Generator",
+    "shortDescription": "Battleboard generator for Labyrinthe LARP",
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.ico"]
+  }
+}

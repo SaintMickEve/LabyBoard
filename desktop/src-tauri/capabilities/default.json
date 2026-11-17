@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "The main window may use Tauri's core features. Export's Save dialog runs on the Rust side, so the page needs no file-system or dialog access of its own.",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}

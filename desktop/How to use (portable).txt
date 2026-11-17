@@ -1,0 +1,27 @@
+Labyrinthe Battleboard Generator (RC 1.8) - Windows app, portable version
+=========================================================================
+
+No installation needed.
+
+TO RUN
+Keep LabyrintheBattleboard.exe and WebView2Loader.dll together in the same folder
+(the .exe needs the .dll), then double-click LabyrintheBattleboard.exe.
+The generator opens in its own window.
+
+For Start-menu and desktop shortcuts, use the installer instead
+(LabyrintheBattleboard-Setup-1.8.0.exe).
+
+The first time, Windows may show "Windows protected your PC" because the program isn't
+signed with a paid certificate. Click "More info", then "Run anyway".
+
+YOUR BOARDS
+- Your board is saved automatically and is still there next time you open the app.
+- Export saves a copy as a .json file wherever you choose. You can Import it again
+  here, or on the website at labynoob.info/BB, and boards exported from the website
+  import here too.
+- Print / PDF opens the Windows print dialog. Choose "Microsoft Print to PDF" or
+  "Save as PDF" to make a PDF. Use A4, margins None and scale 100%.
+
+NEEDS
+Windows 10 or 11 (64-bit). It uses Microsoft Edge WebView2, which Windows already has.
+Everything runs on your own computer. Nothing is sent over the internet.

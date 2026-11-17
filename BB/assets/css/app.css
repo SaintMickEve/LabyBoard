@@ -1,0 +1,186 @@
+/*
+ * Battleboard app shell: editor, layout, responsive and print rules.
+ *
+ * This file styles everything AROUND the sheet: the top bar, the editor form, the preview panel
+ * and the phone tabs. The sheet itself is styled by board.css.
+ *
+ * How the screen is arranged:
+ *   - Desktop (wider than 980 px): editor on the left, the scaled A4 preview on the right, kept in
+ *     view while the editor scrolls.
+ *   - Tablets and phones: one column, with Edit / Preview tabs (.layout[data-view]) to switch.
+ *   - Print: everything except the sheet is hidden, and the sheet prints at full A4 size.
+ * Colours are set once as CSS variables in :root below.
+ */
+:root{
+  --bg:#2f241a; --bg-2:#3d3024; --panel:#fbf7ee; --line:#d9ccb2; --text:#2a1c0f; --muted:#6a5a45;
+  --accent:#7a3b1d; --accent-2:#a2552c; --ok:#2f6b3a; --bad:#a3261a; --radius:10px;
+  --ui-font:"BB Pagella","Palatino Linotype",Palatino,Georgia,serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:16px/1.4 var(--ui-font);min-height:100vh;min-height:100dvh}
+button,input,select,textarea{font:inherit;color:inherit}
+.skip{position:absolute;left:-999px;top:0;background:#fff;padding:.5rem 1rem;z-index:50}
+.skip:focus{left:.5rem}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;
+  padding:.6rem max(1rem,env(safe-area-inset-right)) .6rem max(1rem,env(safe-area-inset-left));background:var(--bg);border-bottom:1px solid #574634;color:#f3e9d2}
+.brand{font:400 1.55rem/1.1 "BB Chorus",cursive;letter-spacing:.01em;margin-right:auto;color:inherit;text-decoration:none;display:flex;align-items:center;gap:.45rem;flex-wrap:wrap}
+.brand:hover .brand-name{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.brand-rc{font:700 .68rem/1 var(--ui-font);letter-spacing:.08em;border:1px solid #8a7154;border-radius:4px;padding:.2rem .35rem;color:#e0c79c}
+.brand-mark{font-size:.8rem;vertical-align:middle;color:#c9a46c}
+.actions{display:flex;gap:.4rem;flex-wrap:wrap}
+.btn{appearance:none;border:1px solid #b79e75;background:#f3e9d2;color:#2a1c0f;border-radius:8px;padding:.45rem .85rem;
+  font-weight:700;cursor:pointer;min-height:40px;line-height:1.1;touch-action:manipulation}
+.btn:hover{background:#fff8e8}
+.btn:focus-visible,.in:focus-visible,.pip-pick button:focus-visible,.tabs button:focus-visible,summary:focus-visible{outline:3px solid #e0a94e;outline-offset:2px}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-2)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+
+/* ---------- layout ---------- */
+.tabs{display:none}
+.layout{display:grid;grid-template-columns:minmax(340px,440px) 1fr;gap:1rem;padding:1rem;align-items:start}
+.editor{background:var(--panel);border-radius:var(--radius);padding:.75rem;max-height:calc(100vh - 5.5rem);max-height:calc(100dvh - 5.5rem);overflow:auto;overscroll-behavior:contain}
+.preview{position:sticky;top:4.6rem;display:block;min-width:0;overflow:hidden}
+.preview-scale{transform-origin:top left;width:210mm;height:297mm}
+.preview-scale .sheet{box-shadow:0 6px 30px rgba(0,0,0,.45)}
+
+/* ---------- editor sections ---------- */
+.status{margin:.1rem .25rem .5rem;font-size:.85rem;color:var(--muted);min-height:1.2em}
+.sec{border:1px solid var(--line);border-radius:8px;background:#fff;margin-bottom:.55rem}
+.sec>summary{cursor:pointer;list-style:none;padding:.7rem .9rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.9rem;
+  display:flex;align-items:center;gap:.5rem;border-radius:8px}
+.sec>summary::-webkit-details-marker{display:none}
+.sec>summary::before{content:"\25B8";color:var(--accent);transition:transform .15s}
+.sec[open]>summary::before{transform:rotate(90deg)}
+.sec[open]>summary{border-bottom:1px solid var(--line);border-radius:8px 8px 0 0;background:#f6efe0}
+.sec>:not(summary){margin-left:.9rem;margin-right:.9rem}
+.sec>:last-child{margin-bottom:.9rem}
+.sec.flash{animation:flash 1.2s ease}
+@keyframes flash{0%{box-shadow:0 0 0 3px #e0a94e}100%{box-shadow:0 0 0 0 transparent}}
+.count{margin-left:auto;font-size:.75rem;font-weight:400;letter-spacing:0;text-transform:none;color:var(--muted)}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.8rem}
+.grid.three{grid-template-columns:repeat(3,1fr)}
+.grid.four{grid-template-columns:repeat(4,1fr)}
+.grid.shields{grid-template-columns:repeat(5,1fr)}
+.grid.five{grid-template-columns:repeat(auto-fill,minmax(5.5rem,1fr))}
+.span-2{grid-column:span 2}
+.field{display:flex;flex-direction:column;gap:.25rem;font-size:.82rem;font-weight:700;color:var(--muted);margin-top:.8rem}
+.grid .field{margin-top:0}
+.field.inline{flex-direction:row;align-items:center;gap:.6rem}
+.field.inline .in{width:6.5rem}
+.in{width:100%;border:1px solid #c8b796;border-radius:7px;background:#fffdf8;padding:.5rem .6rem;min-height:42px;font-size:1rem;font-weight:400;color:var(--text)}
+textarea.in{resize:vertical;min-height:7rem;line-height:1.35}
+.standing-fields textarea.in{min-height:4.2rem;font-size:.95rem}
+.in[aria-invalid="true"]{border-color:var(--bad);background:#fff3f1}
+.err{color:var(--bad);font-size:.78rem;font-weight:700;margin:.15rem 0 0}
+.hint{font-size:.82rem;color:var(--muted);margin-top:.7rem}
+.stack{display:grid;gap:.35rem;margin-top:.4rem}
+.check{display:flex;gap:.5rem;align-items:center;margin-top:.8rem}
+.check input{width:1.2rem;height:1.2rem}
+
+.loc-table{display:grid;grid-template-columns:1fr 6.2rem 6.2rem;gap:.4rem .5rem;align-items:center;margin-top:.8rem}
+.lt-h{font-size:.75rem;font-weight:700;color:var(--muted)}
+.lt-name{font-weight:700;font-size:.9rem}
+
+/* repeatable rows */
+.list{list-style:none;margin:.6rem 0 0;padding:0;display:grid;gap:.5rem;counter-reset:row}
+.item{display:flex;gap:.4rem;align-items:flex-start;padding:.45rem;border:1px solid var(--line);border-radius:8px;background:#fffdf8;counter-increment:row}
+.item::before{content:counter(row);font-size:.75rem;color:var(--muted);width:1.2rem;text-align:right;padding-top:.75rem;flex:none}
+.item-main{flex:1;display:grid;gap:.4rem;min-width:0}
+.item-main.pair{grid-template-columns:1fr auto;align-items:center}
+.frac{width:5rem}
+.imm-val{display:flex;gap:.3rem}
+.imm-val select{width:4.4rem}
+.imm-val .small{width:4.2rem}
+.btn.icon{min-width:42px;padding:.35rem;font-size:1.3rem;line-height:1}
+.btn.add{display:block;margin-top:.6rem;width:calc(100% - 1.8rem)}
+/* "Sort A–Z" button at the top of a list (Innates) */
+.btn.sort{display:block;margin-top:.8rem;min-height:34px;padding:.3rem .8rem;font-size:.85rem}
+.pip-pick{display:flex;gap:.25rem}
+.pip-pick button{flex:1 1 0;min-width:0;padding:0;height:2.4rem;border:1.5px solid #8d7653;border-radius:6px;background:#fff;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pip-pick button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pip-pick button.off{background:repeating-linear-gradient(45deg,#fff 0 4px,#e3d6bd 4px 6px);color:#9b8a70}
+
+.toast{position:fixed;left:50%;bottom:max(1rem,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:40;max-width:min(92vw,560px);
+  background:#2a1c0f;color:#fff;border-radius:10px;padding:.8rem 1rem;box-shadow:0 8px 30px rgba(0,0,0,.4);font-size:.92rem}
+.toast ul{margin:.4rem 0 0;padding-left:1.1rem;max-height:40vh;overflow:auto}
+.toast .close{float:right;margin-left:1rem;background:none;border:0;color:#fff;font-size:1.2rem;cursor:pointer}
+
+/* used briefly by app.js to measure the sheet while the Preview tab is hidden on phones */
+.preview.measuring{display:block !important;position:absolute !important;left:-10000px;top:0;visibility:hidden}
+
+/* layout and paper-doll pickers */
+.picker{padding:.6rem .9rem .8rem;margin:0 0 .55rem;display:grid;gap:.4rem;border:1px solid var(--line);border-radius:8px;background:#fff}
+.picker legend{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.9rem;padding:0 .3rem;color:var(--text)}
+.sec.picker>:not(summary){margin:0}
+.pick{display:flex;gap:.6rem;align-items:flex-start;border:1px solid #d8c9ab;border-radius:8px;padding:.5rem .6rem;cursor:pointer;background:#fffdf8}
+.pick input{margin-top:.2rem;width:1.1rem;height:1.1rem;flex:none;accent-color:var(--accent)}
+.pick span{display:flex;flex-direction:column;gap:.1rem}
+.pick small{color:var(--muted);font-size:.8rem;line-height:1.3}
+.pick:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1.5px var(--accent);background:#fff8ee}
+.hint.warn:not(:empty){color:#8a4b12;font-weight:700}
+.hint:empty{display:none}
+.pool-grid{display:grid;grid-template-columns:1fr 5.5rem;gap:.4rem .5rem;margin-top:.6rem}
+.in[hidden],[data-loc][hidden]{display:none}
+
+/* sheet colour picker */
+.themes{border:0;padding:0;margin:.8rem 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(8.5rem,1fr));gap:.4rem}
+.themes legend{font-size:.82rem;font-weight:700;color:var(--muted);margin-bottom:.35rem;padding:0}
+.swatch{position:relative;display:flex;align-items:center;gap:.5rem;border:1px solid #c8b796;border-radius:8px;padding:.45rem .55rem;cursor:pointer;background:#fffdf8;min-height:44px;font-size:.9rem}
+.swatch input{position:absolute;left:0;top:0;opacity:0;width:1px;height:1px;pointer-events:none}
+.swatch .chip-c{width:1.6rem;height:1.6rem;border-radius:50%;border:2px solid;flex:none}
+.swatch:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 2px var(--accent);font-weight:700}
+.swatch:has(input:focus-visible){outline:3px solid #e0a94e;outline-offset:2px}
+.swatch-parchment .chip-c{background:linear-gradient(135deg,#f8f3e7 0 50%,#efe4cc 50% 100%);border-color:#6a4e2e}
+.swatch-blue .chip-c{background:linear-gradient(135deg,#eef4fb 0 50%,#d8e5f4 50% 100%);border-color:#3a5679}
+.swatch-red .chip-c{background:linear-gradient(135deg,#fbf0ef 0 50%,#f3dad8 50% 100%);border-color:#863636}
+.swatch-green .chip-c{background:linear-gradient(135deg,#eff7ee 0 50%,#d8ebd6 50% 100%);border-color:#345a39}
+.swatch-yellow .chip-c{background:linear-gradient(135deg,#fcf8e2 0 50%,#f4eabd 50% 100%);border-color:#5d4f0f}
+.swatch-lavender .chip-c{background:linear-gradient(135deg,#f5f1fa 0 50%,#e5dbf2 50% 100%);border-color:#5a417e}
+
+/* watermark picker */
+.watermarks{grid-template-columns:repeat(auto-fill,minmax(5.2rem,1fr))}
+.wm-opt{position:relative;display:flex;flex-direction:column;align-items:center;gap:.25rem;border:1px solid #c8b796;border-radius:8px;padding:.35rem;cursor:pointer;background:#fffdf8;font-size:.8rem;text-align:center}
+.wm-opt input{position:absolute;left:0;top:0;opacity:0;width:1px;height:1px;pointer-events:none}
+.wm-prev{display:block;width:100%;aspect-ratio:194/281;border-radius:4px;background:#f8f3e7;color:#c7b596;overflow:hidden;border:1px solid #e3d8c3}
+.wm-prev svg{width:100%;height:100%;display:block}
+.wm-opt:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 2px var(--accent);font-weight:700}
+.wm-opt:has(input:focus-visible){outline:3px solid #e0a94e;outline-offset:2px}
+
+/* ---------- tablet & phone ---------- */
+@media (max-width:980px){
+  .layout{grid-template-columns:1fr;padding:.6rem}
+  .tabs{display:flex;position:sticky;top:var(--topbar-h,3.6rem);z-index:15;background:var(--bg);padding:0 .6rem .5rem;gap:.4rem}
+  .tabs button{flex:1;border:1px solid #6b5640;background:var(--bg-2);color:#f3e9d2;border-radius:8px;padding:.55rem;font-weight:700;min-height:42px}
+  .tabs button[aria-selected="true"]{background:#f3e9d2;color:#2a1c0f}
+  .layout[data-view="edit"] .preview{display:none}
+  .layout[data-view="preview"] .editor{display:none}
+  .editor{max-height:none;overflow:visible}
+  .preview{position:static}
+}
+@media (max-width:560px){
+  .brand{font-size:1.2rem}
+  .actions{width:100%}
+  .actions .btn{flex:1;padding:.45rem .4rem;font-size:.9rem}
+  .grid,.grid.three{grid-template-columns:1fr}
+  .grid.four{grid-template-columns:repeat(2,1fr)}
+  .grid.shields{grid-template-columns:repeat(3,1fr)}
+  .span-2{grid-column:auto}
+  .loc-table{grid-template-columns:1fr 4.6rem 4.6rem}
+  .item-main.pair{grid-template-columns:1fr}
+  .frac{width:100%}
+}
+
+/* ---------- print: only the sheet, at true size ---------- */
+@media print{
+  html,body{background:#fff !important}
+  .topbar,.tabs,.editor,.toast,.skip{display:none !important}
+  .layout{display:block;padding:0}
+  .preview,.layout[data-view] .preview{display:block !important;position:static;height:auto !important;width:auto}
+  .preview-scale{transform:none !important;margin:0 !important;width:210mm;height:297mm}
+  .preview-scale .sheet{box-shadow:none}
+}
