@@ -1,4 +1,4 @@
-# Labyrinthe Battleboard Generator (RC 1.8)
+# Labyrinthe Battleboard Generator (RC 1.9)
 
 A single page app for filling in a fantasy LARP battleboard, then printing it or saving it as a PDF.
 Built for PHP 8.2 on Fasthosts Linux hosting. It works on desktop, tablet and phone and has no
@@ -99,9 +99,10 @@ Required PHP extensions are `json`, `mbstring` and `session`; these are standard
 Edit `config/schema.json`; both the PHP and JavaScript validation read it. Examples:
 
 - `text.notes` sets the maximum length of the notes.
-- `int.armour` sets the range for the five shields (PAC, DAC, SAC, MAC, NAC), currently 0–24.
+- `int.armour` sets the range for the five shields (PAC, DAC, SAC, MAC, NAC), currently 0–36.
+- `int.locAc` sets the range for the AC circles on the paper doll, currently 0–36.
 - `powerTypes` lists the power options.
-- `rows.immunities` sets the minimum and maximum Immunities/Resistances rows. Long lists take space from the Notes box.
+- `dollLimits` and `immunitiesCompact.limits` set the most Immunities/Resistances rows for each doll (see below).
 
 Keep row maximums within what fits on the A4 sheet.
 
@@ -111,7 +112,7 @@ Keep row maximums within what fits on the A4 sheet.
 {
   "app": "battleboard",
   "version": 1,
-  "generator": "Labyrinthe Battleboard Generator (RC 1.8)",
+  "generator": "Labyrinthe Battleboard Generator (RC 1.9)",
   "exportedAt": "2026-11-14T20:30:00.000Z",
   "character": {
     "layout": "basic",
@@ -237,11 +238,25 @@ doll or the pools toggle changes the space available.
 - **Loading:** the file is about 550 KB, roughly 150 KB compressed. It's downloaded once and cached.
   `.htaccess` turns on compression for it when the server supports it.
 
-`immunitiesCompact` (the "Compact rows" tick box in the Immunities/Resistances section) shortens
-that table's rows so more fit, without changing its text size. The limit rises from 12 to 17 rows, or
-from 20 to 28 on the ghost doll; the ghost's column refills with blank rows to the new height. The
-limits are in `immunitiesCompact` in `config/schema.json`. Switching back to normal rows trims blank
-rows, and asks first if filled rows would be lost. Older files import with it switched off.
+**Immunities/Resistances rows.** On the Default and Snow(man)flake dolls, rows that don't fit in
+the main table (beside the right leg) continue in a second table, headed "Imms (cont.)", in the
+space below the Resistance table, beside the left leg. It only appears when it's needed. The ghost doll
+has no space there, as its Resistance table is on the right, but its Immunities column already runs
+the full height of the doll.
+
+`immunitiesCompact` (the "Compact rows" tick box in the Immunities/Resistances section) shortens the
+rows so more fit, without changing the text size. Row limits:
+
+| Doll | Normal rows | Compact rows |
+|---|---|---|
+| Default, Snow(man)flake | 18 (12 in the main table, 6 below Resistance) | 26 (17 + 9) |
+| Woo I'm a ghost | 20 | 28 |
+
+The limits are `dollLimits` (normal) and `immunitiesCompact.limits` (compact) in `config/schema.json`,
+and `immunitiesMainRows` says how many rows the main table holds before the rest continue below
+Resistance. The ghost's column refills with blank rows when compact rows are switched on or off.
+Switching back to normal rows trims blank rows, and asks first if filled rows would be lost. Older
+files import with compact rows switched off.
 
 `combatWary.show` adds an optional Combat Wary row under Fractional in the Reductions box. Its value is
 up to 4 characters, like the other reductions, and typing a value switches the row on.
@@ -288,7 +303,7 @@ Exported files are meant to keep working as the site evolves.
 - **Upgrading the site:** a board saved in the browser by an older version loads in the new one with
   every field intact.
 
-Compatibility tests for RC 1.8:
+Compatibility tests for RC 1.9:
 
 - **Older versions:** files exported from RC 1.0 to RC 1.4 import with every field preserved. The only
   exception is a Social/Professional/Political entry longer than today's 50-character limit, which
@@ -312,7 +327,7 @@ When adding features in future versions:
 The generator is also available as a Windows app that opens in its own window, with no browser,
 no command window and no PHP.
 
-- **Downloads:** `LabyrintheBattleboard-Setup-1.8.0.exe` is an installer that needs no
+- **Downloads:** `LabyrintheBattleboard-Setup-1.9.0.exe` is an installer that needs no
   administrator rights and adds Start-menu and desktop shortcuts and an uninstaller. A portable
   zip is also available: keep `LabyrintheBattleboard.exe` and `WebView2Loader.dll` together.
 - **How it works:** the app is built with Tauri. It shows this web app in a native window using

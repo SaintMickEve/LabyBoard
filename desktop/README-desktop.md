@@ -4,7 +4,7 @@ The website's generator (`BB/`) in its own Windows window: no browser, no comman
 
 ## What the user gets
 
-- `LabyrintheBattleboard-Setup-1.8.0.exe` is an installer that needs no administrator rights. It
+- `LabyrintheBattleboard-Setup-1.9.0.exe` is an installer that needs no administrator rights. It
   installs into `%LOCALAPPDATA%\Programs\Labyrinthe Battleboard Generator`, adds a Start-menu
   shortcut (and a desktop one if wanted), and registers an uninstaller in Settings > Apps.
 - The portable version is `LabyrintheBattleboard.exe` plus `WebView2Loader.dll`. Keep the two
@@ -33,7 +33,7 @@ The website's generator (`BB/`) in its own Windows window: no browser, no comman
 ```
 sudo apt install rustc-1.97 cargo-1.97 rust-1.97-src mingw-w64 nsis php-cli nodejs npm
 npm install            # Tauri command-line tools (only used for `npx tauri icon`)
-./build-windows.sh     # renders ../BB, compiles the .exe, builds the installer into out/
+./build-windows.sh     # renders ../../app/BB, compiles the .exe, builds the installer into out/
 ```
 
 - **Why this setup:** Ubuntu doesn't ship Rust's standard library for Windows, so the build

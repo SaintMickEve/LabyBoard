@@ -1,6 +1,6 @@
 [package]
 name = "labyrinthe-battleboard"
-version = "1.8.0"
+version = "1.9.0"
 description = "Labyrinthe Battleboard Generator - Windows desktop app"
 edition = "2021"
 

@@ -298,5 +298,7 @@ html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 @media print{[data-section]{cursor:auto}}
 
 
+/* Immunities/Resistances continuation table: sits under the Resistance table (top is set by app.js) */
+.mini.immune-over{left:0;right:auto}
 /* Compact Immunities/Resistances rows (optional): shorter lines, same text size */
 .sheet[data-imm="compact"] .mini.immune tbody td,.sheet[data-imm="compact"] .mini.immune tbody th{height:4mm}

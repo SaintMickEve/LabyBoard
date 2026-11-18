@@ -1,7 +1,7 @@
 {
   "name": "labyrinthe-battleboard-desktop",
   "private": true,
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "Windows desktop app for the Labyrinthe Battleboard Generator",
   "scripts": {
     "tauri": "tauri"

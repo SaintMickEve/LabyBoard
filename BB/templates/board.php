@@ -231,6 +231,9 @@ use function Battleboard\e;
           </tbody></table>
         <table class="mini immune" data-section="immunities"><colgroup><col><col class="n"></colgroup>
           <thead><tr><th colspan="2">Immunities/<wbr>Resistances</th></tr></thead><tbody id="sheet-immunities"></tbody></table>
+        <?php /* Continuation of Immunities/Resistances (Default and Snow(man)flake dolls): rows beyond what the main table holds flow into the space under the Resistance table. */ ?>
+        <table class="mini immune immune-over" data-section="immunities" hidden><colgroup><col><col class="n"></colgroup>
+          <thead><tr><th colspan="2">Imms (cont.)</th></tr></thead><tbody id="sheet-immunities-over"></tbody></table>
       </div>
       <?php /* NOTES: heading with Points, the three small Social / Professional / Political boxes, then free notes. */ ?>
       <div class="panel notes" id="sheet-notes" data-section="notes">

@@ -28,7 +28,7 @@
         ],
         "armour": [
             0,
-            24
+            36
         ],
         "locHits": [
             1,
@@ -36,7 +36,7 @@
         ],
         "locAc": [
             0,
-            24
+            36
         ],
         "resist": [
             0,
@@ -316,14 +316,24 @@
         "ghost": {
             "colourResist": 9,
             "immunities": 20
+        },
+        "default": {
+            "immunities": 18
+        },
+        "snowflake": {
+            "immunities": 18
         }
     },
     "immunitiesCompact": {
         "rowMm": 4.0,
         "limits": {
-            "default": 17,
-            "snowflake": 17,
+            "default": 26,
+            "snowflake": 26,
             "ghost": 28
         }
+    },
+    "immunitiesMainRows": {
+        "normal": 12,
+        "compact": 17
     }
 }

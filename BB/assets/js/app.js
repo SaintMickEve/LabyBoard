@@ -742,7 +742,13 @@
       return tr;
     });
     $('#sheet-colour').replaceChildren(...tableRows(state.colourResist, 'text', 'fraction'));
-    $('#sheet-immunities').replaceChildren(...tableRows(state.immunities, 'text', 'value'));
+    // Immunities/Resistances: on the Default and Snow(man)flake dolls, rows beyond what the main table
+    // holds continue in a second table under the Resistance table (the ghost's column holds them all).
+    const immMain = immunitiesMainRows();
+    $('#sheet-immunities').replaceChildren(...tableRows(state.immunities.slice(0, immMain), 'text', 'value'));
+    const immOver = state.immunities.slice(immMain);
+    $('#sheet-immunities-over').replaceChildren(...tableRows(immOver, 'text', 'value'));
+    $('#sheet-immunities-over').closest('table').hidden = immOver.length === 0;
 
     $('#sheet-notes').classList.toggle('has-text', state.notes.trim() !== '');
     requestAnimationFrame(fitAll);
@@ -887,6 +893,10 @@
   }
 
   /* ---------------- paper doll ---------------- */
+  /** How many Immunities/Resistances rows the main table holds before the rest continue under Resistance. */
+  const immunitiesMainRows = (doll = state.doll, compact = state.immunitiesCompact) => (
+    doll === 'ghost' ? Infinity : schema.immunitiesMainRows[compact ? 'compact' : 'normal']);
+
   /** Most Colour Resist or Immunities rows allowed, for a doll and the compact-rows setting. */
   const tableLimit = (key, doll = state.doll, compact = state.immunitiesCompact) => (
     key === 'immunities' && compact
@@ -969,13 +979,15 @@
   /** In ghost mode the right-hand tables stack: Reductions, then Resistance, then Immunities/Resistances. */
   function positionGhostTables() {
     const resist = $('.mini.resist', sheet);
-    const immune = $('.mini.immune', sheet);
+    const immune = $('.mini.immune:not(.immune-over)', sheet);
+    const gap = 3 * pxPerMm;
     if (state.doll !== 'ghost') {
       resist.style.removeProperty('top');
       immune.style.removeProperty('top');
+      // The Immunities continuation table starts just under the Resistance table.
+      $('.mini.immune-over', sheet).style.top = `${resist.offsetTop + resist.offsetHeight + 1.6 * pxPerMm}px`;
       return;
     }
-    const gap = 3 * pxPerMm;
     const reduce = $('.mini.reduce', sheet);
     resist.style.top = `${reduce.offsetTop + reduce.offsetHeight + gap}px`;
     immune.style.top = `${resist.offsetTop + resist.offsetHeight + gap}px`;
@@ -1035,10 +1047,12 @@
 
     // A long Immunities/Resistances table can run below the doll: push the Notes box down to make room.
     const doll = $('.doll', sheet);
-    const immTable = $('#sheet-immunities', sheet).closest('table');
     const notesPanel = $('#sheet-notes', sheet);
     notesPanel.style.marginTop = '';
-    const overflow = immTable.offsetTop + immTable.offsetHeight - doll.offsetHeight;
+    const overflow = Math.max(...['#sheet-immunities', '#sheet-immunities-over'].map((id) => {
+      const table = $(id, sheet).closest('table');
+      return table.hidden ? -Infinity : table.offsetTop + table.offsetHeight;
+    })) - doll.offsetHeight;
     if (overflow > 0) notesPanel.style.marginTop = `${overflow}px`;
 
     const notes = $('[data-bind="notes"]', sheet);

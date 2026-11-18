@@ -73,18 +73,18 @@ $text = static function (string $path, int $max, string $label, string $placehol
 <link rel="preload" href="<?= e(url('assets/fonts/chorus-mediumitalic.woff')) ?>" as="font" type="font/woff" crossorigin>
 <link rel="preload" href="<?= e(url('assets/fonts/pagella-regular.woff')) ?>" as="font" type="font/woff" crossorigin>
 <!-- The ?v= number changes with each release so browsers fetch the new files instead of old cached ones. -->
-<link rel="stylesheet" href="<?= e(url('assets/css/board.css?v=53')) ?>">
-<link rel="stylesheet" href="<?= e(url('assets/css/app.css?v=53')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/board.css?v=57')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/app.css?v=57')) ?>">
 <!-- The whole schema as data (not code), so the browser applies exactly the same limits as the server. -->
 <script type="application/json" id="bb-schema"><?= json_encode($schema, $jsonFlags) ?></script>
-<script src="<?= e(url('assets/js/app.js?v=53')) ?>" defer></script>
+<script src="<?= e(url('assets/js/app.js?v=57')) ?>" defer></script>
 </head>
 <body>
 <a class="skip" href="#editor">Skip to editor</a>
 
 <!-- Top bar: New / Import / Export / Print. app.js handles each button by its data-action. -->
 <header class="topbar">
-  <a class="brand" href="<?= e(url()) ?>" title="Home"><span class="brand-mark" aria-hidden="true">&#9670;</span> <span class="brand-name">Labyrinthe Battleboard Generator</span> <span class="brand-rc">RC 1.8</span></a>
+  <a class="brand" href="<?= e(url()) ?>" title="Home"><span class="brand-mark" aria-hidden="true">&#9670;</span> <span class="brand-name">Labyrinthe Battleboard Generator</span> <span class="brand-rc">RC 1.9</span></a>
   <nav class="actions" aria-label="Board actions">
     <button type="button" class="btn" data-action="new" title="Start a blank board">New</button>
     <button type="button" class="btn" data-action="import" title="Load a JSON file">Import</button>
@@ -249,7 +249,7 @@ $text = static function (string $path, int $max, string $label, string $placehol
     <details class="sec" data-sec="locations">
       <summary>Locations (paper doll)</summary>
       <div class="loc-table" role="group" aria-label="Locations">
-        <span class="lt-h">Location</span><span class="lt-h">loc (1–999)</span><span class="lt-h">AC (0–24)</span>
+        <span class="lt-h">Location</span><span class="lt-h">loc (1–999)</span><span class="lt-h">AC (0–36)</span>
         <?php foreach ($schema['locations'] as $key => $label): ?>
           <span class="lt-name" data-loc="<?= e($key) ?>"><?= e($label) ?></span>
           <?= $num("locations.$key.hits", $int['locHits'], "$label loc", ' data-loc="' . e($key) . '"') ?>
@@ -289,7 +289,7 @@ $text = static function (string $path, int $max, string $label, string $placehol
 
     <details class="sec" data-sec="immunities">
       <summary>Immunities/Resistances <span class="count" data-count="immunities"></span></summary>
-      <p class="hint">Short text on the left; a number, Y or N on the right. Adding lots of rows makes the Notes box smaller.</p>
+      <p class="hint">Short text on the left; a number, Y or N on the right. On the Default and Snow(man)flake dolls, rows that don't fit in the main table continue in the space below the Resistance table.</p>
       <label class="check"><input type="checkbox" data-path="immunitiesCompact" data-kind="bool"> Compact rows: shorter lines, so more rows fit</label>
       <ol class="list" data-list="immunities"></ol>
       <button type="button" class="btn add" data-add="immunities">+ Add row</button>
