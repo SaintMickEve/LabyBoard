@@ -73,18 +73,18 @@ $text = static function (string $path, int $max, string $label, string $placehol
 <link rel="preload" href="<?= e(url('assets/fonts/chorus-mediumitalic.woff')) ?>" as="font" type="font/woff" crossorigin>
 <link rel="preload" href="<?= e(url('assets/fonts/pagella-regular.woff')) ?>" as="font" type="font/woff" crossorigin>
 <!-- The ?v= number changes with each release so browsers fetch the new files instead of old cached ones. -->
-<link rel="stylesheet" href="<?= e(url('assets/css/board.css?v=57')) ?>">
-<link rel="stylesheet" href="<?= e(url('assets/css/app.css?v=57')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/board.css?v=63')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/app.css?v=63')) ?>">
 <!-- The whole schema as data (not code), so the browser applies exactly the same limits as the server. -->
 <script type="application/json" id="bb-schema"><?= json_encode($schema, $jsonFlags) ?></script>
-<script src="<?= e(url('assets/js/app.js?v=57')) ?>" defer></script>
+<script src="<?= e(url('assets/js/app.js?v=63')) ?>" defer></script>
 </head>
 <body>
 <a class="skip" href="#editor">Skip to editor</a>
 
 <!-- Top bar: New / Import / Export / Print. app.js handles each button by its data-action. -->
 <header class="topbar">
-  <a class="brand" href="<?= e(url()) ?>" title="Home"><span class="brand-mark" aria-hidden="true">&#9670;</span> <span class="brand-name">Labyrinthe Battleboard Generator</span> <span class="brand-rc">RC 1.9</span></a>
+  <a class="brand" href="<?= e(url()) ?>" title="Home"><span class="brand-mark" aria-hidden="true">&#9670;</span> <span class="brand-name">Labyrinthe Battleboard Generator</span> <span class="brand-rc">RC 1.11.0</span></a>
   <nav class="actions" aria-label="Board actions">
     <button type="button" class="btn" data-action="new" title="Start a blank board">New</button>
     <button type="button" class="btn" data-action="import" title="Load a JSON file">Import</button>
@@ -296,12 +296,14 @@ $text = static function (string $path, int $max, string $label, string $placehol
     </details>
 
     <details class="sec" data-sec="notes">
-      <summary>Notes, Points &amp; Standing</summary>
+      <summary>Notes, Points &amp; Guilds</summary>
       <label class="field">Notes
         <textarea class="in" rows="6" data-path="notes" data-kind="multiline" maxlength="<?= e((string) $t['notes']) ?>" aria-describedby="notes-count"></textarea>
       </label>
       <p class="hint" id="notes-count"></p>
       <label class="field inline">Points <?= $num('points', $int['points'], 'Points') ?></label>
+      <label class="check"><input type="checkbox" data-path="guildsShow" data-kind="bool"> Show the Guilds boxes (Social, Professional, Political) on the sheet (switch off for more room for notes)</label>
+      <div id="guild-fields">
       <div class="grid three standing-fields">
         <?php foreach (['social' => 'Social', 'professional' => 'Professional', 'political' => 'Political'] as $key => $label): ?>
           <label class="field"><?= e($label) ?>
@@ -310,6 +312,7 @@ $text = static function (string $path, int $max, string $label, string $placehol
         <?php endforeach; ?>
       </div>
       <p class="hint">Social, Professional and Political print in small type in three boxes under the Notes heading (two short lines, 50 characters each). The box label disappears once you type in it; text that doesn't fit is cut off with "…".</p>
+      </div>
     </details>
 
     <details class="sec" data-sec="theme">
@@ -373,7 +376,7 @@ $text = static function (string $path, int $max, string $label, string $placehol
       <input class="in" type="text" autocomplete="off" data-field="text" maxlength="<?= e((string) $t['immunityText']) ?>" aria-label="Immunity or resistance" placeholder="Immunity / resistance">
       <span class="imm-val">
         <select class="in" data-field="mode" aria-label="Value type">
-          <option value="">—</option><option value="Y">Y</option><option value="N">N</option><option value="#">No.</option>
+          <option value="">—</option><option value="Y">Y</option><option value="N">N</option><option value="#">Num.</option>
         </select>
         <input class="in num small" type="text" inputmode="numeric" autocomplete="off" data-field="number" maxlength="2" aria-label="Value (0–99)" placeholder="0–99" hidden>
       </span>

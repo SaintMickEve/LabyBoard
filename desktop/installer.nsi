@@ -12,7 +12,7 @@ Unicode true
 !include "LogicLib.nsh"
 
 !define APPNAME   "Labyrinthe Battleboard Generator"
-!define VERSION   "1.9.0"
+!define VERSION   "1.11.0"
 !define EXE       "LabyrintheBattleboard.exe"
 !define UNINSTKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\LabyrintheBattleboard"
 ; Registry key where Windows records the Microsoft Edge WebView2 Runtime (built into Windows 10/11).
@@ -24,7 +24,7 @@ InstallDir "$LOCALAPPDATA\Programs\${APPNAME}"
 InstallDirRegKey HKCU "${UNINSTKEY}" "InstallLocation"
 RequestExecutionLevel user
 SetCompressor /SOLID lzma
-BrandingText "${APPNAME} (RC 1.9)"
+BrandingText "${APPNAME} (RC 1.11.0)"
 
 VIProductVersion "${VERSION}.0"
 VIAddVersionKey "ProductName" "${APPNAME}"

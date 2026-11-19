@@ -1,4 +1,4 @@
-Labyrinthe Battleboard Generator (RC 1.9) - Windows app
+Labyrinthe Battleboard Generator (RC 1.11.0) - Windows app
 ========================================================
 
 OPENING IT

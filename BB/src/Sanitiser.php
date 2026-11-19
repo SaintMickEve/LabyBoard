@@ -160,6 +160,8 @@ final class Sanitiser
             'colourResist' => [],
             'immunities'  => [],
             'notes' => $this->text($input['notes'] ?? '', $t['notes'], 'Notes', true),
+            // Guilds: the Social / Professional / Political boxes under Notes can be switched off (older files: on).
+            'guildsShow'   => $this->bool($input['guildsShow'] ?? true),
             'social'       => $this->text($input['social'] ?? '', $t['standing'], 'Social'),
             'professional' => $this->text($input['professional'] ?? '', $t['standing'], 'Professional'),
             'political'    => $this->text($input['political'] ?? '', $t['standing'], 'Political'),

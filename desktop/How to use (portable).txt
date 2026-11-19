@@ -1,4 +1,4 @@
-Labyrinthe Battleboard Generator (RC 1.9) - Windows app, portable version
+Labyrinthe Battleboard Generator (RC 1.11.0) - Windows app, portable version
 =========================================================================
 
 No installation needed.
@@ -9,7 +9,7 @@ Keep LabyrintheBattleboard.exe and WebView2Loader.dll together in the same folde
 The generator opens in its own window.
 
 For Start-menu and desktop shortcuts, use the installer instead
-(LabyrintheBattleboard-Setup-1.9.0.exe).
+(LabyrintheBattleboard-Setup-1.11.0.exe).
 
 The first time, Windows may show "Windows protected your PC" because the program isn't
 signed with a paid certificate. Click "More info", then "Run anyway".

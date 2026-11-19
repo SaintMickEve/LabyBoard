@@ -216,6 +216,8 @@
       },
       colourResist: [], immunities: [],
       notes: text(input.notes ?? '', T.notes, 'Notes', true),
+      // Guilds: the Social / Professional / Political boxes under Notes can be switched off (older files: on).
+      guildsShow: [true, 1, '1', 'true'].includes(input.guildsShow ?? true),
       social: text(input.social ?? '', T.standing, 'Social'),
       professional: text(input.professional ?? '', T.standing, 'Professional'),
       political: text(input.political ?? '', T.standing, 'Political'),
@@ -727,6 +729,9 @@
     sheet.dataset.doll = state.doll;
     sheet.dataset.pools = layoutCfg().pools || state.poolsShow ? 'on' : 'off';
     sheet.dataset.imm = state.immunitiesCompact ? 'compact' : 'normal';
+    // Guilds off hides the three small boxes under the Notes heading (board.css), so the notes get their room.
+    sheet.dataset.guilds = state.guildsShow ? 'on' : 'off';
+    $('#guild-fields').hidden = !state.guildsShow; // the form hides their inputs too (the text is kept)
     sheet.dataset.power = layoutCfg().power === false ? 'off' : 'on';
     // Casting Stam (optional) takes the place of the bottom T.B.L.P. line.
     $$('#sheet-tblp .row:not(.cs-row)', sheet).forEach((r, i) => { r.hidden = i >= tblpTextRows(); });

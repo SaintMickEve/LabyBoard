@@ -103,86 +103,86 @@ use function Battleboard\e;
       <?php /* PAPER DOLL: one SVG holds every body piece for all three dolls; CSS shows the pieces for the chosen doll. Each chip is a location's loc box and AC circle. */ ?>
       <div class="doll">
         <div data-section="locations">
-        <svg class="doll-svg" viewBox="0 0 88 182" width="88mm" height="182mm" aria-hidden="true"><defs><pattern id="lines" width="4" height="5" patternUnits="userSpaceOnUse"><line x1="0" y1="4.9" x2="4" y2="4.9" class="writeline"/></pattern><pattern id="hatch" width="1.1" height="1.1" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="1.1" class="hatchline"/></pattern><clipPath id="clip-head"><path d="M30,33 L30,7 Q30,1 36,1 L52,1 Q58,1 58,7 L58,33 Q44,35.5 30,33 Z"/></clipPath><clipPath id="clip-larm"><path d="M4.5,38 L18,38 Q21,38 21,42 L20,100 Q20,104 16,104 L6.5,104 Q2.5,104 2.5,100 L0.5,42 Q0.5,38 4.5,38 Z"/></clipPath><clipPath id="clip-chest"><path d="M28,38 L60,38 Q65,38 65,43 L63,77 L25,77 L23,43 Q23,38 28,38 Z"/></clipPath><clipPath id="clip-rarm"><path d="M83.5,38 L70,38 Q67,38 67,42 L68,100 Q68,104 72,104 L81.5,104 Q85.5,104 85.5,100 L87.5,42 Q87.5,38 83.5,38 Z"/></clipPath><clipPath id="clip-abdomen"><path d="M24.5,80 L63.5,80 L62,112 Q62,114 60,114 L28,114 Q26,114 26,112 Z"/></clipPath><clipPath id="clip-lleg"><path d="M24,117 L43,117 L42,177 Q42,181 38,181 L29,181 Q25,181 25,177 Z"/></clipPath><clipPath id="clip-rleg"><path d="M45,117 L64,117 L63,177 Q63,181 59,181 L50,181 Q46,181 46,177 Z"/></clipPath><clipPath id="clip-torso"><path d="M28,38 L60,38 Q65,38 65,43 L63.5,111 Q63.5,114 60.5,114 L27.5,114 Q24.5,114 24.5,111 L23,43 Q23,38 28,38 Z"/></clipPath></defs>
+        <svg class="doll-svg" viewBox="0 0 88 182" width="88mm" height="182mm" aria-hidden="true"><defs><pattern id="lines" width="4" height="5" patternUnits="userSpaceOnUse"><line x1="0" y1="4.9" x2="4" y2="4.9" class="writeline"/></pattern><pattern id="hatch" width="1.1" height="1.1" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="1.1" class="hatchline"/></pattern><clipPath id="clip-head"><path d="M28,30.3 L28,6.5 Q28,0.8 33.7,0.8 L54.3,0.8 Q60,0.8 60,6.5 L60,30.3 Q44,32.8 28,30.3 Z"/></clipPath><clipPath id="clip-larm"><path d="M1.7,35.7 L19.5,35.7 Q22.5,35.7 22.5,39.7 L21.5,101 Q21.5,105 17.5,105 L3.7,105 Q-0.3,105 -0.3,101 L-2.3,39.7 Q-2.3,35.7 1.7,35.7 Z"/></clipPath><clipPath id="clip-chest"><path d="M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62,75.2 L26,75.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z"/></clipPath><clipPath id="clip-rarm"><path d="M87.5,35.7 L68.5,35.7 Q65.5,35.7 65.5,39.7 L66.5,101 Q66.5,105 70.5,105 L85.5,105 Q89.5,105 89.5,101 L91.5,39.7 Q91.5,35.7 87.5,35.7 Z"/></clipPath><clipPath id="clip-abdomen"><path d="M24.5,77.7 L63.5,77.7 L62,110.2 Q62,112.2 60,112.2 L28,112.2 Q26,112.2 26,110.2 Z"/></clipPath><clipPath id="clip-lleg"><path d="M24,114.2 L43,114.2 L42,179.8 Q42,183.8 38,183.8 L29,183.8 Q25,183.8 25,179.8 Z"/></clipPath><clipPath id="clip-rleg"><path d="M45,114.2 L64,114.2 L63,179.8 Q63,183.8 59,183.8 L50,183.8 Q46,183.8 46,179.8 Z"/></clipPath><clipPath id="clip-torso"><path d="M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62.5,109.2 Q62.5,112.2 59.5,112.2 L28.5,112.2 Q25.5,112.2 25.5,109.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z"/></clipPath></defs>
   <g class="piece" id="piece-head">
-    <path d="M30,33 L30,7 Q30,1 36,1 L52,1 Q58,1 58,7 L58,33 Q44,35.5 30,33 Z" class="piece-fill"/>
+    <path d="M28,30.3 L28,6.5 Q28,0.8 33.7,0.8 L54.3,0.8 Q60,0.8 60,6.5 L60,30.3 Q44,32.8 28,30.3 Z" class="piece-fill"/>
     <g clip-path="url(#clip-head)">
-      <rect x="30" y="10" width="28" height="34" fill="url(#lines)"/>
-      <rect x="55.4" y="1" width="2.6" height="34" fill="url(#hatch)" class="shade"/>
-      <rect x="30" y="33.2" width="28" height="1.8" fill="url(#hatch)" class="shade"/>
+      <rect x="28" y="9.8" width="32" height="31.4" fill="url(#lines)"/>
+      <rect x="57.4" y="0.8" width="2.6" height="31.4" fill="url(#hatch)" class="shade"/>
+      <rect x="28" y="30.399999999999995" width="32" height="1.8" fill="url(#hatch)" class="shade"/>
     </g>
-    <path d="M30,33 L30,7 Q30,1 36,1 L52,1 Q58,1 58,7 L58,33 Q44,35.5 30,33 Z" class="stitch" transform="translate(44.0 18.0) scale(0.9143 0.9294) translate(-44.0 -18.0)"/>
-    <path d="M30,33 L30,7 Q30,1 36,1 L52,1 Q58,1 58,7 L58,33 Q44,35.5 30,33 Z" class="piece-edge"/>
+    <path d="M28,30.3 L28,6.5 Q28,0.8 33.7,0.8 L54.3,0.8 Q60,0.8 60,6.5 L60,30.3 Q44,32.8 28,30.3 Z" class="stitch" transform="translate(44.0 16.5) scale(0.9250 0.9236) translate(-44.0 -16.5)"/>
+    <path d="M28,30.3 L28,6.5 Q28,0.8 33.7,0.8 L54.3,0.8 Q60,0.8 60,6.5 L60,30.3 Q44,32.8 28,30.3 Z" class="piece-edge"/>
   </g>
   <g class="piece" id="piece-larm">
-    <path d="M4.5,38 L18,38 Q21,38 21,42 L20,100 Q20,104 16,104 L6.5,104 Q2.5,104 2.5,100 L0.5,42 Q0.5,38 4.5,38 Z" class="piece-fill"/>
+    <path d="M1.7,35.7 L19.5,35.7 Q22.5,35.7 22.5,39.7 L21.5,101 Q21.5,105 17.5,105 L3.7,105 Q-0.3,105 -0.3,101 L-2.3,39.7 Q-2.3,35.7 1.7,35.7 Z" class="piece-fill"/>
     <g clip-path="url(#clip-larm)">
-      <rect x="0.5" y="47" width="20.5" height="66" fill="url(#lines)"/>
-      <rect x="18.4" y="38" width="2.6" height="66" fill="url(#hatch)" class="shade"/>
-      <rect x="0.5" y="102.2" width="20.5" height="1.8" fill="url(#hatch)" class="shade"/>
+      <rect x="-2.3" y="44.7" width="24.8" height="69.3" fill="url(#lines)"/>
+      <rect x="19.9" y="35.7" width="2.6" height="69.3" fill="url(#hatch)" class="shade"/>
+      <rect x="-2.3" y="103.2" width="24.8" height="1.8" fill="url(#hatch)" class="shade"/>
     </g>
-    <path d="M4.5,38 L18,38 Q21,38 21,42 L20,100 Q20,104 16,104 L6.5,104 Q2.5,104 2.5,100 L0.5,42 Q0.5,38 4.5,38 Z" class="stitch" transform="translate(10.75 71.0) scale(0.8829 0.9636) translate(-10.75 -71.0)"/>
-    <path d="M4.5,38 L18,38 Q21,38 21,42 L20,100 Q20,104 16,104 L6.5,104 Q2.5,104 2.5,100 L0.5,42 Q0.5,38 4.5,38 Z" class="piece-edge"/>
+    <path d="M1.7,35.7 L19.5,35.7 Q22.5,35.7 22.5,39.7 L21.5,101 Q21.5,105 17.5,105 L3.7,105 Q-0.3,105 -0.3,101 L-2.3,39.7 Q-2.3,35.7 1.7,35.7 Z" class="stitch" transform="translate(10.100000000000001 70.35) scale(0.9032 0.9654) translate(-10.100000000000001 -70.35)"/>
+    <path d="M1.7,35.7 L19.5,35.7 Q22.5,35.7 22.5,39.7 L21.5,101 Q21.5,105 17.5,105 L3.7,105 Q-0.3,105 -0.3,101 L-2.3,39.7 Q-2.3,35.7 1.7,35.7 Z" class="piece-edge"/>
   </g>
   <g class="piece" id="piece-chest">
-    <path d="M28,38 L60,38 Q65,38 65,43 L63,77 L25,77 L23,43 Q23,38 28,38 Z" class="piece-fill"/>
+    <path d="M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62,75.2 L26,75.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z" class="piece-fill"/>
     <g clip-path="url(#clip-chest)">
-      <rect x="23" y="47" width="42" height="39" fill="url(#lines)"/>
-      <rect x="62.4" y="38" width="2.6" height="39" fill="url(#hatch)" class="shade"/>
-      <rect x="23" y="75.2" width="42" height="1.8" fill="url(#hatch)" class="shade"/>
+      <rect x="24.5" y="43.2" width="39" height="41" fill="url(#lines)"/>
+      <rect x="60.9" y="34.2" width="2.6" height="41" fill="url(#hatch)" class="shade"/>
+      <rect x="24.5" y="73.4" width="39" height="1.8" fill="url(#hatch)" class="shade"/>
     </g>
-    <path d="M28,38 L60,38 Q65,38 65,43 L63,77 L25,77 L23,43 Q23,38 28,38 Z" class="stitch" transform="translate(44.0 57.5) scale(0.9429 0.9385) translate(-44.0 -57.5)"/>
-    <path d="M28,38 L60,38 Q65,38 65,43 L63,77 L25,77 L23,43 Q23,38 28,38 Z" class="piece-edge"/>
+    <path d="M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62,75.2 L26,75.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z" class="stitch" transform="translate(44.0 54.7) scale(0.9385 0.9415) translate(-44.0 -54.7)"/>
+    <path d="M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62,75.2 L26,75.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z" class="piece-edge"/>
   </g>
   <g class="piece" id="piece-rarm">
-    <path d="M83.5,38 L70,38 Q67,38 67,42 L68,100 Q68,104 72,104 L81.5,104 Q85.5,104 85.5,100 L87.5,42 Q87.5,38 83.5,38 Z" class="piece-fill"/>
+    <path d="M87.5,35.7 L68.5,35.7 Q65.5,35.7 65.5,39.7 L66.5,101 Q66.5,105 70.5,105 L85.5,105 Q89.5,105 89.5,101 L91.5,39.7 Q91.5,35.7 87.5,35.7 Z" class="piece-fill"/>
     <g clip-path="url(#clip-rarm)">
-      <rect x="67" y="47" width="20.5" height="66" fill="url(#lines)"/>
-      <rect x="84.9" y="38" width="2.6" height="66" fill="url(#hatch)" class="shade"/>
-      <rect x="67" y="102.2" width="20.5" height="1.8" fill="url(#hatch)" class="shade"/>
+      <rect x="65.5" y="44.7" width="26.0" height="69.3" fill="url(#lines)"/>
+      <rect x="88.9" y="35.7" width="2.6" height="69.3" fill="url(#hatch)" class="shade"/>
+      <rect x="65.5" y="103.2" width="26.0" height="1.8" fill="url(#hatch)" class="shade"/>
     </g>
-    <path d="M83.5,38 L70,38 Q67,38 67,42 L68,100 Q68,104 72,104 L81.5,104 Q85.5,104 85.5,100 L87.5,42 Q87.5,38 83.5,38 Z" class="stitch" transform="translate(77.25 71.0) scale(0.8829 0.9636) translate(-77.25 -71.0)"/>
-    <path d="M83.5,38 L70,38 Q67,38 67,42 L68,100 Q68,104 72,104 L81.5,104 Q85.5,104 85.5,100 L87.5,42 Q87.5,38 83.5,38 Z" class="piece-edge"/>
+    <path d="M87.5,35.7 L68.5,35.7 Q65.5,35.7 65.5,39.7 L66.5,101 Q66.5,105 70.5,105 L85.5,105 Q89.5,105 89.5,101 L91.5,39.7 Q91.5,35.7 87.5,35.7 Z" class="stitch" transform="translate(78.5 70.35) scale(0.9077 0.9654) translate(-78.5 -70.35)"/>
+    <path d="M87.5,35.7 L68.5,35.7 Q65.5,35.7 65.5,39.7 L66.5,101 Q66.5,105 70.5,105 L85.5,105 Q89.5,105 89.5,101 L91.5,39.7 Q91.5,35.7 87.5,35.7 Z" class="piece-edge"/>
   </g>
   <g class="piece" id="piece-abdomen">
-    <path d="M24.5,80 L63.5,80 L62,112 Q62,114 60,114 L28,114 Q26,114 26,112 Z" class="piece-fill"/>
+    <path d="M24.5,77.7 L63.5,77.7 L62,110.2 Q62,112.2 60,112.2 L28,112.2 Q26,112.2 26,110.2 Z" class="piece-fill"/>
     <g clip-path="url(#clip-abdomen)">
-      <rect x="24.5" y="89" width="39" height="34" fill="url(#lines)"/>
-      <rect x="60.9" y="80" width="2.6" height="34" fill="url(#hatch)" class="shade"/>
-      <rect x="24.5" y="112.2" width="39" height="1.8" fill="url(#hatch)" class="shade"/>
+      <rect x="24.5" y="86.7" width="39" height="34.5" fill="url(#lines)"/>
+      <rect x="60.9" y="77.7" width="2.6" height="34.5" fill="url(#hatch)" class="shade"/>
+      <rect x="24.5" y="110.4" width="39" height="1.8" fill="url(#hatch)" class="shade"/>
     </g>
-    <path d="M24.5,80 L63.5,80 L62,112 Q62,114 60,114 L28,114 Q26,114 26,112 Z" class="stitch" transform="translate(44.0 97.0) scale(0.9385 0.9294) translate(-44.0 -97.0)"/>
-    <path d="M24.5,80 L63.5,80 L62,112 Q62,114 60,114 L28,114 Q26,114 26,112 Z" class="piece-edge"/>
+    <path d="M24.5,77.7 L63.5,77.7 L62,110.2 Q62,112.2 60,112.2 L28,112.2 Q26,112.2 26,110.2 Z" class="stitch" transform="translate(44.0 94.95) scale(0.9385 0.9304) translate(-44.0 -94.95)"/>
+    <path d="M24.5,77.7 L63.5,77.7 L62,110.2 Q62,112.2 60,112.2 L28,112.2 Q26,112.2 26,110.2 Z" class="piece-edge"/>
   </g>
   <g class="piece" id="piece-lleg">
-    <path d="M24,117 L43,117 L42,177 Q42,181 38,181 L29,181 Q25,181 25,177 Z" class="piece-fill"/>
+    <path d="M24,114.2 L43,114.2 L42,179.8 Q42,183.8 38,183.8 L29,183.8 Q25,183.8 25,179.8 Z" class="piece-fill"/>
     <g clip-path="url(#clip-lleg)">
-      <rect x="24" y="126" width="19" height="64" fill="url(#lines)"/>
-      <rect x="40.4" y="117" width="2.6" height="64" fill="url(#hatch)" class="shade"/>
-      <rect x="24" y="179.2" width="19" height="1.8" fill="url(#hatch)" class="shade"/>
+      <rect x="24" y="123.2" width="19" height="69.6" fill="url(#lines)"/>
+      <rect x="40.4" y="114.2" width="2.6" height="69.6" fill="url(#hatch)" class="shade"/>
+      <rect x="24" y="182.0" width="19" height="1.8" fill="url(#hatch)" class="shade"/>
     </g>
-    <path d="M24,117 L43,117 L42,177 Q42,181 38,181 L29,181 Q25,181 25,177 Z" class="stitch" transform="translate(33.5 149.0) scale(0.8737 0.9625) translate(-33.5 -149.0)"/>
-    <path d="M24,117 L43,117 L42,177 Q42,181 38,181 L29,181 Q25,181 25,177 Z" class="piece-edge"/>
+    <path d="M24,114.2 L43,114.2 L42,179.8 Q42,183.8 38,183.8 L29,183.8 Q25,183.8 25,179.8 Z" class="stitch" transform="translate(33.5 149.0) scale(0.8737 0.9655) translate(-33.5 -149.0)"/>
+    <path d="M24,114.2 L43,114.2 L42,179.8 Q42,183.8 38,183.8 L29,183.8 Q25,183.8 25,179.8 Z" class="piece-edge"/>
   </g>
   <g class="piece" id="piece-rleg">
-    <path d="M45,117 L64,117 L63,177 Q63,181 59,181 L50,181 Q46,181 46,177 Z" class="piece-fill"/>
+    <path d="M45,114.2 L64,114.2 L63,179.8 Q63,183.8 59,183.8 L50,183.8 Q46,183.8 46,179.8 Z" class="piece-fill"/>
     <g clip-path="url(#clip-rleg)">
-      <rect x="45" y="126" width="19" height="64" fill="url(#lines)"/>
-      <rect x="61.4" y="117" width="2.6" height="64" fill="url(#hatch)" class="shade"/>
-      <rect x="45" y="179.2" width="19" height="1.8" fill="url(#hatch)" class="shade"/>
+      <rect x="45" y="123.2" width="19" height="69.6" fill="url(#lines)"/>
+      <rect x="61.4" y="114.2" width="2.6" height="69.6" fill="url(#hatch)" class="shade"/>
+      <rect x="45" y="182.0" width="19" height="1.8" fill="url(#hatch)" class="shade"/>
     </g>
-    <path d="M45,117 L64,117 L63,177 Q63,181 59,181 L50,181 Q46,181 46,177 Z" class="stitch" transform="translate(54.5 149.0) scale(0.8737 0.9625) translate(-54.5 -149.0)"/>
-    <path d="M45,117 L64,117 L63,177 Q63,181 59,181 L50,181 Q46,181 46,177 Z" class="piece-edge"/>
+    <path d="M45,114.2 L64,114.2 L63,179.8 Q63,183.8 59,183.8 L50,183.8 Q46,183.8 46,179.8 Z" class="stitch" transform="translate(54.5 149.0) scale(0.8737 0.9655) translate(-54.5 -149.0)"/>
+    <path d="M45,114.2 L64,114.2 L63,179.8 Q63,183.8 59,183.8 L50,183.8 Q46,183.8 46,179.8 Z" class="piece-edge"/>
   </g>
   <g class="piece" id="piece-torso">
-    <path d="M28,38 L60,38 Q65,38 65,43 L63.5,111 Q63.5,114 60.5,114 L27.5,114 Q24.5,114 24.5,111 L23,43 Q23,38 28,38 Z" class="piece-fill"/>
+    <path d="M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62.5,109.2 Q62.5,112.2 59.5,112.2 L28.5,112.2 Q25.5,112.2 25.5,109.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z" class="piece-fill"/>
     <g clip-path="url(#clip-torso)">
-      <rect x="23" y="47" width="42" height="76" fill="url(#lines)"/>
-      <rect x="62.4" y="38" width="2.6" height="76" fill="url(#hatch)" class="shade"/>
-      <rect x="23" y="112.2" width="42" height="1.8" fill="url(#hatch)" class="shade"/>
+      <rect x="24.5" y="43.2" width="39" height="78" fill="url(#lines)"/>
+      <rect x="60.9" y="34.2" width="2.6" height="78" fill="url(#hatch)" class="shade"/>
+      <rect x="24.5" y="110.4" width="39" height="1.8" fill="url(#hatch)" class="shade"/>
     </g>
-    <path d="M28,38 L60,38 Q65,38 65,43 L63.5,111 Q63.5,114 60.5,114 L27.5,114 Q24.5,114 24.5,111 L23,43 Q23,38 28,38 Z" class="stitch" transform="translate(44.0 76.0) scale(0.9429 0.9684) translate(-44.0 -76.0)"/>
-    <path d="M28,38 L60,38 Q65,38 65,43 L63.5,111 Q63.5,114 60.5,114 L27.5,114 Q24.5,114 24.5,111 L23,43 Q23,38 28,38 Z" class="piece-edge"/>
+    <path d="M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62.5,109.2 Q62.5,112.2 59.5,112.2 L28.5,112.2 Q25.5,112.2 25.5,109.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z" class="stitch" transform="translate(44.0 73.2) scale(0.9385 0.9692) translate(-44.0 -73.2)"/>
+    <path d="M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62.5,109.2 Q62.5,112.2 59.5,112.2 L28.5,112.2 Q25.5,112.2 25.5,109.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z" class="piece-edge"/>
   </g>
   <g class="piece" id="piece-ghost">
     <clipPath id="clip-ghost"><path d="M0,121 L0,30.5 A30,30 0 0 1 60,30.5 L60,121 L52.5,113.5 L45,121 L37.5,113.5 L30,121 L22.5,113.5 L15,121 L7.5,113.5 Z"/></clipPath>

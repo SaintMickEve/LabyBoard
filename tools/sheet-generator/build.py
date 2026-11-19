@@ -24,13 +24,18 @@ def pip_rows(count, field):
 # All units are millimetres inside an 88 x 140 box.
 PIECES = [
     # id, label, path, bbox (x, y, w, h), chip position (x, y) — head chip is centred on x
-    ("head", "Head", "M30,33 L30,7 Q30,1 36,1 L52,1 Q58,1 58,7 L58,33 Q44,35.5 30,33 Z", (30, 1, 28, 34), (44, 2.2)),
-    ("larm", "Left Arm", "M4.5,38 L18,38 Q21,38 21,42 L20,100 Q20,104 16,104 L6.5,104 Q2.5,104 2.5,100 L0.5,42 Q0.5,38 4.5,38 Z", (0.5, 38, 20.5, 66), (2.2, 40)),
-    ("chest", "Chest", "M28,38 L60,38 Q65,38 65,43 L63,77 L25,77 L23,43 Q23,38 28,38 Z", (23, 38, 42, 39), (25.5, 40)),
-    ("rarm", "Right Arm", "M83.5,38 L70,38 Q67,38 67,42 L68,100 Q68,104 72,104 L81.5,104 Q85.5,104 85.5,100 L87.5,42 Q87.5,38 83.5,38 Z", (67, 38, 20.5, 66), (68.7, 40)),
-    ("abdomen", "Abdomen", "M24.5,80 L63.5,80 L62,112 Q62,114 60,114 L28,114 Q26,114 26,112 Z", (24.5, 80, 39, 34), (27, 82)),
-    ("lleg", "Left Leg", "M24,117 L43,117 L42,177 Q42,181 38,181 L29,181 Q25,181 25,177 Z", (24, 117, 19, 64), (25.6, 119)),
-    ("rleg", "Right Leg", "M45,117 L64,117 L63,177 Q63,181 59,181 L50,181 Q46,181 46,177 Z", (45, 117, 19, 64), (46.6, 119)),
+    # Sized to leave about 1.5 mm between each location and the tables around the doll
+    # (Colour Resist and Reductions at the top, at their largest; Resistance, Immunities and the
+    # Immunities continuation table at the sides). The arms reach out past the doll's 88 mm box
+    # (the SVG draws with overflow visible): the left arm to about 1.5 mm from the POW column, the
+    # right arm to about 2 mm from the page border. The legs end about 1.5 mm above the Notes box.
+    ("head", "Head", "M28,30.3 L28,6.5 Q28,0.8 33.7,0.8 L54.3,0.8 Q60,0.8 60,6.5 L60,30.3 Q44,32.8 28,30.3 Z", (28, 0.8, 32, 31.4), (44, 2)),
+    ("larm", "Left Arm", "M1.7,35.7 L19.5,35.7 Q22.5,35.7 22.5,39.7 L21.5,101 Q21.5,105 17.5,105 L3.7,105 Q-0.3,105 -0.3,101 L-2.3,39.7 Q-2.3,35.7 1.7,35.7 Z", (-2.3, 35.7, 24.8, 69.3), (-0.6, 37.7)),
+    ("chest", "Chest", "M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62,75.2 L26,75.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z", (24.5, 34.2, 39, 41), (27, 36.2)),
+    ("rarm", "Right Arm", "M87.5,35.7 L68.5,35.7 Q65.5,35.7 65.5,39.7 L66.5,101 Q66.5,105 70.5,105 L85.5,105 Q89.5,105 89.5,101 L91.5,39.7 Q91.5,35.7 87.5,35.7 Z", (65.5, 35.7, 26.0, 69.3), (67.2, 37.7)),
+    ("abdomen", "Abdomen", "M24.5,77.7 L63.5,77.7 L62,110.2 Q62,112.2 60,112.2 L28,112.2 Q26,112.2 26,110.2 Z", (24.5, 77.7, 39, 34.5), (27, 79.7)),
+    ("lleg", "Left Leg", "M24,114.2 L43,114.2 L42,179.8 Q42,183.8 38,183.8 L29,183.8 Q25,183.8 25,179.8 Z", (24, 114.2, 19, 69.6), (25.6, 116.2)),
+    ("rleg", "Right Leg", "M45,114.2 L64,114.2 L63,179.8 Q63,183.8 59,183.8 L50,183.8 Q46,183.8 46,179.8 Z", (45, 114.2, 19, 69.6), (46.6, 116.2)),
 ]
 
 def doll_svg():
@@ -240,7 +245,7 @@ body{background:#8d8273;font-family:var(--label-font);color:var(--ink)}
 .mini tbody th{font:400 2.5mm var(--label-font);text-align:right;white-space:nowrap}
 .mini td{font:700 3mm var(--label-font);text-align:center}
 .mini col.n{width:6mm}
-.mini.immune td:first-child{width:auto;text-align:left;font:italic 2.7mm var(--label-font)}
+.mini.immune td:first-child{width:auto;text-align:left;font:400 2.7mm var(--label-font)}
 .mini.resist{left:0;top:106.5mm}
 .mini.immune{right:0;top:106.5mm}
 .mini.reduce{right:0;top:.5mm;width:25mm}

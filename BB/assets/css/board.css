@@ -135,7 +135,7 @@ html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .mini tbody th{font:400 2.5mm var(--label-font);text-align:right;white-space:nowrap}
 .mini td{font:700 3mm var(--label-font);text-align:center}
 .mini col.n{width:6mm}
-.mini.immune td:first-child{width:auto;text-align:left;font:italic 2.7mm var(--label-font)}
+.mini.immune td:first-child{width:auto;text-align:left;font:400 2.7mm var(--label-font)}
 .mini.resist{left:0;top:106.5mm}
 .mini.immune{right:0;top:106.5mm}
 .mini.reduce{right:0;top:.5mm;width:25mm}
@@ -154,22 +154,22 @@ html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .foot .dia{font-size:2.4mm;color:var(--ink-2)}
 
 /* ---------- paper-doll positions ---------- */
-#chip-head{left:44mm;top:2.2mm;transform:translateX(-50%)}
-#pname-head{left:30mm;top:29.8mm;width:28mm}
-#chip-larm{left:2.2mm;top:40mm}
-#pname-larm{left:0.5mm;top:98.8mm;width:20.5mm}
-#chip-chest{left:25.5mm;top:40mm}
-#pname-chest{left:23mm;top:71.8mm;width:42mm}
-#chip-rarm{left:68.7mm;top:40mm}
-#pname-rarm{left:67mm;top:98.8mm;width:20.5mm}
-#chip-abdomen{left:27mm;top:82mm}
-#pname-abdomen{left:24.5mm;top:108.8mm;width:39mm}
-#chip-lleg{left:25.6mm;top:119mm}
-#pname-lleg{left:24mm;top:174.8mm;width:19mm}
-#chip-rleg{left:46.6mm;top:119mm}
-#pname-rleg{left:45mm;top:174.8mm;width:19mm}
-#chip-torso{left:25.5mm;top:40mm}
-#pname-torso{left:23mm;top:108.8mm;width:42mm}
+#chip-head{left:44mm;top:2mm;transform:translateX(-50%)}
+#pname-head{left:28mm;top:26.999999999999996mm;width:32mm}
+#chip-larm{left:-0.6mm;top:37.7mm}
+#pname-larm{left:-2.3mm;top:99.8mm;width:24.8mm}
+#chip-chest{left:27mm;top:36.2mm}
+#pname-chest{left:24.5mm;top:70.0mm;width:39mm}
+#chip-rarm{left:67.2mm;top:37.7mm}
+#pname-rarm{left:65.5mm;top:99.8mm;width:26.0mm}
+#chip-abdomen{left:27mm;top:79.7mm}
+#pname-abdomen{left:24.5mm;top:107.0mm;width:39mm}
+#chip-lleg{left:25.6mm;top:116.2mm}
+#pname-lleg{left:24mm;top:177.60000000000002mm;width:19mm}
+#chip-rleg{left:46.6mm;top:116.2mm}
+#pname-rleg{left:45mm;top:177.60000000000002mm;width:19mm}
+#chip-torso{left:27mm;top:36.2mm}
+#pname-torso{left:24.5mm;top:107.0mm;width:39mm}
 
 /* ---------- app additions ---------- */
 .sheet .fit{display:block;overflow:hidden;white-space:nowrap;min-width:0}
@@ -251,7 +251,12 @@ html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .mini td{overflow:hidden}
 .mini.reduce col.n{width:8mm}
 .mini.reduce td{font-size:2.6mm}
-.mini.colour td:first-child,.mini.immune td:first-child{font:italic 2.3mm var(--label-font);text-align:left}
+.mini.colour td:first-child{font:italic 2.3mm var(--label-font);text-align:left}
+.mini.immune td:first-child{font:400 2.3mm var(--label-font);text-align:left} /* upright, never italic */
+/* Colour Resist rows are a little shorter than the other side tables, so up to 6 fit above the left arm */
+.mini.colour tbody td{height:4.6mm}
+/* Guilds off: the Social / Professional / Political boxes go and the notes lines take their space */
+.sheet[data-guilds="off"] .standing{display:none}
 .mini.colour td.num,.mini.immune td.num{font:700 2.5mm var(--label-font)}
 .notes .fill{font:3mm/1.25 var(--label-font);white-space:pre-wrap;overflow:hidden;height:100%;padding:1mm 0}
 .notes .lines{display:flex;flex-direction:column;min-height:0}

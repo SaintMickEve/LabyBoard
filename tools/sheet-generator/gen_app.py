@@ -7,8 +7,8 @@ import build  # noqa: E402  (defines PIECES, doll_svg, CORNER, BANNER, css)
 
 # Special Snow(man)flake: chest + abdomen combined into one Torso location (shown instead of them by CSS)
 build.PIECES.append(("torso", "Torso",
-    "M28,38 L60,38 Q65,38 65,43 L63.5,111 Q63.5,114 60.5,114 L27.5,114 Q24.5,114 24.5,111 L23,43 Q23,38 28,38 Z",
-    (23, 38, 42, 76), (25.5, 40)))
+    "M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62.5,109.2 Q62.5,112.2 59.5,112.2 L28.5,112.2 Q25.5,112.2 25.5,109.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z",
+    (24.5, 34.2, 39, 78), (27, 36.2)))
 
 APP = pathlib.Path(__file__).resolve().parents[2] / "BB"
 (APP / "templates").mkdir(parents=True, exist_ok=True)
@@ -129,7 +129,12 @@ extra = r"""
 .mini td{overflow:hidden}
 .mini.reduce col.n{width:8mm}
 .mini.reduce td{font-size:2.6mm}
-.mini.colour td:first-child,.mini.immune td:first-child{font:italic 2.3mm var(--label-font);text-align:left}
+.mini.colour td:first-child{font:italic 2.3mm var(--label-font);text-align:left}
+.mini.immune td:first-child{font:400 2.3mm var(--label-font);text-align:left} /* upright, never italic */
+/* Colour Resist rows are a little shorter than the other side tables, so up to 6 fit above the left arm */
+.mini.colour tbody td{height:4.6mm}
+/* Guilds off: the Social / Professional / Political boxes go and the notes lines take their space */
+.sheet[data-guilds="off"] .standing{display:none}
 .mini.colour td.num,.mini.immune td.num{font:700 2.5mm var(--label-font)}
 .notes .fill{font:3mm/1.25 var(--label-font);white-space:pre-wrap;overflow:hidden;height:100%;padding:1mm 0}
 .notes .lines{display:flex;flex-direction:column;min-height:0}

@@ -1,4 +1,4 @@
-# Labyrinthe Battleboard Generator (RC 1.9)
+# Labyrinthe Battleboard Generator (RC 1.11.0)
 
 A single page app for filling in a fantasy LARP battleboard, then printing it or saving it as a PDF.
 Built for PHP 8.2 on Fasthosts Linux hosting. It works on desktop, tablet and phone and has no
@@ -112,7 +112,7 @@ Keep row maximums within what fits on the A4 sheet.
 {
   "app": "battleboard",
   "version": 1,
-  "generator": "Labyrinthe Battleboard Generator (RC 1.9)",
+  "generator": "Labyrinthe Battleboard Generator (RC 1.11.0)",
   "exportedAt": "2026-11-14T20:30:00.000Z",
   "character": {
     "layout": "basic",
@@ -146,6 +146,7 @@ Keep row maximums within what fits on the A4 sheet.
     "colourResist": [{ "text": "Green", "fraction": "3/4" }],
     "immunities": [{ "text": "Fear", "value": "Y" }, { "text": "Poison", "value": 5 }],
     "notes": "Free text…",
+    "guildsShow": true,
     "social": "Knight of the realm",
     "professional": "Guild smith, journeyman",
     "political": "Loyalist",
@@ -207,6 +208,11 @@ text only gets smaller in extreme cases, for example a full list plus the option
 `doll` is one of:
 
 - **`default`:** separate Chest and Abdomen.
+
+  The arms reach out into the gaps on either side (to about 1.5 mm from the POW column and 2 mm from the
+  page border) and the legs run down to about 1.5 mm above the Notes box. Colour Resist rows are a little
+  shorter than the other side tables, so up to 6 fit above the left arm. Immunities/Resistances text is
+  upright (not italic); in the form its value menu offers —, Y, N or Num. (a number).
 - **`snowflake`** (Special Snow(man)flake): Chest and Abdomen combined into one Torso location, with a
   single loc box and AC circle.
 - **`ghost`** ("Woo I'm a ghost"): for characters with no locations.
@@ -217,7 +223,7 @@ text only gets smaller in extreme cases, for example a full list plus the option
       for writing.
     - Reductions, Resistance and Immunities/Resistances stack down the right-hand side.
     - Colour Resist moves under the ghost and is wider.
-  - **Row limits:** Colour Resist rises from 5 to 9 rows, and Immunities/Resistances from 12 to 20.
+  - **Row limits:** Colour Resist rises from 6 to 11 rows, and Immunities/Resistances from 12 to 20.
     Both fill with blank rows when you switch to the ghost. They are set in `dollLimits` in
     `config/schema.json`.
   - **Switching back:** blank rows are trimmed. If filled rows would be lost, the user is asked first.
@@ -271,7 +277,9 @@ T.B.L.P. box inside the ghost. Older files without it import with it switched of
 value switches it on automatically. `points` (0–99999) is shown beside the Notes heading.
 
 `social`, `professional` and `political` (up to 50 characters, two short lines, each) print in three small boxes under
-the Notes heading. Each box's label shows only while it is empty. Long text shrinks slightly, then is cut at the last whole word that fits, with "…".
+the Notes heading. In the form they're the **Guilds** boxes. `guildsShow` (default `true`, the "Show the Guilds
+boxes" tick box) can switch them off: the boxes leave the sheet, the notes area grows into their space (so long
+notes print larger), and the text is kept for when they're switched back on. Older files import with them on. Each box's label shows only while it is empty. Long text shrinks slightly, then is cut at the last whole word that fits, with "…".
 Only the printed sheet is shortened; the saved and exported text is kept in full.
 
 `alignment` is one of `GL, GN, GC, NL, NN, NC, EL, EN, EC`, or `""` when not chosen. It's shown in
@@ -303,7 +311,7 @@ Exported files are meant to keep working as the site evolves.
 - **Upgrading the site:** a board saved in the browser by an older version loads in the new one with
   every field intact.
 
-Compatibility tests for RC 1.9:
+Compatibility tests for RC 1.11.0:
 
 - **Older versions:** files exported from RC 1.0 to RC 1.4 import with every field preserved. The only
   exception is a Social/Professional/Political entry longer than today's 50-character limit, which
@@ -327,7 +335,7 @@ When adding features in future versions:
 The generator is also available as a Windows app that opens in its own window, with no browser,
 no command window and no PHP.
 
-- **Downloads:** `LabyrintheBattleboard-Setup-1.9.0.exe` is an installer that needs no
+- **Downloads:** `LabyrintheBattleboard-Setup-1.11.0.exe` is an installer that needs no
   administrator rights and adds Start-menu and desktop shortcuts and an uninstaller. A portable
   zip is also available: keep `LabyrintheBattleboard.exe` and `WebView2Loader.dll` together.
 - **How it works:** the app is built with Tauri. It shows this web app in a native window using

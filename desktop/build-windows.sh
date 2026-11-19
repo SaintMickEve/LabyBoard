@@ -6,7 +6,7 @@
 # (-Zbuild-std). See README-desktop.md for the one-line fix that Ubuntu's rust-src needs.
 set -e
 cd "$(dirname "$0")"
-WEB=${WEB:-../BB}
+WEB=${WEB:-../../app/BB}
 
 # 1. The web app as plain files: render index.php once to HTML (no server: empty token and API).
 rm -rf dist && mkdir -p dist/BB

@@ -84,7 +84,7 @@
         "powerLines": 5,
         "colourResist": [
             0,
-            5
+            6
         ],
         "immunities": [
             0,
@@ -314,7 +314,7 @@
     },
     "dollLimits": {
         "ghost": {
-            "colourResist": 9,
+            "colourResist": 11,
             "immunities": 20
         },
         "default": {
