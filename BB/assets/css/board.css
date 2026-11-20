@@ -85,7 +85,7 @@ html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .pips i{width:3.9mm;height:3.9mm;border:.25mm solid var(--ink);border-radius:.8mm;background:#fff;position:relative;display:block}
 .pips i b{position:absolute;right:.25mm;bottom:-.1mm;font:400 1.75mm/1 var(--label-font);color:var(--ink-2)}
 /* boxes beyond a power's uses: light hatch (printer friendly, replaces solid black) */
-.pips i.off{background:repeating-linear-gradient(45deg,#fff 0 .45mm,var(--hatch) .45mm .6mm);border-color:var(--ink-2)}
+.pips i.off{background:repeating-linear-gradient(45deg,var(--tint-2,#efe4cc) 0 .28mm,var(--ink-2,#6a4e2e) .28mm .52mm);border-color:var(--ink)}
 .pips i.off b{display:none}
 
 .res-row{display:flex;align-items:center;height:7.4mm;padding:0 1.8mm;gap:1mm;z-index:1;position:relative}
@@ -327,29 +327,33 @@ html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 /* =====================================================================================
  * "2 Page 15k+ nutjobs" format (data-format="twoPage" on both sheets). Page 1 keeps the normal header,
  * footer, shields, doll and side tables, but:
- *   left column   Powers box (two named powers, Total Heal Innate, True Believer), then Innates
- *                 down to Res Chance, which also shows Points; no Power box, pools or Consumables
+ *   left column   Powers box (two named powers, Total Heal Innate, True Believer; parts can be
+ *                 switched off and the rest share its fixed height), optional pools, then Innates
+ *                 down to Res Chance, which also shows Points; no Power box or Consumables
  *   right column  smaller shields, a 6 mm shorter doll (TP_PIECES), and the T.B.L.P. box under the
  *                 doll (app.js moves it there); no Notes box, no Guilds
  * Page 2 (#sheet-p2) has the name banner and footer, Immunities/Resistances (continued),
- * Regeneration Powers, Damage Grades, Notes, Damage Reductions and Additional Resistances.
+ * optional Innates (continued), Regeneration Powers, Damage Grades, Notes, Damage Reductions and
+ * Additional Resistances.
  * ===================================================================================== */
 .sheet[hidden]{display:none !important}
 .sheet:not([data-format="twoPage"]) .tp-only{display:none !important}
-.sheet[data-format="twoPage"] :is(#sheet-power,.pools,[data-section="consumables"],#sheet-notes,.immune-over,.ghost-stats){display:none !important}
+.sheet[data-format="twoPage"] :is(#sheet-power,[data-section="consumables"],#sheet-notes,.immune-over,.ghost-stats){display:none !important}
 .sheet[data-format="twoPage"] .armour .shield{zoom:.72}
 .sheet[data-format="twoPage"]:not([data-doll="ghost"]) .doll{--doll-h:176mm}
 .sheet[data-format="twoPage"]:not([data-doll="ghost"]) :is(.mini.resist,.mini.immune){top:100.5mm}
 .sheet[data-format="twoPage"] #sheet-tblp{display:block;flex:1 1 auto;min-height:0;overflow:hidden}
 .sheet[data-format="twoPage"] #sheet-tblp .row{height:4.4mm}
 /* Powers box: each power is a heading row (name | value | free space) with its own lines */
-.tp-powers{flex:none}
-.tp-powers .ph{height:5.6mm}
-.tp-powers .ph + .row,.tp-powers .row + .ph{margin-top:0}
-.tp-powers .row + .ph{border-top:.35mm solid var(--ink)}
+.tp-powers{flex:none;box-sizing:border-box;display:flex;flex-direction:column;height:59.7mm}
+.tp-powers .tp-part{display:contents}
+.tp-powers .tp-part[hidden],.tp-powers .row[hidden]{display:none}
+.tp-powers .ph{height:5.6mm;flex:none;margin-top:0}
+.tp-powers .ph + .row,.tp-powers .row + .row{margin-top:0}
+.tp-powers .tp-part ~ .tp-part > .ph{border-top:.35mm solid var(--ink)}
 .tp-powers .ph .k{flex:0 0 49mm;min-width:0;justify-content:flex-start;overflow:hidden;font-size:3.1mm;letter-spacing:.3mm}
 .tp-powers .ph .k .fit{flex:0 1 auto;min-width:0}
-.tp-powers .row{height:4.6mm}
+.tp-powers .row{height:auto;flex:1 0 4.6mm;min-height:0}
 .tp-powers .row .fill{font:italic 3mm var(--label-font)}
 .tp-powers .ph .box .fit{font-size:3.4mm}
 /* Res Chance + Points share the bottom box */
@@ -374,4 +378,8 @@ html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .sheet-p2 .p2-notes .p2-lines{position:relative;margin:0 1.6mm;background:repeating-linear-gradient(to bottom,transparent 0 3.8mm,var(--rule) 3.8mm 4mm)}
 .sheet-p2 .p2-notes .fill{display:block;height:100%;overflow:hidden;white-space:pre-wrap;font:3mm/4mm var(--label-font);padding-top:.5mm}
 .sheet-p2 .p2-fill{flex:1 1 auto}
+.sheet-p2 .panel[hidden],.sheet-p2 .row[hidden]{display:none}
+.sheet-p2[data-cont="on"] .p2-imm{flex:none}
+.sheet-p2[data-cont="on"] .p2-inn{flex:1 1 auto}
+.sheet-p2 #sheet-p2-innates{--row-h:4mm}
 .sheet-p2 .p2-notes .p2-lines{height:44mm}

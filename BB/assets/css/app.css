@@ -99,6 +99,10 @@ textarea.in{resize:vertical;min-height:7rem;line-height:1.35}
 .stack{display:grid;gap:.35rem;margin-top:.4rem}
 .check{display:flex;gap:.5rem;align-items:center;margin-top:.8rem}
 .check input{width:1.2rem;height:1.2rem}
+.checks{display:flex;flex-wrap:wrap;gap:0 1.2rem}
+.tp-part-form{margin-top:.6rem}
+.tp-cont{margin:.4rem 0 .2rem;padding:.1rem .6rem .6rem;border:1px dashed var(--line);border-radius:8px}
+.tp-cont select:disabled{opacity:.5}
 
 .loc-table{display:grid;grid-template-columns:1fr 6.2rem 6.2rem;gap:.4rem .5rem;align-items:center;margin-top:.8rem}
 .lt-h{font-size:.75rem;font-weight:700;color:var(--muted)}

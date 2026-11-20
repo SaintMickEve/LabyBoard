@@ -195,7 +195,7 @@ body{background:#8d8273;font-family:var(--label-font);color:var(--ink)}
 .pips i{width:3.9mm;height:3.9mm;border:.25mm solid var(--ink);border-radius:.8mm;background:#fff;position:relative;display:block}
 .pips i b{position:absolute;right:.25mm;bottom:-.1mm;font:400 1.75mm/1 var(--label-font);color:var(--ink-2)}
 /* boxes beyond a power's uses: light hatch (printer friendly, replaces solid black) */
-.pips i.off{background:repeating-linear-gradient(45deg,#fff 0 .45mm,#9b8565 .45mm .6mm);border-color:var(--ink-2)}
+.pips i.off{background:repeating-linear-gradient(45deg,var(--tint-2,#efe4cc) 0 .28mm,var(--ink-2,#6a4e2e) .28mm .52mm);border-color:var(--ink)}
 .pips i.off b{display:none}
 
 .res-row{display:flex;align-items:center;height:7.4mm;padding:0 1.8mm;gap:1mm;z-index:1;position:relative}

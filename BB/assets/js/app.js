@@ -75,6 +75,20 @@
   // so emoji and accented letters count as one character in both places.
   const cpLength = (s) => Array.from(s).length;
   const cpSlice = (s, n) => Array.from(s).slice(0, n).join('');
+  /**
+   * Rows in the Innates (continued) box on page 2: what is left of the left column after the shown
+   * Immunities/Resistances and Regeneration Powers rows (schema twoPage.page2Col, tenths of a mm).
+   * A table with 0 rows isn't shown, so its heading and gap are freed too. Same sums in PHP.
+   */
+  const innatesContRows = (TP, imm, regen) => {
+    const c = TP.page2Col;
+    let panels = 1;
+    let used = c.panelMm10;
+    if (imm > 0) { panels++; used += c.panelMm10 + imm * c.rowMm10; }
+    if (regen > 0) { panels++; used += c.panelMm10 + regen * c.rowMm10; }
+    used += (panels - 1) * c.gapMm10;
+    return Math.max(0, Math.floor((c.heightMm10 - used) / c.rowMm10));
+  };
 
   /**
    * Cleans a character (from an imported file, from localStorage, or before export).
@@ -168,15 +182,17 @@
     const maxColour = schema.dollLimits[doll]?.colourResist ?? R.colourResist[1];
     const immCompact = [true, 1, '1', 'true'].includes(input.immunitiesCompact);
     const conShow = [true, 1, '1', 'true'].includes(input.consumablesShow ?? true);
+    // Two-page board switches and page-2 line counts (read now: they decide the innate and Immunities limits).
+    const tpLayout = twoPageLayout(sub('twoPage'), TP);
     let maxImmune = immCompact
       ? (schema.immunitiesCompact.limits[doll] ?? R.immunities[1])
       : (schema.dollLimits[doll]?.immunities ?? R.immunities[1]);
     if (twoPage) {
       // Page 1 holds the doll's main table (the ghost's whole column); the rest continue on page 2.
       const page1 = doll === 'ghost' ? TP.ghostImmunities[immCompact ? 'compact' : 'normal'] : schema.immunitiesMainRows[immCompact ? 'compact' : 'normal'];
-      maxImmune = page1 + TP.page2.immunities;
+      maxImmune = page1 + tpLayout.p2Imm;
     }
-    const innatesMax = twoPage ? TP.innates[1] : (conShow ? L.innates[1] : L.innatesSolo);
+    const innatesMax = twoPage ? TP.innates[1] + tpLayout.contRows : (conShow ? L.innates[1] : L.innatesSolo);
     const poolsIn = asList(input.pools);
     const data = {
       format,
@@ -234,7 +250,7 @@
       professional: text(input.professional ?? '', T.standing, 'Professional'),
       political: text(input.political ?? '', T.standing, 'Political'),
       points: int(input.points ?? null, I.points, 'Points'),
-      twoPage: twoPageData(sub('twoPage')),
+      twoPage: twoPageData(sub('twoPage'), tpLayout),
     };
     // (Consumables aren't on the two-page board, so they don't share its innate column.)
     if (!twoPage && conShow && data.innates.length + data.consumables.length > L.pipRowsCombined) {
@@ -268,7 +284,29 @@
       data.immunities.push({ text: rowText, value });
     });
     /** The parts only the two-page board uses (kept, unprinted, while the one-page board is shown). */
-    function twoPageData(tp) {
+    /**
+     * The two-page board's on/off switches (twoPage.show) and page-2 line counts (twoPage.rows), and what
+     * they leave: page 2's Immunities/Resistances and Regeneration rows (the full tables unless the
+     * Innates (continued) box is on) and how many rows that box holds. Matches twoPageLayout() in PHP.
+     */
+    function twoPageLayout(tp, TP) {
+      const obj = (v) => (isObj(v) || Array.isArray(v) ? v : {});
+      const showIn = obj(tp.show);
+      const rowsIn = obj(tp.rows);
+      const show = {};
+      for (const [k, d] of Object.entries(TP.showDefault)) show[k] = [true, 1, '1', 'true'].includes(showIn[k] ?? d);
+      const D = TP.p2RowsDefault;
+      const rows = {
+        immunities: int(rowsIn.immunities ?? D.immunities, I.tpImmRows, 'Page 2 Immunities/Resistances lines') ?? D.immunities,
+        regeneration: int(rowsIn.regeneration ?? D.regeneration, I.tpRegenRows, 'Page 2 Regeneration Powers lines') ?? D.regeneration,
+      };
+      const cont = show.innatesCont;
+      const p2Imm = cont ? rows.immunities : TP.page2.immunities;
+      const p2Regen = cont ? rows.regeneration : TP.page2.regeneration;
+      return { show, rows, p2Imm, p2Regen, contRows: cont ? innatesContRows(TP, p2Imm, p2Regen) : 0 };
+    }
+
+    function twoPageData(tp, tpLayout) {
       const obj = (v) => (isObj(v) || Array.isArray(v) ? v : {});
       const powersIn = asList(tp.powers);
       const regenIn = asList(tp.regeneration);
@@ -278,6 +316,8 @@
         line: text(obj(tp[key]).line ?? '', T.powerLine, `${label} line`),
       });
       return {
+        show: tpLayout.show,
+        rows: tpLayout.rows,
         powers: Array.from({ length: TP.powers }, (_, n) => {
           const row = obj(powersIn[n]);
           return {
@@ -463,8 +503,11 @@
   function onFieldInput(input, final) {
     const path = input.dataset.path;
     const kind = input.dataset.kind;
+    if (kind === 'tprows') { applyTpLayout({ rows: { [path.split('.').pop()]: parseInt(input.value, 10) } }, input); return; }
     if (kind === 'bool') {
+      if (path === 'twoPage.show.innatesCont') { applyTpLayout({ show: { innatesCont: input.checked } }, input); return; }
       setPath(state, path, input.checked);
+      if (path.startsWith('twoPage.show.')) { updateLayoutForm(); renderSheet(); scheduleSave(); return; }
       if (path === 'consumablesShow') { setPath(state, path, !input.checked); applyConsumablesShow(input.checked, input); return; }
       if (path === 'immunitiesCompact') { setPath(state, path, !input.checked); applyImmunitiesCompact(input.checked, input); return; }
       if (path === 'poolsShow') { updateLayoutForm(); renderSheet(); refill(); scheduleSave(); return; }
@@ -537,6 +580,32 @@
    */
   /** True while the "2 Page 15k+ nutjobs" (two-page) board is chosen with the toggle in the top bar. */
   const isTP = () => state.format === 'twoPage';
+  /** Page 2's Immunities/Resistances and Regeneration rows and the Innates (continued) rows, as sanitise() works them out. */
+  const tpLayoutOf = (c = state) => {
+    const TP = schema.twoPage;
+    const cont = c.twoPage.show.innatesCont;
+    const p2Imm = cont ? c.twoPage.rows.immunities : TP.page2.immunities;
+    const p2Regen = cont ? c.twoPage.rows.regeneration : TP.page2.regeneration;
+    return { p2Imm, p2Regen, contRows: cont ? innatesContRows(TP, p2Imm, p2Regen) : 0 };
+  };
+  /**
+   * Lines under each part of the two-page Powers box. The box keeps its height (schema twoPage.powerBox):
+   * Total Heal Innate and True Believer keep one line each, and the shown powers share the rest
+   * (Power 1 takes any odd one), so switching a part off gives the others its room.
+   */
+  const tpPowerLines = (c = state) => {
+    const TP = schema.twoPage;
+    const b = TP.powerBox;
+    const sh = c.twoPage.show;
+    const heads = 1 + [sh.power2, sh.totalHeal, sh.trueBeliever].filter(Boolean).length;
+    let lines = Math.floor((b.heightMm10 - heads * b.headMm10) / b.lineMm10);
+    const out = { power1: 0, power2: 0, totalHeal: sh.totalHeal ? 1 : 0, trueBeliever: sh.trueBeliever ? 1 : 0 };
+    lines -= out.totalHeal + out.trueBeliever;
+    const each = sh.power2 ? Math.floor(lines / 2) : 0;
+    out.power2 = Math.min(TP.powerLines, each);
+    out.power1 = Math.min(TP.powerLines, lines - each);
+    return out;
+  };
   /**
    * The active board layout's settings (row counts, row heights, limits). The two-page board has its
    * own fixed left column (schema.twoPage); state.layout is the one-page layout, kept for switching back.
@@ -558,7 +627,9 @@
     get immunities() { return tableLimit('immunities'); },
   };
   /** Innates allowed: more when the Consumables table is switched off. */
-  const innateMax = (cfg = layoutCfg(), conShow = conShown()) => (conShow ? cfg.innates[1] : cfg.innatesSolo);
+  const innateMax = (cfg = layoutCfg(), conShow = conShown()) => (cfg === schema.twoPage
+    ? cfg.innates[1] + tpLayoutOf().contRows
+    : conShow ? cfg.innates[1] : cfg.innatesSolo);
   /** Rows sharing the column: hidden consumables take no space. */
   const pipCombined = () => state.innates.length + (conShown() ? state.consumables.length : 0);
   const pipFull = () => conShown() && pipCombined() >= layoutCfg().pipRowsCombined;
@@ -783,9 +854,17 @@
     if (tp && tblpBox.previousElementSibling !== $('.doll', sheet)) $('.doll', sheet).after(tblpBox);
     if (!tp && tblpBox.parentElement.firstElementChild !== tblpBox) $('.body > .col', sheet).prepend(tblpBox);
 
-    for (const key of PIP_LIST_KEYS) {
-      const holder = $(`#sheet-${key}`);
-      holder.replaceChildren(...state[key].map((row) => {
+    // On the two-page board page 1 holds the first innates; the rest go in Innates (continued) on page 2.
+    const p1Innates = schema.twoPage.innates[1];
+    const pipLists = PIP_LIST_KEYS.map((key) => [key, `#sheet-${key}`, key === 'innates' && tp ? state.innates.slice(0, p1Innates) : state[key]]);
+    if (tp) {
+      const { contRows } = tpLayoutOf();
+      const rest = state.innates.slice(p1Innates);
+      pipLists.push(['innates', '#sheet-p2-innates', Array.from({ length: Math.max(contRows, rest.length) }, (_, n) => rest[n] || { name: '', count: null })]);
+    }
+    for (const [, sel, rows] of pipLists) {
+      const holder = $(sel);
+      holder.replaceChildren(...rows.map((row) => {
         const r = el('div', 'row pip-row');
         r.append(el('span', 'fill name fit', row.name));
         const pips = el('span', 'pips');
@@ -808,6 +887,21 @@
     // Casting Stam (optional) takes the place of the bottom T.B.L.P. line.
     $$('#sheet-tblp .row:not(.cs-row)', sheet).forEach((r, i) => { r.hidden = i >= tblpTextRows(); });
     $$('#sheet-power .row', sheet).forEach((r, i) => { r.hidden = i >= layoutCfg().powerRows; });
+    if (tp) {
+      // Powers box: the parts left on share its fixed height, so the powers get more lines.
+      const lines = tpPowerLines();
+      $$('#sheet-tp-powers .tp-part', sheet).forEach((part) => {
+        const n = lines[part.dataset.part] ?? 1;
+        $$('.row', part).forEach((r, i) => { r.hidden = i >= n; });
+      });
+      // Page 2: Innates (continued) takes the room freed from Immunities/Resistances and Regeneration.
+      const lay = tpLayoutOf();
+      sheet2.dataset.cont = state.twoPage.show.innatesCont ? 'on' : 'off';
+      $('.p2-imm', sheet2).hidden = lay.p2Imm === 0;
+      $('.p2-inn', sheet2).hidden = lay.contRows === 0; // (switched on, but the other two tables leave it no room)
+      $('#sheet-p2-regen').hidden = lay.p2Regen === 0;
+      $$('#sheet-p2-regen .row', sheet2).forEach((r, i) => { r.hidden = i >= lay.p2Regen; });
+    }
     sizePipRows();
 
     // Builds <tr> rows for the two small tables: text on the left, fraction/value on the right.
@@ -828,7 +922,7 @@
     $('#sheet-immunities-over').closest('table').hidden = tp || immOver.length === 0;
     // Two-page board: the rows page 1 can't hold continue on page 2, which is ruled down to the bottom.
     if (tp) {
-      const p2 = Array.from({ length: schema.twoPage.page2.immunities }, (_, n) => immOver[n] || { text: '', value: '' });
+      const p2 = Array.from({ length: tpLayoutOf().p2Imm }, (_, n) => immOver[n] || { text: '', value: '' });
       $('#sheet-p2-immunities').replaceChildren(...p2.map((row) => {
         const r = el('div', 'row p2-row vrow');
         r.append(el('span', 'fill fit', row.text));
@@ -854,7 +948,8 @@
     const col = $('.body > .col', sheet);
     const over = col.scrollHeight - col.clientHeight;
     if (over > 0.5) {
-      const shown = (key) => (key === 'consumables' && !conShown() ? 0 : state[key].length);
+      const shown = (key) => (key === 'consumables' && !conShown() ? 0
+        : key === 'innates' && isTP() ? Math.min(state.innates.length, schema.twoPage.innates[1]) : state[key].length);
       const total = lists.reduce((sum, [key, , mm]) => sum + shown(key) * mm * pxPerMm, 0);
       if (total > 0) {
         const scale = Math.max(0.5, (total - over) / total);
@@ -976,7 +1071,9 @@
       sizePipRows();
       const rowPx = (key === 'innates' ? cfg.innateRowMm : cfg.consumableRowMm) * pxPerMm;
       let extra = Math.floor((freeColumnSpace() + 0.5) / rowPx);
-      while (extra-- > 0 && canAdd(key)) list.push({ name: '', count: null });
+      // (Two-page board: blank rows only fill page 1; Innates (continued) on page 2 is ruled anyway.)
+      const cap = isTP() ? schema.twoPage.innates[1] : Infinity;
+      while (extra-- > 0 && canAdd(key) && list.length < cap) list.push({ name: '', count: null });
     });
     renderAll();
   }
@@ -1001,7 +1098,7 @@
       ? schema.immunitiesCompact.limits[doll] ?? schema.rows[key][1]
       : schema.dollLimits[doll]?.[key] ?? schema.rows[key][1];
     if (key !== 'immunities' || format !== 'twoPage') return base;
-    return immunitiesMainRows(doll, compact, format) + schema.twoPage.page2.immunities;
+    return immunitiesMainRows(doll, compact, format) + tpLayoutOf().p2Imm;
   }
   /** True for a Colour Resist / Immunities row with nothing in it. */
   const isBlankTableRow = (key, r) => (key === 'colourResist' ? r.text === '' && r.fraction === '' : r.text === '' && r.value === '');
@@ -1024,6 +1121,46 @@
   }
 
   /** Compact Immunities/Resistances rows: shorter lines, so more of them fit. */
+  /**
+   * Two-page board: switches the Innates (continued) box on page 2 on or off, or changes how many
+   * Immunities/Resistances or Regeneration Powers lines page 2 shows (which sets the box's size).
+   * Blank innate/Immunities rows that no longer fit are trimmed; if filled ones wouldn't fit, the user
+   * is asked first. `input` is the checkbox or list that changed; it is set back if the user cancels.
+   */
+  function applyTpLayout(change, input) {
+    const next = JSON.parse(JSON.stringify(state));
+    Object.assign(next.twoPage.show, change.show || {});
+    Object.assign(next.twoPage.rows, change.rows || {});
+    const lay = tpLayoutOf(next);
+    const fit = (list, max, blank) => {
+      const rows = list.slice();
+      while (rows.length > max && blank(rows[rows.length - 1])) rows.pop();
+      return { kept: rows.slice(0, max), lost: rows.slice(max).filter((r) => !blank(r)).length };
+    };
+    const inn = fit(next.innates, schema.twoPage.innates[1] + lay.contRows, isBlankRow);
+    const immMax = immunitiesMainRows(next.doll, next.immunitiesCompact, 'twoPage') + lay.p2Imm;
+    const imm = fit(next.immunities, immMax, (r) => isBlankTableRow('immunities', r));
+    if (isTP()) {
+      const parts = [];
+      if (inn.lost) parts.push(`${inn.lost} filled innate row${inn.lost > 1 ? 's' : ''}`);
+      if (imm.lost) parts.push(`${imm.lost} filled Immunities/Resistances row${imm.lost > 1 ? 's' : ''}`);
+      if (parts.length && !window.confirm(`That leaves less room on page 2, so ${parts.join(' and ')} would be removed. Go ahead?`)) {
+        const v = getPath(state, input.dataset.path);
+        if (input.type === 'checkbox') input.checked = v === true; else input.value = String(v);
+        return;
+      }
+      next.innates = inn.kept;
+      next.immunities = imm.kept;
+    }
+    state = sanitise(next).data;
+    renderAll();
+    refill();
+    scheduleSave();
+    if (isTP() && change.show) {
+      toast(change.show.innatesCont ? `Innates (continued) on page 2: room for ${lay.contRows} more innate${lay.contRows === 1 ? '' : 's'}.` : 'Innates (continued) box removed from page 2.');
+    }
+  }
+
   function applyImmunitiesCompact(on, input) {
     if (on === state.immunitiesCompact) return;
     const max = tableLimit('immunities', state.doll, on);
@@ -1099,15 +1236,14 @@
   const powerUsed = (c) => c.power.type !== '' || c.power.value != null || !blankLines(c.powerLines);
   /** True if a two-page power has been filled in (a name other than its default "Power n" counts). */
   const tpPowerUsed = (p, n) => (p.name !== '' && p.name !== `Power ${n + 1}`) || p.value != null || !blankLines(p.lines);
-  const poolUsed = (p, n) => (p.name !== '' && p.name !== `Pool ${n + 1}`) || p.value != null;
 
   /**
    * Switches between the one-page board and the "2 Page 15k+ nutjobs" board (the toggle in the top bar).
-   * Shared fields (name, T.B.L.P., innates, the doll, shields, resistances, Colour Resist,
+   * Shared fields (name, T.B.L.P., innates, pools, the doll, shields, resistances, Colour Resist,
    * Immunities, notes, points...) carry straight across. Matching fields are copied where the other
    * board has an empty place for them:
-   *   one page -> two pages  Power (type, value, first 3 lines) -> Power 1; first pool -> Power 2
-   *   two pages -> one page  Power 1 -> Power (its name becomes the type if it is one) ; Power 2 -> first pool
+   *   one page -> two pages  Power (type, value, lines) -> Power 1
+   *   two pages -> one page  Power 1 -> Power (its name becomes the type if it is one; first 5 lines)
    * Anything the other board doesn't show (Consumables, Guilds, the page-2 tables...) is kept, unprinted,
    * so switching back brings it back. If the board has content, the user is asked first, with a list
    * of what changes, including any filled rows that don't fit and would be removed.
@@ -1129,15 +1265,11 @@
         tp.powers[0].lines = next.powerLines.slice(0, schema.twoPage.powerLines);
         notes.push('Your Power box is copied into Power 1.');
       }
-      const poolOn = schema.layouts[next.layout].pools || next.poolsShow;
-      if (poolOn && poolUsed(next.pools[0], 0) && !tpPowerUsed(tp.powers[1], 1)) {
-        tp.powers[1].name = cpSlice(next.pools[0].name, schema.text.tpPowerName);
-        tp.powers[1].value = next.pools[0].value;
-        notes.push('Your first pool is copied into Power 2.');
-      }
+      // Pools carry straight across (shown under the Powers box if they were on this board).
+      if (schema.layouts[next.layout].pools && !next.poolsShow) next.poolsShow = true;
       const hidden = [];
-      if (next.powerLines.slice(schema.twoPage.powerLines).some((l) => l !== '')) hidden.push('Power lines 4 and 5');
-      if (poolOn && next.pools.slice(1).some(poolUsed)) hidden.push('pools 2 and 3');
+      const p1Lines = tpPowerLines(next).power1;
+      if (next.powerLines.slice(p1Lines).some((l) => l !== '')) hidden.push(`Power lines after line ${p1Lines} (switch Power 2, Total Heal Innate or True Believer off to make room)`);
       if (next.consumables.some((r) => !isBlankRow(r))) hidden.push('Consumables');
       if (next.guildsShow && [next.social, next.professional, next.political].some((v) => v !== '')) hidden.push('Social / Professional / Political');
       if (hidden.length) notes.push(`Not shown on the two-page board (kept for if you switch back): ${hidden.join(', ')}.`);
@@ -1148,16 +1280,12 @@
         next.power.type = type || '';
         const [, maxPower] = schema.int.powerValue;
         next.power.value = tp.powers[0].value != null && tp.powers[0].value <= maxPower ? tp.powers[0].value : null;
-        tp.powers[0].lines.forEach((l, i) => { next.powerLines[i] = l; });
+        tp.powers[0].lines.slice(0, schema.rows.powerLines).forEach((l, i) => { next.powerLines[i] = l; });
         notes.push('Power 1 is copied into the Power box.');
       }
-      if (tpPowerUsed(tp.powers[1], 1) && !poolUsed(next.pools[0], 0) && schema.layouts[next.layout].power !== false) {
-        next.pools[0].name = cpSlice(tp.powers[1].name, schema.text.poolName);
-        next.pools[0].value = tp.powers[1].value;
-        next.poolsShow = true;
-        notes.push('Power 2 is copied into the first pool (pools switched on).');
-      }
       const hidden = [];
+      if (tpPowerUsed(tp.powers[1], 1)) hidden.push('Power 2');
+      if (tp.powers[0].lines.slice(schema.rows.powerLines).some((l) => l !== '')) hidden.push(`Power 1 lines after line ${schema.rows.powerLines}`);
       if (tp.totalHeal.value != null || tp.totalHeal.line || tp.trueBeliever.value != null || tp.trueBeliever.line) hidden.push('Total Heal Innate / True Believer');
       const p2Used = tp.regeneration.some((r) => r.text || r.value) || [tp.damageGrades, tp.damageReductions, tp.additionalResistances].some((l) => !blankLines(l));
       if (p2Used) hidden.push('the page 2 tables');
@@ -1166,7 +1294,7 @@
 
     // Rows that won't fit: innates (the new board's column) and Immunities/Resistances.
     const cfg = toTP ? schema.twoPage : schema.layouts[next.layout];
-    const innMax = toTP ? cfg.innates[1] : next.consumablesShow ? cfg.innates[1] : cfg.innatesSolo;
+    const innMax = toTP ? cfg.innates[1] + tpLayoutOf(next).contRows : next.consumablesShow ? cfg.innates[1] : cfg.innatesSolo;
     const innates = next.innates.slice();
     while (innates.length > Math.min(innMax, cfg.defaultInnates) && isBlankRow(innates[innates.length - 1])) innates.pop();
     while (innates.length < Math.min(innMax, cfg.defaultInnates)) innates.push({ name: '', count: null });
@@ -1340,6 +1468,24 @@
     };
     lineFields('tblpLines', tblpTextRows(), '#tblp-hidden-note');
     lineFields('powerLines', cfg.powerRows, '#power-hidden-note');
+    // Two-page Powers box: parts switched off hide their fields; each power shows the lines that fit.
+    const tpLines = tpPowerLines();
+    $$('[data-tp-part]', editor).forEach((node) => { node.hidden = node.dataset.tpPart !== 'power1' && !state.twoPage.show[node.dataset.tpPart]; });
+    let tpHiddenText = 0;
+    for (let n = 0; n < schema.twoPage.powers; n++) {
+      const inputs = $$(`[data-path^="twoPage.powers.${n}.lines."]`, editor);
+      const count = tpLines[`power${n + 1}`];
+      inputs.forEach((inp, i) => { inp.hidden = i >= count; });
+      tpHiddenText += inputs.filter((inp, i) => i >= count && inp.value.trim() !== '').length;
+    }
+    $('#tp-power-hidden-note').textContent = tpHiddenText
+      ? `${tpHiddenText} power line${tpHiddenText > 1 ? 's' : ''} with text ${tpHiddenText > 1 ? "don't" : "doesn't"} fit with these parts switched on (kept in case you switch one off).` : '';
+    const lay = tpLayoutOf();
+    const cont = state.twoPage.show.innatesCont;
+    $$('[data-kind="tprows"]', editor).forEach((sel) => { sel.disabled = !cont; });
+    $('#tp-cont-note').textContent = cont
+      ? `Page 2 holds ${lay.p2Imm} Immunities/Resistances line${lay.p2Imm === 1 ? '' : 's'}, ${lay.p2Regen} Regeneration Powers line${lay.p2Regen === 1 ? '' : 's'} and ${lay.contRows} Innates (continued) row${lay.contRows === 1 ? '' : 's'}. Fewer lines in the other two tables make the box bigger; a table set to 0 is left off.`
+      : `Switch this on to continue your innates on page 2. It takes the bottom of the Immunities/Resistances table, and you can shorten that table or Regeneration Powers to make it bigger.`;
     const poolsToggle = $('[data-path="poolsShow"]', editor);
     poolsToggle.disabled = !!cfg.pools;
     poolsToggle.checked = !!cfg.pools || state.poolsShow;
@@ -1350,7 +1496,7 @@
  $('#tblp-ghost-note').textContent = ghost && !tp ? "While the paper doll is \u201cWoo I'm a ghost\u201d, the T.B.L.P. box is replaced by a small T.B.L.P. (and LTM, if shown) box inside the ghost. The lines below aren't printed but are kept." : '';
     $('details[data-sec="locations"]').hidden = ghost;
     $('#pip-combined').textContent = String(cfg.pipRowsCombined);
-    $('#tp-innates-note').textContent = tp ? `On the ${schema.twoPage.label} board up to ${innateMax()} innates fit, with blank rows filling the rest of the column.` : '';
+    $('#tp-innates-note').textContent = tp ? `On the ${schema.twoPage.label} board up to ${schema.twoPage.innates[1]} innates fit on page 1, with blank rows filling the rest of the column${cont ? `, and ${lay.contRows} more in Innates (continued) on page 2 (up to ${innateMax()} in all)` : ''}.` : '';
     const hiddenLocs = schema.dollHidden[state.doll] || [];
     $$('[data-loc]', editor).forEach((node) => { node.hidden = hiddenLocs.includes(node.dataset.loc); });
   }

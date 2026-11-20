@@ -47,7 +47,8 @@ def tp_pieces_svg():
 APP = pathlib.Path(__file__).resolve().parents[2] / "BB"
 # Page-2 row counts come from config/schema.json so the sheet and both sanitisers agree.
 import json as _json
-P2 = _json.loads((APP / "config/schema.json").read_text())["twoPage"]["page2"]
+TPS = _json.loads((APP / "config/schema.json").read_text())["twoPage"]
+P2 = TPS["page2"]
 (APP / "templates").mkdir(parents=True, exist_ok=True)
 (APP / "assets/css").mkdir(parents=True, exist_ok=True)
 (APP / "assets/fonts").mkdir(parents=True, exist_ok=True)
@@ -253,29 +254,33 @@ css = css.strip() + "\n\n/* ---------- paper-doll positions ---------- */\n" + "
 /* =====================================================================================
  * "2 Page 15k+ nutjobs" format (data-format="twoPage" on both sheets). Page 1 keeps the normal header,
  * footer, shields, doll and side tables, but:
- *   left column   Powers box (two named powers, Total Heal Innate, True Believer), then Innates
- *                 down to Res Chance, which also shows Points; no Power box, pools or Consumables
+ *   left column   Powers box (two named powers, Total Heal Innate, True Believer; parts can be
+ *                 switched off and the rest share its fixed height), optional pools, then Innates
+ *                 down to Res Chance, which also shows Points; no Power box or Consumables
  *   right column  smaller shields, a 6 mm shorter doll (TP_PIECES), and the T.B.L.P. box under the
  *                 doll (app.js moves it there); no Notes box, no Guilds
  * Page 2 (#sheet-p2) has the name banner and footer, Immunities/Resistances (continued),
- * Regeneration Powers, Damage Grades, Notes, Damage Reductions and Additional Resistances.
+ * optional Innates (continued), Regeneration Powers, Damage Grades, Notes, Damage Reductions and
+ * Additional Resistances.
  * ===================================================================================== */
 .sheet[hidden]{display:none !important}
 .sheet:not([data-format="twoPage"]) .tp-only{display:none !important}
-.sheet[data-format="twoPage"] :is(#sheet-power,.pools,[data-section="consumables"],#sheet-notes,.immune-over,.ghost-stats){display:none !important}
+.sheet[data-format="twoPage"] :is(#sheet-power,[data-section="consumables"],#sheet-notes,.immune-over,.ghost-stats){display:none !important}
 .sheet[data-format="twoPage"] .armour .shield{zoom:.72}
 .sheet[data-format="twoPage"]:not([data-doll="ghost"]) .doll{--doll-h:176mm}
 .sheet[data-format="twoPage"]:not([data-doll="ghost"]) :is(.mini.resist,.mini.immune){top:100.5mm}
 .sheet[data-format="twoPage"] #sheet-tblp{display:block;flex:1 1 auto;min-height:0;overflow:hidden}
 .sheet[data-format="twoPage"] #sheet-tblp .row{height:4.4mm}
 /* Powers box: each power is a heading row (name | value | free space) with its own lines */
-.tp-powers{flex:none}
-.tp-powers .ph{height:5.6mm}
-.tp-powers .ph + .row,.tp-powers .row + .ph{margin-top:0}
-.tp-powers .row + .ph{border-top:.35mm solid var(--ink)}
+.tp-powers{flex:none;box-sizing:border-box;display:flex;flex-direction:column;height:59.7mm}
+.tp-powers .tp-part{display:contents}
+.tp-powers .tp-part[hidden],.tp-powers .row[hidden]{display:none}
+.tp-powers .ph{height:5.6mm;flex:none;margin-top:0}
+.tp-powers .ph + .row,.tp-powers .row + .row{margin-top:0}
+.tp-powers .tp-part ~ .tp-part > .ph{border-top:.35mm solid var(--ink)}
 .tp-powers .ph .k{flex:0 0 49mm;min-width:0;justify-content:flex-start;overflow:hidden;font-size:3.1mm;letter-spacing:.3mm}
 .tp-powers .ph .k .fit{flex:0 1 auto;min-width:0}
-.tp-powers .row{height:4.6mm}
+.tp-powers .row{height:auto;flex:1 0 4.6mm;min-height:0}
 .tp-powers .row .fill{font:italic 3mm var(--label-font)}
 .tp-powers .ph .box .fit{font-size:3.4mm}
 /* Res Chance + Points share the bottom box */
@@ -300,6 +305,10 @@ css = css.strip() + "\n\n/* ---------- paper-doll positions ---------- */\n" + "
 .sheet-p2 .p2-notes .p2-lines{position:relative;margin:0 1.6mm;background:repeating-linear-gradient(to bottom,transparent 0 3.8mm,var(--rule) 3.8mm 4mm)}
 .sheet-p2 .p2-notes .fill{display:block;height:100%;overflow:hidden;white-space:pre-wrap;font:3mm/4mm var(--label-font);padding-top:.5mm}
 .sheet-p2 .p2-fill{flex:1 1 auto}
+.sheet-p2 .panel[hidden],.sheet-p2 .row[hidden]{display:none}
+.sheet-p2[data-cont="on"] .p2-imm{flex:none}
+.sheet-p2[data-cont="on"] .p2-inn{flex:1 1 auto}
+.sheet-p2 #sheet-p2-innates{--row-h:4mm}
 """ + f".sheet-p2 .p2-notes .p2-lines{{height:{P2['notes'] * 4}mm}}\n", encoding="utf-8")
 
 # ---------------------------------------------------------------- ghost doll ("Woo I'm a ghost")
@@ -349,15 +358,18 @@ reduce_rows = "".join(
 corners = "".join(build.CORNER.format(cls=c) for c in ("tl", "tr", "bl", "br"))
 
 def tp_powers():
-    """Page-1 Powers box for the two-page format. Names, values and lines bind to state.twoPage."""
+    """Page-1 Powers box for the two-page format. Names, values and lines bind to state.twoPage.
+    Each part can be switched off (data-show); the box keeps its height and app.js shows as many
+    lines under each power as then fit (schema twoPage.powerBox), so the box always stays full."""
     out = []
     for n in range(2):
-        out.append(f'<div class="ph"><span class="k"><span class="fit" data-bind="twoPage.powers.{n}.name" data-placeholder="Power {n + 1}"></span></span>'
-                   f'<span class="box"><span class="fit" data-bind="twoPage.powers.{n}.value"></span></span><span class="spacer"></span></div>')
-        out.append("".join(f'<div class="row"><span class="fill fit" data-bind="twoPage.powers.{n}.lines.{i}"></span></div>' for i in range(3)))
+        show = ' data-show="twoPage.show.power2"' if n == 1 else ''
+        out.append(f'<div class="tp-part" data-part="power{n + 1}"{show}><div class="ph"><span class="k"><span class="fit" data-bind="twoPage.powers.{n}.name" data-placeholder="Power {n + 1}"></span></span>'
+                   f'<span class="box"><span class="fit" data-bind="twoPage.powers.{n}.value"></span></span><span class="spacer"></span></div>'
+                   + "".join(f'<div class="row"><span class="fill fit" data-bind="twoPage.powers.{n}.lines.{i}"></span></div>' for i in range(TPS["powerLines"])) + '</div>')
     for key, label in (("totalHeal", "Total Heal Innate"), ("trueBeliever", "True Believer")):
-        out.append(f'<div class="ph"><span class="k">{label}</span><span class="box"><span class="fit" data-bind="twoPage.{key}.value"></span></span><span class="spacer"></span></div>'
-                   f'<div class="row"><span class="fill fit" data-bind="twoPage.{key}.line"></span></div>')
+        out.append(f'<div class="tp-part" data-part="{key}" data-show="twoPage.show.{key}"><div class="ph"><span class="k">{label}</span><span class="box"><span class="fit" data-bind="twoPage.{key}.value"></span></span><span class="spacer"></span></div>'
+                   f'<div class="row"><span class="fill fit" data-bind="twoPage.{key}.line"></span></div></div>')
     return "\n        ".join(out)
 
 
@@ -381,7 +393,8 @@ def page2():
    <main class="body">
     <section class="col">
       <div class="panel p2-imm p2-fill" data-section="immunities"><div class="ph"><span class="k">Immunities / Resistances</span><span class="spacer"></span><span class="k sep">Lvl</span></div><div id="sheet-p2-immunities"></div></div>
-      <div class="panel" data-section="tpRegen"><div class="ph"><span class="k">Regeneration Powers</span><span class="spacer"></span></div>{regen}</div>
+      <div class="panel p2-inn" data-section="innates" data-show="twoPage.show.innatesCont"><div class="ph"><span class="k">Innates (continued)</span><span class="box wide"></span></div><div id="sheet-p2-innates"></div></div>
+      <div class="panel" data-section="tpRegen" id="sheet-p2-regen"><div class="ph"><span class="k">Regeneration Powers</span><span class="spacer"></span></div>{regen}</div>
     </section>
     <section class="col">
       {lines_panel("tpDamageGrades", "Damage Grades", "damageGrades", P2["damageGrades"])}
@@ -441,7 +454,7 @@ use function Battleboard\\e;
         <div class="ph"><span class="k"><span class="tp-only">Life &#183;</span>T.B.L.P.</span><span class="box"><span class="fit" data-bind="tblp"></span></span><span class="opt-group" data-show="ltm.show"><span class="k sep">LTM</span><span class="box"><span class="fit" data-bind="ltm.value"></span></span></span><span class="spacer"></span></div>
         {lined(8, "tblpLines")}<div class="row cs-row" data-show="castingStam.show"><span class="cs-k">Casting Stam</span><span class="cs-v"><span class="fit" data-bind="castingStam.value"></span></span><span class="fill"></span></div>
       </div>
-      <?php /* 2 Page 15k+ nutjobs only: the Powers box (two named powers with three lines each, then Total Heal Innate and True Believer). */ ?>
+      <?php /* 2 Page 15k+ nutjobs only: the Powers box (two named powers with their lines, then Total Heal Innate and True Believer; app.js shows the lines that fit). */ ?>
       <div class="panel tp-powers tp-only" id="sheet-tp-powers" data-section="tpPowers">
         {tp_powers()}
       </div>

@@ -112,15 +112,18 @@ final class Sanitiser
         $immCompact = $this->bool($input['immunitiesCompact'] ?? false);
         // The Consumables table can be switched off (older files: on). Its rows are kept but don't take space.
         $conShow = $this->bool($input['consumablesShow'] ?? true);
+        // Two-page board switches and page-2 line counts (read now: they decide the innate and Immunities limits).
+        $tpIn = is_array($input['twoPage'] ?? null) ? $input['twoPage'] : [];
+        $tpLayout = $this->twoPageLayout($tpIn);
         $maxImmune = $immCompact
             ? ($s['immunitiesCompact']['limits'][$doll] ?? $r['immunities'][1])
             : ($s['dollLimits'][$doll]['immunities'] ?? $r['immunities'][1]);
         if ($twoPage) {
             // Page 1 holds the doll's main table (the ghost's whole column); the rest continue on page 2.
             $page1 = $doll === 'ghost' ? $TP['ghostImmunities'][$immCompact ? 'compact' : 'normal'] : $s['immunitiesMainRows'][$immCompact ? 'compact' : 'normal'];
-            $maxImmune = $page1 + $TP['page2']['immunities'];
+            $maxImmune = $page1 + $tpLayout['p2Imm'];
         }
-        $innatesMax = $twoPage ? $TP['innates'][1] : ($conShow ? $L['innates'][1] : $L['innatesSolo']);
+        $innatesMax = $twoPage ? $TP['innates'][1] + $tpLayout['contRows'] : ($conShow ? $L['innates'][1] : $L['innatesSolo']);
 
         // The clean character, built field by field. The order of keys here is the order they appear
         // in exported files, and must match the JavaScript twin.
@@ -178,7 +181,7 @@ final class Sanitiser
             'professional' => $this->text($input['professional'] ?? '', $t['standing'], 'Professional'),
             'political'    => $this->text($input['political'] ?? '', $t['standing'], 'Political'),
             'points' => $this->int($input['points'] ?? null, $i['points'], 'Points'),
-            'twoPage' => $this->twoPageData(is_array($input['twoPage'] ?? null) ? $input['twoPage'] : []),
+            'twoPage' => $this->twoPageData($tpIn, $tpLayout),
         ];
 
         // Innates + consumables share the same space on the sheet.
@@ -423,7 +426,59 @@ final class Sanitiser
      * @param array<mixed> $tp
      * @return array<string, mixed>
      */
-    private function twoPageData(array $tp): array
+    /**
+     * The two-page board's on/off switches (twoPage.show) and page-2 line counts (twoPage.rows), and what
+     * they leave: page 2's Immunities/Resistances and Regeneration rows (the full tables unless the
+     * Innates (continued) box is on) and how many rows that box holds. Matches twoPageLayout() in app.js.
+     *
+     * @return array{show: array<string, bool>, rows: array{immunities: int, regeneration: int}, p2Imm: int, p2Regen: int, contRows: int}
+     */
+    private function twoPageLayout(array $tp): array
+    {
+        $TP = $this->schema['twoPage'];
+        $i = $this->schema['int'];
+        $showIn = is_array($tp['show'] ?? null) ? $tp['show'] : [];
+        $rowsIn = is_array($tp['rows'] ?? null) ? $tp['rows'] : [];
+        $show = [];
+        foreach ($TP['showDefault'] as $k => $d) {
+            $show[$k] = $this->bool($showIn[$k] ?? $d);
+        }
+        $D = $TP['p2RowsDefault'];
+        $rows = [
+            'immunities'   => $this->int($rowsIn['immunities'] ?? $D['immunities'], $i['tpImmRows'], 'Page 2 Immunities/Resistances lines') ?? $D['immunities'],
+            'regeneration' => $this->int($rowsIn['regeneration'] ?? $D['regeneration'], $i['tpRegenRows'], 'Page 2 Regeneration Powers lines') ?? $D['regeneration'],
+        ];
+        $cont = $show['innatesCont'];
+        $p2Imm = $cont ? $rows['immunities'] : $TP['page2']['immunities'];
+        $p2Regen = $cont ? $rows['regeneration'] : $TP['page2']['regeneration'];
+        return ['show' => $show, 'rows' => $rows, 'p2Imm' => $p2Imm, 'p2Regen' => $p2Regen,
+            'contRows' => $cont ? $this->innatesContRows($p2Imm, $p2Regen) : 0];
+    }
+
+    /**
+     * Rows in the Innates (continued) box on page 2: what is left of the left column after the shown
+     * Immunities/Resistances and Regeneration Powers rows (schema twoPage.page2Col, tenths of a mm).
+     * A table with 0 rows isn't shown, so its heading and gap are freed too. Same sums in app.js.
+     */
+    private function innatesContRows(int $imm, int $regen): int
+    {
+        $c = $this->schema['twoPage']['page2Col'];
+        $panels = 1;
+        $used = $c['panelMm10'];
+        if ($imm > 0) {
+            $panels++;
+            $used += $c['panelMm10'] + $imm * $c['rowMm10'];
+        }
+        if ($regen > 0) {
+            $panels++;
+            $used += $c['panelMm10'] + $regen * $c['rowMm10'];
+        }
+        $used += ($panels - 1) * $c['gapMm10'];
+        return max(0, intdiv($c['heightMm10'] - $used, $c['rowMm10']));
+    }
+
+    /** @param array{show: array<string, bool>, rows: array{immunities: int, regeneration: int}} $layout */
+    private function twoPageData(array $tp, array $layout): array
     {
         $s = $this->schema;
         $t = $s['text'];
@@ -461,6 +516,8 @@ final class Sanitiser
             ];
         }
         return [
+            'show' => $layout['show'],
+            'rows' => $layout['rows'],
             'powers' => $powers,
             'totalHeal' => $totalHeal,
             'trueBeliever' => $trueBeliever,

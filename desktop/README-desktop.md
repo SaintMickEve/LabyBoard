@@ -4,7 +4,7 @@ The website's generator (`BB/`) in its own Windows window: no browser, no comman
 
 ## What the user gets
 
-- `LabyrintheBattleboard-Setup-2.0.0.exe` is an installer that needs no administrator rights. It
+- `LabyrintheBattleboard-Setup-2.1.0.exe` is an installer that needs no administrator rights. It
   installs into `%LOCALAPPDATA%\Programs\Labyrinthe Battleboard Generator`, adds a Start-menu
   shortcut (and a desktop one if wanted), and registers an uninstaller in Settings > Apps.
 - The portable version is `LabyrintheBattleboard.exe` plus `WebView2Loader.dll`. Keep the two

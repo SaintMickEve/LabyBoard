@@ -80,6 +80,14 @@
         "poolValue": [
             0,
             999
+        ],
+        "tpImmRows": [
+            0,
+            48
+        ],
+        "tpRegenRows": [
+            0,
+            7
         ]
     },
     "rows": {
@@ -371,7 +379,7 @@
         "fill": "innates",
         "innatesSolo": 31,
         "powers": 2,
-        "powerLines": 3,
+        "powerLines": 11,
         "page2": {
             "immunities": 48,
             "regeneration": 7,
@@ -383,6 +391,27 @@
         "ghostImmunities": {
             "normal": 20,
             "compact": 26
+        },
+        "powerBox": {
+            "heightMm10": 592,
+            "headMm10": 56,
+            "lineMm10": 46
+        },
+        "showDefault": {
+            "power2": true,
+            "totalHeal": true,
+            "trueBeliever": true,
+            "innatesCont": false
+        },
+        "p2RowsDefault": {
+            "immunities": 40,
+            "regeneration": 7
+        },
+        "page2Col": {
+            "heightMm10": 2385,
+            "panelMm10": 70,
+            "gapMm10": 34,
+            "rowMm10": 40
         }
     }
 }

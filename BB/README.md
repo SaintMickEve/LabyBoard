@@ -1,4 +1,4 @@
-# Labyrinthe Battleboard Generator (RC 2.0.0)
+# Labyrinthe Battleboard Generator (RC 2.1.0)
 
 A single page app for filling in a fantasy LARP battleboard, then printing it or saving it as a PDF.
 Built for PHP 8.2 on Fasthosts Linux hosting. It works on desktop, tablet and phone and has no
@@ -112,7 +112,7 @@ Keep row maximums within what fits on the A4 sheet.
 {
   "app": "battleboard",
   "version": 1,
-  "generator": "Labyrinthe Battleboard Generator (RC 2.0.0)",
+  "generator": "Labyrinthe Battleboard Generator (RC 2.1.0)",
   "exportedAt": "2026-11-14T20:30:00.000Z",
   "character": {
     "format": "normal",
@@ -152,7 +152,7 @@ Keep row maximums within what fits on the A4 sheet.
     "professional": "Guild smith, journeyman",
     "political": "Loyalist",
     "points": 1250,
-    "twoPage": { "powers": [{ "name": "Power 1", "value": null, "lines": ["", "", ""] }, "…"], "totalHeal": { "value": null, "line": "" }, "…": {} }
+    "twoPage": { "show": { "power2": true, "totalHeal": true, "trueBeliever": true, "innatesCont": false }, "rows": { "immunities": 40, "regeneration": 7 }, "powers": [{ "name": "Power 1", "value": null, "lines": ["", "…11 lines"] }, "…"], "totalHeal": { "value": null, "line": "" }, "…": {} }
   }
 }
 ```
@@ -175,10 +175,14 @@ or `"twoPage"`.
 **Page 1** of the two-page board keeps the header, footer, Pow column, shields, paper doll, side
 tables and Res Chance. It changes like this:
 
-- **Left column:** a Powers box replaces the Power box, pools and Consumables. It has two named powers,
-  each with a value from 0 to 999 and three lines, then Total Heal Innate and True Believer, each with a
-  value and one line. Innates fill the rest of the column, up to 31 rows of 4.8 mm. Res Chance now also
-  shows Points.
+- **Left column:** a Powers box replaces the Power box and Consumables. It has two named powers,
+  each with a value from 0 to 999 and lines beneath, then Total Heal Innate and True Believer, each with
+  a value and one line. Power 2, Total Heal Innate and True Believer can each be switched off
+  (`twoPage.show`). The box keeps its height, so the powers left on share the room: 3 lines each with
+  everything on, up to 11 for Power 1 alone (`twoPage.powerBox` holds the sums; each power stores 11
+  lines). The three pools can be switched on under the Powers box, as on the Normal board (`poolsShow`,
+  the same pools). Innates fill the rest of the column, up to 31 rows of 4.8 mm (they squeeze a little
+  to make room for the pools when the column is full). Res Chance now also shows Points.
 - **Right column:** the shields are smaller. The doll is 6 mm shorter: chest and abdomen (or the
   Snow(man)flake torso) lose 3 mm each and the arms 6 mm, and the legs move up. The T.B.L.P. box sits
   under the doll, headed "Life · T.B.L.P.", with 7 lines (5 under the ghost). There is no Notes box
@@ -191,6 +195,15 @@ rows: Immunities/Resistances (continued, 48 rows), Regeneration Powers (7 rows, 
 value), Damage Grades (12), Notes (11 ruled lines; this is the same `notes` field), Damage Reductions
 (10) and Additional Resistances (17). The footers read "Page 1 of 2" and "Page 2 of 2".
 
+- **Innates (continued):** an optional box on page 2 (`twoPage.show.innatesCont`, in the Innates
+  section of the form) between Immunities/Resistances and Regeneration Powers, for innates past page 1's
+  31. While it is on, page 2's Immunities/Resistances table can be shortened from 48 to 0 lines
+  (default 40, so the box takes the old bottom 8 lines) and Regeneration Powers from 7 to 0
+  (`twoPage.rows`). A table set to 0 is left off. The box gets whatever is left of the column:
+  `floor((height − panels × panel − gaps × gap − shown rows × row) / row)` with the tenths-of-a-mm
+  figures in `twoPage.page2Col` (5 rows by default, 57 with both other tables at 0). Both sanitisers
+  do the same sum, and the innate and Immunities limits follow it. Hidden Regeneration lines keep
+  their text. If a change would leave filled rows without room, the app asks first.
 - **Shared options:** paper dolls, sheet colours, watermarks, ink-saver, compact rows, LTM, Casting
   Stam and Combat Wary all work on both pages. Print / PDF prints two A4 pages, and the preview shows
   page 2 under page 1.
@@ -199,10 +212,11 @@ value), Damage Grades (12), Notes (11 ruled lines; this is the same `notes` fiel
   object, and every list has its full, fixed number of slots.
 - **Switching:**
   - Fields both boards share carry straight across.
-  - Matching fields are copied into empty places: the Power box goes to Power 1 and the first pool to
-    Power 2. Going back, Power 1 goes to the Power box (its name becomes the power type when it is one)
-    and Power 2 goes to the first pool.
-  - Nothing the other board doesn't show is deleted. Consumables, Guilds, pools, layout, the page-2
+  - The pools carry straight across, and stay switched on if they were on (or always shown, as in
+    Pool Princess).
+  - Matching fields are copied into empty places: the Power box (type, value and its 5 lines) goes to
+    Power 1. Going back, Power 1 goes to the Power box (its name becomes the power type when it is one).
+  - Nothing the other board doesn't show is deleted. Consumables, Guilds, layout, Power 2, the page-2
     tables and so on are kept, unprinted, and come back when you switch back.
   - If the board has anything typed into it, the user is first shown a list of what changes, including
     any filled rows that won't fit (for example more than 31 innates, or Immunities beyond the one-page
@@ -361,7 +375,7 @@ Exported files are meant to keep working as the site evolves.
 - **Upgrading the site:** a board saved in the browser by an older version loads in the new one with
   every field intact.
 
-Compatibility tests for RC 2.0.0:
+Compatibility tests for RC 2.1.0:
 
 - **Older versions:** files exported from RC 1.0 to RC 1.4 import with every field preserved. The only
   exception is a Social/Professional/Political entry longer than today's 50-character limit, which
@@ -385,7 +399,7 @@ When adding features in future versions:
 The generator is also available as a Windows app that opens in its own window, with no browser,
 no command window and no PHP.
 
-- **Downloads:** `LabyrintheBattleboard-Setup-2.0.0.exe` is an installer that needs no
+- **Downloads:** `LabyrintheBattleboard-Setup-2.1.0.exe` is an installer that needs no
   administrator rights and adds Start-menu and desktop shortcuts and an uninstaller. A portable
   zip is also available: keep `LabyrintheBattleboard.exe` and `WebView2Loader.dll` together.
 - **How it works:** the app is built with Tauri. It shows this web app in a native window using
