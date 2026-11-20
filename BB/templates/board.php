@@ -46,8 +46,17 @@ use function Battleboard\e;
    <main class="body">
     <section class="col">
       <div class="panel" data-section="tblp" id="sheet-tblp">
-        <div class="ph"><span class="k">T.B.L.P.</span><span class="box"><span class="fit" data-bind="tblp"></span></span><span class="opt-group" data-show="ltm.show"><span class="k sep">LTM</span><span class="box"><span class="fit" data-bind="ltm.value"></span></span></span><span class="spacer"></span></div>
+        <div class="ph"><span class="k"><span class="tp-only">Life &#183;</span>T.B.L.P.</span><span class="box"><span class="fit" data-bind="tblp"></span></span><span class="opt-group" data-show="ltm.show"><span class="k sep">LTM</span><span class="box"><span class="fit" data-bind="ltm.value"></span></span></span><span class="spacer"></span></div>
         <div class="row"><span class="fill fit" data-bind="tblpLines.0"></span></div><div class="row"><span class="fill fit" data-bind="tblpLines.1"></span></div><div class="row"><span class="fill fit" data-bind="tblpLines.2"></span></div><div class="row"><span class="fill fit" data-bind="tblpLines.3"></span></div><div class="row"><span class="fill fit" data-bind="tblpLines.4"></span></div><div class="row"><span class="fill fit" data-bind="tblpLines.5"></span></div><div class="row"><span class="fill fit" data-bind="tblpLines.6"></span></div><div class="row"><span class="fill fit" data-bind="tblpLines.7"></span></div><div class="row cs-row" data-show="castingStam.show"><span class="cs-k">Casting Stam</span><span class="cs-v"><span class="fit" data-bind="castingStam.value"></span></span><span class="fill"></span></div>
+      </div>
+      <?php /* 2 Page 15k+ nutjobs only: the Powers box (two named powers with three lines each, then Total Heal Innate and True Believer). */ ?>
+      <div class="panel tp-powers tp-only" id="sheet-tp-powers" data-section="tpPowers">
+        <div class="ph"><span class="k"><span class="fit" data-bind="twoPage.powers.0.name" data-placeholder="Power 1"></span></span><span class="box"><span class="fit" data-bind="twoPage.powers.0.value"></span></span><span class="spacer"></span></div>
+        <div class="row"><span class="fill fit" data-bind="twoPage.powers.0.lines.0"></span></div><div class="row"><span class="fill fit" data-bind="twoPage.powers.0.lines.1"></span></div><div class="row"><span class="fill fit" data-bind="twoPage.powers.0.lines.2"></span></div>
+        <div class="ph"><span class="k"><span class="fit" data-bind="twoPage.powers.1.name" data-placeholder="Power 2"></span></span><span class="box"><span class="fit" data-bind="twoPage.powers.1.value"></span></span><span class="spacer"></span></div>
+        <div class="row"><span class="fill fit" data-bind="twoPage.powers.1.lines.0"></span></div><div class="row"><span class="fill fit" data-bind="twoPage.powers.1.lines.1"></span></div><div class="row"><span class="fill fit" data-bind="twoPage.powers.1.lines.2"></span></div>
+        <div class="ph"><span class="k">Total Heal Innate</span><span class="box"><span class="fit" data-bind="twoPage.totalHeal.value"></span></span><span class="spacer"></span></div><div class="row"><span class="fill fit" data-bind="twoPage.totalHeal.line"></span></div>
+        <div class="ph"><span class="k">True Believer</span><span class="box"><span class="fit" data-bind="twoPage.trueBeliever.value"></span></span><span class="spacer"></span></div><div class="row"><span class="fill fit" data-bind="twoPage.trueBeliever.line"></span></div>
       </div>
       <div class="panel" data-section="power" id="sheet-power">
         <div class="ph"><span class="k power-k">Power (<span class="ptype" data-bind="power.type"></span>)</span><span class="box"><span class="fit" data-bind="power.value"></span></span><span class="spacer"></span></div>
@@ -66,7 +75,7 @@ use function Battleboard\e;
       </div>
       <div class="panel res-panel" data-section="resChance">
         <div class="res-row"><span class="k">Res Chance</span>
-          <span class="res-box"><span class="fit" data-bind="resChance"></span></span></div>
+          <span class="res-box"><span class="fit" data-bind="resChance"></span></span><span class="k tp-only">Points</span><span class="res-box tp-only"><span class="fit" data-bind="points"></span></span></div>
       </div>
     </section>
 
@@ -184,6 +193,83 @@ use function Battleboard\e;
     <path d="M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62.5,109.2 Q62.5,112.2 59.5,112.2 L28.5,112.2 Q25.5,112.2 25.5,109.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z" class="stitch" transform="translate(44.0 73.2) scale(0.9385 0.9692) translate(-44.0 -73.2)"/>
     <path d="M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62.5,109.2 Q62.5,112.2 59.5,112.2 L28.5,112.2 Q25.5,112.2 25.5,109.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z" class="piece-edge"/>
   </g>
+  <g class="piece tp" id="piece-larm-tp">
+    <clipPath id="clip-larm-tp"><path d="M1.7,35.7 L19.5,35.7 Q22.5,35.7 22.5,39.7 L21.5,95 Q21.5,99 17.5,99 L3.7,99 Q-0.3,99 -0.3,95 L-2.3,39.7 Q-2.3,35.7 1.7,35.7 Z"/></clipPath>
+    <path d="M1.7,35.7 L19.5,35.7 Q22.5,35.7 22.5,39.7 L21.5,95 Q21.5,99 17.5,99 L3.7,99 Q-0.3,99 -0.3,95 L-2.3,39.7 Q-2.3,35.7 1.7,35.7 Z" class="piece-fill"/>
+    <g clip-path="url(#clip-larm-tp)">
+      <rect x="-2.3" y="44.7" width="24.8" height="63.3" fill="url(#lines)"/>
+      <rect x="19.9" y="35.7" width="2.6" height="63.3" fill="url(#hatch)" class="shade"/>
+      <rect x="-2.3" y="97.2" width="24.8" height="1.8" fill="url(#hatch)" class="shade"/>
+    </g>
+    <path d="M1.7,35.7 L19.5,35.7 Q22.5,35.7 22.5,39.7 L21.5,95 Q21.5,99 17.5,99 L3.7,99 Q-0.3,99 -0.3,95 L-2.3,39.7 Q-2.3,35.7 1.7,35.7 Z" class="stitch" transform="translate(10.100000000000001 67.35) scale(0.9032 0.9621) translate(-10.100000000000001 -67.35)"/>
+    <path d="M1.7,35.7 L19.5,35.7 Q22.5,35.7 22.5,39.7 L21.5,95 Q21.5,99 17.5,99 L3.7,99 Q-0.3,99 -0.3,95 L-2.3,39.7 Q-2.3,35.7 1.7,35.7 Z" class="piece-edge"/>
+  </g>
+  <g class="piece tp" id="piece-chest-tp">
+    <clipPath id="clip-chest-tp"><path d="M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62,72.2 L26,72.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z"/></clipPath>
+    <path d="M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62,72.2 L26,72.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z" class="piece-fill"/>
+    <g clip-path="url(#clip-chest-tp)">
+      <rect x="24.5" y="43.2" width="39" height="38" fill="url(#lines)"/>
+      <rect x="60.9" y="34.2" width="2.6" height="38" fill="url(#hatch)" class="shade"/>
+      <rect x="24.5" y="70.4" width="39" height="1.8" fill="url(#hatch)" class="shade"/>
+    </g>
+    <path d="M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62,72.2 L26,72.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z" class="stitch" transform="translate(44.0 53.2) scale(0.9385 0.9368) translate(-44.0 -53.2)"/>
+    <path d="M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62,72.2 L26,72.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z" class="piece-edge"/>
+  </g>
+  <g class="piece tp" id="piece-rarm-tp">
+    <clipPath id="clip-rarm-tp"><path d="M87.5,35.7 L68.5,35.7 Q65.5,35.7 65.5,39.7 L66.5,95 Q66.5,99 70.5,99 L85.5,99 Q89.5,99 89.5,95 L91.5,39.7 Q91.5,35.7 87.5,35.7 Z"/></clipPath>
+    <path d="M87.5,35.7 L68.5,35.7 Q65.5,35.7 65.5,39.7 L66.5,95 Q66.5,99 70.5,99 L85.5,99 Q89.5,99 89.5,95 L91.5,39.7 Q91.5,35.7 87.5,35.7 Z" class="piece-fill"/>
+    <g clip-path="url(#clip-rarm-tp)">
+      <rect x="65.5" y="44.7" width="26.0" height="63.3" fill="url(#lines)"/>
+      <rect x="88.9" y="35.7" width="2.6" height="63.3" fill="url(#hatch)" class="shade"/>
+      <rect x="65.5" y="97.2" width="26.0" height="1.8" fill="url(#hatch)" class="shade"/>
+    </g>
+    <path d="M87.5,35.7 L68.5,35.7 Q65.5,35.7 65.5,39.7 L66.5,95 Q66.5,99 70.5,99 L85.5,99 Q89.5,99 89.5,95 L91.5,39.7 Q91.5,35.7 87.5,35.7 Z" class="stitch" transform="translate(78.5 67.35) scale(0.9077 0.9621) translate(-78.5 -67.35)"/>
+    <path d="M87.5,35.7 L68.5,35.7 Q65.5,35.7 65.5,39.7 L66.5,95 Q66.5,99 70.5,99 L85.5,99 Q89.5,99 89.5,95 L91.5,39.7 Q91.5,35.7 87.5,35.7 Z" class="piece-edge"/>
+  </g>
+  <g class="piece tp" id="piece-abdomen-tp">
+    <clipPath id="clip-abdomen-tp"><path d="M24.5,74.7 L63.5,74.7 L62,104.2 Q62,106.2 60,106.2 L28,106.2 Q26,106.2 26,104.2 Z"/></clipPath>
+    <path d="M24.5,74.7 L63.5,74.7 L62,104.2 Q62,106.2 60,106.2 L28,106.2 Q26,106.2 26,104.2 Z" class="piece-fill"/>
+    <g clip-path="url(#clip-abdomen-tp)">
+      <rect x="24.5" y="83.7" width="39" height="31.5" fill="url(#lines)"/>
+      <rect x="60.9" y="74.7" width="2.6" height="31.5" fill="url(#hatch)" class="shade"/>
+      <rect x="24.5" y="104.4" width="39" height="1.8" fill="url(#hatch)" class="shade"/>
+    </g>
+    <path d="M24.5,74.7 L63.5,74.7 L62,104.2 Q62,106.2 60,106.2 L28,106.2 Q26,106.2 26,104.2 Z" class="stitch" transform="translate(44.0 90.45) scale(0.9385 0.9238) translate(-44.0 -90.45)"/>
+    <path d="M24.5,74.7 L63.5,74.7 L62,104.2 Q62,106.2 60,106.2 L28,106.2 Q26,106.2 26,104.2 Z" class="piece-edge"/>
+  </g>
+  <g class="piece tp" id="piece-lleg-tp">
+    <clipPath id="clip-lleg-tp"><path d="M24,108.2 L43,108.2 L42,173.8 Q42,177.8 38,177.8 L29,177.8 Q25,177.8 25,173.8 Z"/></clipPath>
+    <path d="M24,108.2 L43,108.2 L42,173.8 Q42,177.8 38,177.8 L29,177.8 Q25,177.8 25,173.8 Z" class="piece-fill"/>
+    <g clip-path="url(#clip-lleg-tp)">
+      <rect x="24" y="117.2" width="19" height="69.6" fill="url(#lines)"/>
+      <rect x="40.4" y="108.2" width="2.6" height="69.6" fill="url(#hatch)" class="shade"/>
+      <rect x="24" y="176.0" width="19" height="1.8" fill="url(#hatch)" class="shade"/>
+    </g>
+    <path d="M24,108.2 L43,108.2 L42,173.8 Q42,177.8 38,177.8 L29,177.8 Q25,177.8 25,173.8 Z" class="stitch" transform="translate(33.5 143.0) scale(0.8737 0.9655) translate(-33.5 -143.0)"/>
+    <path d="M24,108.2 L43,108.2 L42,173.8 Q42,177.8 38,177.8 L29,177.8 Q25,177.8 25,173.8 Z" class="piece-edge"/>
+  </g>
+  <g class="piece tp" id="piece-rleg-tp">
+    <clipPath id="clip-rleg-tp"><path d="M45,108.2 L64,108.2 L63,173.8 Q63,177.8 59,177.8 L50,177.8 Q46,177.8 46,173.8 Z"/></clipPath>
+    <path d="M45,108.2 L64,108.2 L63,173.8 Q63,177.8 59,177.8 L50,177.8 Q46,177.8 46,173.8 Z" class="piece-fill"/>
+    <g clip-path="url(#clip-rleg-tp)">
+      <rect x="45" y="117.2" width="19" height="69.6" fill="url(#lines)"/>
+      <rect x="61.4" y="108.2" width="2.6" height="69.6" fill="url(#hatch)" class="shade"/>
+      <rect x="45" y="176.0" width="19" height="1.8" fill="url(#hatch)" class="shade"/>
+    </g>
+    <path d="M45,108.2 L64,108.2 L63,173.8 Q63,177.8 59,177.8 L50,177.8 Q46,177.8 46,173.8 Z" class="stitch" transform="translate(54.5 143.0) scale(0.8737 0.9655) translate(-54.5 -143.0)"/>
+    <path d="M45,108.2 L64,108.2 L63,173.8 Q63,177.8 59,177.8 L50,177.8 Q46,177.8 46,173.8 Z" class="piece-edge"/>
+  </g>
+  <g class="piece tp" id="piece-torso-tp">
+    <clipPath id="clip-torso-tp"><path d="M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62.5,103.2 Q62.5,106.2 59.5,106.2 L28.5,106.2 Q25.5,106.2 25.5,103.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z"/></clipPath>
+    <path d="M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62.5,103.2 Q62.5,106.2 59.5,106.2 L28.5,106.2 Q25.5,106.2 25.5,103.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z" class="piece-fill"/>
+    <g clip-path="url(#clip-torso-tp)">
+      <rect x="24.5" y="43.2" width="39" height="72" fill="url(#lines)"/>
+      <rect x="60.9" y="34.2" width="2.6" height="72" fill="url(#hatch)" class="shade"/>
+      <rect x="24.5" y="104.4" width="39" height="1.8" fill="url(#hatch)" class="shade"/>
+    </g>
+    <path d="M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62.5,103.2 Q62.5,106.2 59.5,106.2 L28.5,106.2 Q25.5,106.2 25.5,103.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z" class="stitch" transform="translate(44.0 70.2) scale(0.9385 0.9667) translate(-44.0 -70.2)"/>
+    <path d="M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62.5,103.2 Q62.5,106.2 59.5,106.2 L28.5,106.2 Q25.5,106.2 25.5,103.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z" class="piece-edge"/>
+  </g>
   <g class="piece" id="piece-ghost">
     <clipPath id="clip-ghost"><path d="M0,121 L0,30.5 A30,30 0 0 1 60,30.5 L60,121 L52.5,113.5 L45,121 L37.5,113.5 L30,121 L22.5,113.5 L15,121 L7.5,113.5 Z"/></clipPath>
     <path d="M0,121 L0,30.5 A30,30 0 0 1 60,30.5 L60,121 L52.5,113.5 L45,121 L37.5,113.5 L30,121 L22.5,113.5 L15,121 L7.5,113.5 Z" class="piece-fill"/>
@@ -250,7 +336,40 @@ use function Battleboard\e;
 
    <?php /* FOOTER: the character's name and alignment again, at the bottom of the page. */ ?>
    <footer class="foot"><span class="orn"></span><span class="dia">&#9670;</span>
-     <span class="name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span><span class="dia">&#9670;</span><span class="orn"></span></footer>
+     <span class="name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span><span class="dia">&#9670;</span><span class="orn"></span><span class="pg tp-only">Page 1 of 2</span></footer>
+  </div>
+ </div>
+</div>
+<?php /* PAGE 2 ("2 Page 15k+ nutjobs" format only): same banner and footer, then the extra tables. Rows are fixed;
+       the Immunities/Resistances rows that don't fit on page 1 continue here (app.js builds them). */ ?>
+<div class="sheet sheet-p2" id="sheet-p2" data-theme="parchment" aria-label="Battleboard page 2 preview" hidden>
+ <div class="frame">
+  <svg class="corner tl" viewBox="0 0 20 20" aria-hidden="true"><path d="M1,19 L1,6 Q1,1 6,1 L19,1" class="c1"/><path d="M3.5,19 L3.5,7.5 Q3.5,3.5 7.5,3.5 L19,3.5" class="c2"/><path d="M6,6 m-2.2,0 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0" class="c3"/><path d="M10,6 Q13,3.5 16,6 Q13,8.5 10,6 Z M6,10 Q3.5,13 6,16 Q8.5,13 6,10 Z" class="c4"/></svg><svg class="corner tr" viewBox="0 0 20 20" aria-hidden="true"><path d="M1,19 L1,6 Q1,1 6,1 L19,1" class="c1"/><path d="M3.5,19 L3.5,7.5 Q3.5,3.5 7.5,3.5 L19,3.5" class="c2"/><path d="M6,6 m-2.2,0 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0" class="c3"/><path d="M10,6 Q13,3.5 16,6 Q13,8.5 10,6 Z M6,10 Q3.5,13 6,16 Q8.5,13 6,10 Z" class="c4"/></svg><svg class="corner bl" viewBox="0 0 20 20" aria-hidden="true"><path d="M1,19 L1,6 Q1,1 6,1 L19,1" class="c1"/><path d="M3.5,19 L3.5,7.5 Q3.5,3.5 7.5,3.5 L19,3.5" class="c2"/><path d="M6,6 m-2.2,0 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0" class="c3"/><path d="M10,6 Q13,3.5 16,6 Q13,8.5 10,6 Z M6,10 Q3.5,13 6,16 Q8.5,13 6,10 Z" class="c4"/></svg><svg class="corner br" viewBox="0 0 20 20" aria-hidden="true"><path d="M1,19 L1,6 Q1,1 6,1 L19,1" class="c1"/><path d="M3.5,19 L3.5,7.5 Q3.5,3.5 7.5,3.5 L19,3.5" class="c2"/><path d="M6,6 m-2.2,0 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0" class="c3"/><path d="M10,6 Q13,3.5 16,6 Q13,8.5 10,6 Z M6,10 Q3.5,13 6,16 Q8.5,13 6,10 Z" class="c4"/></svg>
+  <div class="frame-in">
+   <svg class="wm" id="sheet-wm-2" viewBox="0 0 194 281" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false" hidden><use width="194" height="281"></use></svg>
+   <header class="head">
+     <div class="title-wrap" data-section="identity"><svg class="banner" viewBox="0 0 160 22" preserveAspectRatio="none" aria-hidden="true">
+  <path class="b-tail" d="M2,6 L16,6 L16,20 L2,20 L7,13 Z"/>
+  <path class="b-tail" d="M158,6 L144,6 L144,20 L158,20 L153,13 Z"/>
+  <path class="b-fold" d="M16,20 L22,17 L16,17 Z M144,20 L138,17 L144,17 Z"/>
+  <path class="b-main" d="M16,2 Q80,-1 144,2 L144,17 Q80,14 16,17 Z"/>
+  <path class="b-rule" d="M19,4 Q80,1.2 141,4 M19,15 Q80,12.2 141,15"/>
+</svg><h1 class="char-name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span></h1></div>
+   </header>
+   <main class="body">
+    <section class="col">
+      <div class="panel p2-imm p2-fill" data-section="immunities"><div class="ph"><span class="k">Immunities / Resistances</span><span class="spacer"></span><span class="k sep">Lvl</span></div><div id="sheet-p2-immunities"></div></div>
+      <div class="panel" data-section="tpRegen"><div class="ph"><span class="k">Regeneration Powers</span><span class="spacer"></span></div><div class="row p2-row vrow"><span class="fill fit" data-bind="twoPage.regeneration.0.text"></span><span class="vb"><span class="fit" data-bind="twoPage.regeneration.0.value"></span></span></div><div class="row p2-row vrow"><span class="fill fit" data-bind="twoPage.regeneration.1.text"></span><span class="vb"><span class="fit" data-bind="twoPage.regeneration.1.value"></span></span></div><div class="row p2-row vrow"><span class="fill fit" data-bind="twoPage.regeneration.2.text"></span><span class="vb"><span class="fit" data-bind="twoPage.regeneration.2.value"></span></span></div><div class="row p2-row vrow"><span class="fill fit" data-bind="twoPage.regeneration.3.text"></span><span class="vb"><span class="fit" data-bind="twoPage.regeneration.3.value"></span></span></div><div class="row p2-row vrow"><span class="fill fit" data-bind="twoPage.regeneration.4.text"></span><span class="vb"><span class="fit" data-bind="twoPage.regeneration.4.value"></span></span></div><div class="row p2-row vrow"><span class="fill fit" data-bind="twoPage.regeneration.5.text"></span><span class="vb"><span class="fit" data-bind="twoPage.regeneration.5.value"></span></span></div><div class="row p2-row vrow"><span class="fill fit" data-bind="twoPage.regeneration.6.text"></span><span class="vb"><span class="fit" data-bind="twoPage.regeneration.6.value"></span></span></div></div>
+    </section>
+    <section class="col">
+      <div class="panel" data-section="tpDamageGrades"><div class="ph"><span class="k">Damage Grades</span><span class="spacer"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageGrades.0"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageGrades.1"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageGrades.2"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageGrades.3"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageGrades.4"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageGrades.5"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageGrades.6"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageGrades.7"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageGrades.8"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageGrades.9"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageGrades.10"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageGrades.11"></span></div></div>
+      <div class="panel p2-notes" data-section="notes"><div class="ph"><span class="k">Notes</span><span class="spacer"></span></div><div class="p2-lines" id="sheet-p2-notes"><span class="fill" data-bind="notes"></span></div></div>
+      <div class="panel" data-section="tpDamageReductions"><div class="ph"><span class="k">Damage Reductions</span><span class="spacer"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageReductions.0"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageReductions.1"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageReductions.2"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageReductions.3"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageReductions.4"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageReductions.5"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageReductions.6"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageReductions.7"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageReductions.8"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.damageReductions.9"></span></div></div>
+      <div class="panel" data-section="tpAdditional"><div class="ph"><span class="k">Additional Resistances</span><span class="spacer"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.additionalResistances.0"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.additionalResistances.1"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.additionalResistances.2"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.additionalResistances.3"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.additionalResistances.4"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.additionalResistances.5"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.additionalResistances.6"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.additionalResistances.7"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.additionalResistances.8"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.additionalResistances.9"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.additionalResistances.10"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.additionalResistances.11"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.additionalResistances.12"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.additionalResistances.13"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.additionalResistances.14"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.additionalResistances.15"></span></div><div class="row p2-row"><span class="fill fit" data-bind="twoPage.additionalResistances.16"></span></div></div>
+    </section>
+   </main>
+   <footer class="foot"><span class="orn"></span><span class="dia">&#9670;</span>
+     <span class="name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span><span class="dia">&#9670;</span><span class="orn"></span><span class="pg">Page 2 of 2</span></footer>
   </div>
  </div>
 </div>

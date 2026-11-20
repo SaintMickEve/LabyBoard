@@ -10,7 +10,44 @@ build.PIECES.append(("torso", "Torso",
     "M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62.5,109.2 Q62.5,112.2 59.5,112.2 L28.5,112.2 Q25.5,112.2 25.5,109.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z",
     (24.5, 34.2, 39, 78), (27, 36.2)))
 
+# "2 Page 15k+ nutjobs" format: the doll is 6 mm shorter so a T.B.L.P. box fits under it. Chest and abdomen
+# (or the Snow(man)flake torso) are 3 mm shorter each, the arms 6 mm shorter, and the legs move up 6 mm
+# (same length). The head is unchanged. These pieces are drawn alongside the normal ones (ids end in
+# "-tp") and board.css shows one set or the other from the sheet's data-format.
+TP_PIECES = [
+    ("larm", "Left Arm", "M1.7,35.7 L19.5,35.7 Q22.5,35.7 22.5,39.7 L21.5,95 Q21.5,99 17.5,99 L3.7,99 Q-0.3,99 -0.3,95 L-2.3,39.7 Q-2.3,35.7 1.7,35.7 Z", (-2.3, 35.7, 24.8, 63.3), (-0.6, 37.7)),
+    ("chest", "Chest", "M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62,72.2 L26,72.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z", (24.5, 34.2, 39, 38), (27, 36.2)),
+    ("rarm", "Right Arm", "M87.5,35.7 L68.5,35.7 Q65.5,35.7 65.5,39.7 L66.5,95 Q66.5,99 70.5,99 L85.5,99 Q89.5,99 89.5,95 L91.5,39.7 Q91.5,35.7 87.5,35.7 Z", (65.5, 35.7, 26.0, 63.3), (67.2, 37.7)),
+    ("abdomen", "Abdomen", "M24.5,74.7 L63.5,74.7 L62,104.2 Q62,106.2 60,106.2 L28,106.2 Q26,106.2 26,104.2 Z", (24.5, 74.7, 39, 31.5), (27, 76.7)),
+    ("lleg", "Left Leg", "M24,108.2 L43,108.2 L42,173.8 Q42,177.8 38,177.8 L29,177.8 Q25,177.8 25,173.8 Z", (24, 108.2, 19, 69.6), (25.6, 110.2)),
+    ("rleg", "Right Leg", "M45,108.2 L64,108.2 L63,173.8 Q63,177.8 59,177.8 L50,177.8 Q46,177.8 46,173.8 Z", (45, 108.2, 19, 69.6), (46.6, 110.2)),
+    ("torso", "Torso", "M29.5,34.2 L58.5,34.2 Q63.5,34.2 63.5,39.2 L62.5,103.2 Q62.5,106.2 59.5,106.2 L28.5,106.2 Q25.5,106.2 25.5,103.2 L24.5,39.2 Q24.5,34.2 29.5,34.2 Z", (24.5, 34.2, 39, 72), (27, 36.2)),
+]
+
+def tp_pieces_svg():
+    """The two-page doll pieces, drawn exactly like build.doll_svg() draws the normal ones."""
+    out = []
+    for pid, label, d, (x, y, w, h), _ in TP_PIECES:
+        cx, cy = x + w / 2, y + h / 2
+        sx, sy = (w - 2.4) / w, (h - 2.4) / h
+        out.append(f'''
+  <g class="piece tp" id="piece-{pid}-tp">
+    <clipPath id="clip-{pid}-tp"><path d="{d}"/></clipPath>
+    <path d="{d}" class="piece-fill"/>
+    <g clip-path="url(#clip-{pid}-tp)">
+      <rect x="{x}" y="{y + 9}" width="{w}" height="{h}" fill="url(#lines)"/>
+      <rect x="{x + w - 2.6}" y="{y}" width="2.6" height="{h}" fill="url(#hatch)" class="shade"/>
+      <rect x="{x}" y="{y + h - 1.8}" width="{w}" height="1.8" fill="url(#hatch)" class="shade"/>
+    </g>
+    <path d="{d}" class="stitch" transform="translate({cx} {cy}) scale({sx:.4f} {sy:.4f}) translate({-cx} {-cy})"/>
+    <path d="{d}" class="piece-edge"/>
+  </g>''')
+    return "".join(out)
+
 APP = pathlib.Path(__file__).resolve().parents[2] / "BB"
+# Page-2 row counts come from config/schema.json so the sheet and both sanitisers agree.
+import json as _json
+P2 = _json.loads((APP / "config/schema.json").read_text())["twoPage"]["page2"]
 (APP / "templates").mkdir(parents=True, exist_ok=True)
 (APP / "assets/css").mkdir(parents=True, exist_ok=True)
 (APP / "assets/fonts").mkdir(parents=True, exist_ok=True)
@@ -47,6 +84,14 @@ for pid, label, _, (x, y, w, h), (chx, chy) in build.PIECES:
         positions.append(f"#chip-{pid}{{left:{chx}mm;top:{chy}mm}}")
     ly = y + h - (6.2 if pid in ("lleg", "rleg") else 5.2)
     positions.append(f"#pname-{pid}{{left:{x}mm;top:{ly}mm;width:{w}mm}}")
+
+tp_ids = ",".join(f"#piece-{pid}" for pid, *_ in TP_PIECES)
+for pid, label, _, (x, y, w, h), (chx, chy) in TP_PIECES:
+    positions.append(f'.sheet[data-format="twoPage"] #chip-{pid}{{left:{chx}mm;top:{chy}mm}}')
+    ly = y + h - (6.2 if pid in ("lleg", "rleg") else 5.2)
+    positions.append(f'.sheet[data-format="twoPage"] #pname-{pid}{{left:{x}mm;top:{ly}mm;width:{w}mm}}')
+positions.append('.sheet:not([data-format="twoPage"]) .piece.tp{display:none}')
+positions.append(f'.sheet[data-format="twoPage"] :is({tp_ids}){{display:none}}')
 
 extra = r"""
 /* ---------- app additions ---------- */
@@ -91,8 +136,8 @@ extra = r"""
 .pool .pv{flex:0 0 7.5mm;height:5.6mm;border:.25mm solid var(--ink);border-radius:.6mm;background:#fff;display:flex;align-items:center;justify-content:center;font:700 3.2mm var(--label-font);padding:0 .4mm}
 .pool .pv .fit{text-align:center;width:100%}
 /* paper doll variants */
-.sheet[data-doll="snowflake"] :is(#piece-chest,#piece-abdomen,#chip-chest,#chip-abdomen,#pname-chest,#pname-abdomen){display:none}
-.sheet:not([data-doll="snowflake"]) :is(#piece-torso,#chip-torso,#pname-torso){display:none}
+.sheet[data-doll="snowflake"] :is(#piece-chest,#piece-abdomen,#piece-chest-tp,#piece-abdomen-tp,#chip-chest,#chip-abdomen,#pname-chest,#pname-abdomen){display:none}
+.sheet:not([data-doll="snowflake"]) :is(#piece-torso,#piece-torso-tp,#chip-torso,#pname-torso){display:none}
 /* "Woo I'm a ghost": no locations, no T.B.L.P. box; one ghost area; tables rearranged for more rows */
 .sheet:not([data-doll="ghost"]) #piece-ghost{display:none}
 .sheet[data-doll="ghost"] #sheet-tblp,
@@ -204,7 +249,58 @@ css = css.strip() + "\n\n/* ---------- paper-doll positions ---------- */\n" + "
 .mini.immune-over{left:0;right:auto}
 /* Compact Immunities/Resistances rows (optional): shorter lines, same text size */
 .sheet[data-imm="compact"] .mini.immune tbody td,.sheet[data-imm="compact"] .mini.immune tbody th{height:4mm}
-""", encoding="utf-8")
+
+/* =====================================================================================
+ * "2 Page 15k+ nutjobs" format (data-format="twoPage" on both sheets). Page 1 keeps the normal header,
+ * footer, shields, doll and side tables, but:
+ *   left column   Powers box (two named powers, Total Heal Innate, True Believer), then Innates
+ *                 down to Res Chance, which also shows Points; no Power box, pools or Consumables
+ *   right column  smaller shields, a 6 mm shorter doll (TP_PIECES), and the T.B.L.P. box under the
+ *                 doll (app.js moves it there); no Notes box, no Guilds
+ * Page 2 (#sheet-p2) has the name banner and footer, Immunities/Resistances (continued),
+ * Regeneration Powers, Damage Grades, Notes, Damage Reductions and Additional Resistances.
+ * ===================================================================================== */
+.sheet[hidden]{display:none !important}
+.sheet:not([data-format="twoPage"]) .tp-only{display:none !important}
+.sheet[data-format="twoPage"] :is(#sheet-power,.pools,[data-section="consumables"],#sheet-notes,.immune-over,.ghost-stats){display:none !important}
+.sheet[data-format="twoPage"] .armour .shield{zoom:.72}
+.sheet[data-format="twoPage"]:not([data-doll="ghost"]) .doll{--doll-h:176mm}
+.sheet[data-format="twoPage"]:not([data-doll="ghost"]) :is(.mini.resist,.mini.immune){top:100.5mm}
+.sheet[data-format="twoPage"] #sheet-tblp{display:block;flex:1 1 auto;min-height:0;overflow:hidden}
+.sheet[data-format="twoPage"] #sheet-tblp .row{height:4.4mm}
+/* Powers box: each power is a heading row (name | value | free space) with its own lines */
+.tp-powers{flex:none}
+.tp-powers .ph{height:5.6mm}
+.tp-powers .ph + .row,.tp-powers .row + .ph{margin-top:0}
+.tp-powers .row + .ph{border-top:.35mm solid var(--ink)}
+.tp-powers .ph .k{flex:0 0 49mm;min-width:0;justify-content:flex-start;overflow:hidden;font-size:3.1mm;letter-spacing:.3mm}
+.tp-powers .ph .k .fit{flex:0 1 auto;min-width:0}
+.tp-powers .row{height:4.6mm}
+.tp-powers .row .fill{font:italic 3mm var(--label-font)}
+.tp-powers .ph .box .fit{font-size:3.4mm}
+/* Res Chance + Points share the bottom box */
+.res-row .tp-only.k{margin-left:auto}
+.sheet[data-format="twoPage"] .res-row .res-box{flex:0 0 14mm}
+/* "Page 1 of 2" / "Page 2 of 2" at the right of the footer */
+.foot{position:relative}
+.foot .pg{position:absolute;right:2mm;bottom:.6mm;font:600 2.3mm var(--label-font);letter-spacing:.3mm;text-transform:uppercase;color:var(--ink-2)}
+/* ---------- page 2 ---------- */
+.preview-scale .sheet + .sheet{margin-top:8mm}
+.sheet-p2 .head{height:21mm}
+.sheet-p2 .body{grid-template-columns:92mm minmax(0,1fr);gap:3.5mm}
+.sheet-p2 .col{gap:3.4mm}
+.sheet-p2 .panel{flex:none;overflow:hidden}
+.sheet-p2 .p2-row{height:4mm;padding:0 1.6mm}
+.sheet-p2 .p2-row .fill{font:3mm var(--label-font);min-width:0}
+.sheet-p2 .vrow{padding-right:0}
+.sheet-p2 .vrow .vb{flex:0 0 9mm;align-self:stretch;border-left:.25mm solid var(--ink);display:flex;align-items:center;justify-content:center;font:700 2.8mm var(--label-font);min-width:0}
+.sheet-p2 .vrow .vb .fit{text-align:center;width:100%}
+.sheet-p2 .p2-imm .ph .k.sep{flex:0 0 9mm;justify-content:center;padding:0;letter-spacing:.3mm}
+.sheet-p2 .p2-imm .ph .k.sep::before,.sheet-p2 .p2-imm .ph .k.sep::after{content:none}
+.sheet-p2 .p2-notes .p2-lines{position:relative;margin:0 1.6mm;background:repeating-linear-gradient(to bottom,transparent 0 3.8mm,var(--rule) 3.8mm 4mm)}
+.sheet-p2 .p2-notes .fill{display:block;height:100%;overflow:hidden;white-space:pre-wrap;font:3mm/4mm var(--label-font);padding-top:.5mm}
+.sheet-p2 .p2-fill{flex:1 1 auto}
+""" + f".sheet-p2 .p2-notes .p2-lines{{height:{P2['notes'] * 4}mm}}\n", encoding="utf-8")
 
 # ---------------------------------------------------------------- ghost doll ("Woo I'm a ghost")
 GHOST_D = ("M0,121 L0,30.5 A30,30 0 0 1 60,30.5 L60,121 L52.5,113.5 L45,121 L37.5,113.5 L30,121 "
@@ -252,6 +348,54 @@ reduce_rows = "".join(
 
 corners = "".join(build.CORNER.format(cls=c) for c in ("tl", "tr", "bl", "br"))
 
+def tp_powers():
+    """Page-1 Powers box for the two-page format. Names, values and lines bind to state.twoPage."""
+    out = []
+    for n in range(2):
+        out.append(f'<div class="ph"><span class="k"><span class="fit" data-bind="twoPage.powers.{n}.name" data-placeholder="Power {n + 1}"></span></span>'
+                   f'<span class="box"><span class="fit" data-bind="twoPage.powers.{n}.value"></span></span><span class="spacer"></span></div>')
+        out.append("".join(f'<div class="row"><span class="fill fit" data-bind="twoPage.powers.{n}.lines.{i}"></span></div>' for i in range(3)))
+    for key, label in (("totalHeal", "Total Heal Innate"), ("trueBeliever", "True Believer")):
+        out.append(f'<div class="ph"><span class="k">{label}</span><span class="box"><span class="fit" data-bind="twoPage.{key}.value"></span></span><span class="spacer"></span></div>'
+                   f'<div class="row"><span class="fill fit" data-bind="twoPage.{key}.line"></span></div>')
+    return "\n        ".join(out)
+
+
+def page2():
+    """The second A4 page of the "2 Page 15k+ nutjobs" format (hidden unless that format is chosen)."""
+    def lines_panel(sec, title, key, count):
+        rows = "".join(f'<div class="row p2-row"><span class="fill fit" data-bind="twoPage.{key}.{i}"></span></div>' for i in range(count))
+        return (f'<div class="panel" data-section="{sec}"><div class="ph"><span class="k">{title}</span><span class="spacer"></span></div>{rows}</div>')
+    regen = "".join(f'<div class="row p2-row vrow"><span class="fill fit" data-bind="twoPage.regeneration.{i}.text"></span>'
+                    f'<span class="vb"><span class="fit" data-bind="twoPage.regeneration.{i}.value"></span></span></div>' for i in range(P2["regeneration"]))
+    return f"""<?php /* PAGE 2 ("2 Page 15k+ nutjobs" format only): same banner and footer, then the extra tables. Rows are fixed;
+       the Immunities/Resistances rows that don't fit on page 1 continue here (app.js builds them). */ ?>
+<div class="sheet sheet-p2" id="sheet-p2" data-theme="parchment" aria-label="Battleboard page 2 preview" hidden>
+ <div class="frame">
+  {corners}
+  <div class="frame-in">
+   <svg class="wm" id="sheet-wm-2" viewBox="0 0 194 281" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false" hidden><use width="194" height="281"></use></svg>
+   <header class="head">
+     <div class="title-wrap" data-section="identity">{build.BANNER}<h1 class="char-name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span></h1></div>
+   </header>
+   <main class="body">
+    <section class="col">
+      <div class="panel p2-imm p2-fill" data-section="immunities"><div class="ph"><span class="k">Immunities / Resistances</span><span class="spacer"></span><span class="k sep">Lvl</span></div><div id="sheet-p2-immunities"></div></div>
+      <div class="panel" data-section="tpRegen"><div class="ph"><span class="k">Regeneration Powers</span><span class="spacer"></span></div>{regen}</div>
+    </section>
+    <section class="col">
+      {lines_panel("tpDamageGrades", "Damage Grades", "damageGrades", P2["damageGrades"])}
+      <div class="panel p2-notes" data-section="notes"><div class="ph"><span class="k">Notes</span><span class="spacer"></span></div><div class="p2-lines" id="sheet-p2-notes"><span class="fill" data-bind="notes"></span></div></div>
+      {lines_panel("tpDamageReductions", "Damage Reductions", "damageReductions", P2["damageReductions"])}
+      {lines_panel("tpAdditional", "Additional Resistances", "additionalResistances", P2["additionalResistances"])}
+    </section>
+   </main>
+   <footer class="foot"><span class="orn"></span><span class="dia">&#9670;</span>
+     <span class="name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span><span class="dia">&#9670;</span><span class="orn"></span><span class="pg">Page 2 of 2</span></footer>
+  </div>
+ </div>
+</div>"""
+
 template = f"""<?php
 /**
  * Battleboard sheet markup. Static structure only — all character data is written by app.js using textContent.
@@ -294,8 +438,12 @@ use function Battleboard\\e;
    <main class="body">
     <section class="col">
       <div class="panel" data-section="tblp" id="sheet-tblp">
-        <div class="ph"><span class="k">T.B.L.P.</span><span class="box"><span class="fit" data-bind="tblp"></span></span><span class="opt-group" data-show="ltm.show"><span class="k sep">LTM</span><span class="box"><span class="fit" data-bind="ltm.value"></span></span></span><span class="spacer"></span></div>
+        <div class="ph"><span class="k"><span class="tp-only">Life &#183;</span>T.B.L.P.</span><span class="box"><span class="fit" data-bind="tblp"></span></span><span class="opt-group" data-show="ltm.show"><span class="k sep">LTM</span><span class="box"><span class="fit" data-bind="ltm.value"></span></span></span><span class="spacer"></span></div>
         {lined(8, "tblpLines")}<div class="row cs-row" data-show="castingStam.show"><span class="cs-k">Casting Stam</span><span class="cs-v"><span class="fit" data-bind="castingStam.value"></span></span><span class="fill"></span></div>
+      </div>
+      <?php /* 2 Page 15k+ nutjobs only: the Powers box (two named powers with three lines each, then Total Heal Innate and True Believer). */ ?>
+      <div class="panel tp-powers tp-only" id="sheet-tp-powers" data-section="tpPowers">
+        {tp_powers()}
       </div>
       <div class="panel" data-section="power" id="sheet-power">
         <div class="ph"><span class="k power-k">Power (<span class="ptype" data-bind="power.type"></span>)</span><span class="box"><span class="fit" data-bind="power.value"></span></span><span class="spacer"></span></div>
@@ -314,7 +462,7 @@ use function Battleboard\\e;
       </div>
       <div class="panel res-panel" data-section="resChance">
         <div class="res-row"><span class="k">Res Chance</span>
-          <span class="res-box"><span class="fit" data-bind="resChance"></span></span></div>
+          <span class="res-box"><span class="fit" data-bind="resChance"></span></span><span class="k tp-only">Points</span><span class="res-box tp-only"><span class="fit" data-bind="points"></span></span></div>
       </div>
     </section>
 
@@ -332,7 +480,7 @@ use function Battleboard\\e;
       <?php /* PAPER DOLL: one SVG holds every body piece for all three dolls; CSS shows the pieces for the chosen doll. Each chip is a location's loc box and AC circle. */ ?>
       <div class="doll">
         <div data-section="locations">
-        {build.doll_svg().replace("</svg>", ghost_svg() + "</svg>")}
+        {build.doll_svg().replace("</svg>", tp_pieces_svg() + ghost_svg() + "</svg>")}
         {chips()}
         </div>
         <?php /* Ghost doll only: small T.B.L.P. / LTM / Casting Stam box inside the ghost (the normal T.B.L.P. box is hidden). */ ?>
@@ -374,10 +522,11 @@ use function Battleboard\\e;
 
    <?php /* FOOTER: the character's name and alignment again, at the bottom of the page. */ ?>
    <footer class="foot"><span class="orn"></span><span class="dia">&#9670;</span>
-     <span class="name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span><span class="dia">&#9670;</span><span class="orn"></span></footer>
+     <span class="name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span><span class="dia">&#9670;</span><span class="orn"></span><span class="pg tp-only">Page 1 of 2</span></footer>
   </div>
  </div>
 </div>
+{page2()}
 """
 (APP / "templates/board.php").write_text(template, encoding="utf-8")
 print("generated")

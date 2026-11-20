@@ -1,4 +1,4 @@
-# Labyrinthe Battleboard Generator (RC 1.11.0)
+# Labyrinthe Battleboard Generator (RC 2.0.0)
 
 A single page app for filling in a fantasy LARP battleboard, then printing it or saving it as a PDF.
 Built for PHP 8.2 on Fasthosts Linux hosting. It works on desktop, tablet and phone and has no
@@ -112,9 +112,10 @@ Keep row maximums within what fits on the A4 sheet.
 {
   "app": "battleboard",
   "version": 1,
-  "generator": "Labyrinthe Battleboard Generator (RC 1.11.0)",
+  "generator": "Labyrinthe Battleboard Generator (RC 2.0.0)",
   "exportedAt": "2026-11-14T20:30:00.000Z",
   "character": {
+    "format": "normal",
     "layout": "basic",
     "doll": "default",
     "poolsShow": false,
@@ -150,7 +151,8 @@ Keep row maximums within what fits on the A4 sheet.
     "social": "Knight of the realm",
     "professional": "Guild smith, journeyman",
     "political": "Loyalist",
-    "points": 1250
+    "points": 1250,
+    "twoPage": { "powers": [{ "name": "Power 1", "value": null, "lines": ["", "", ""] }, "…"], "totalHeal": { "value": null, "line": "" }, "…": {} }
   }
 }
 ```
@@ -164,9 +166,57 @@ These are pastel page washes, each with its own ink. Main text contrast is at le
 secondary ink is at least 5.9:1, the same as or better than the original parchment. The palettes
 are in `assets/css/board.css`. Ink-saver makes the page white but keeps the theme's line colour.
 
+### Board format: Normal or 2 Page 15k+ nutjobs
+
+The **Normal / 2 Page 15k+ nutjobs** toggle in the top bar, to the left of New, switches between the
+one-page board and a two-page board. `format` is `"normal"` (the default, and what older files mean)
+or `"twoPage"`.
+
+**Page 1** of the two-page board keeps the header, footer, Pow column, shields, paper doll, side
+tables and Res Chance. It changes like this:
+
+- **Left column:** a Powers box replaces the Power box, pools and Consumables. It has two named powers,
+  each with a value from 0 to 999 and three lines, then Total Heal Innate and True Believer, each with a
+  value and one line. Innates fill the rest of the column, up to 31 rows of 4.8 mm. Res Chance now also
+  shows Points.
+- **Right column:** the shields are smaller. The doll is 6 mm shorter: chest and abdomen (or the
+  Snow(man)flake torso) lose 3 mm each and the arms 6 mm, and the legs move up. The T.B.L.P. box sits
+  under the doll, headed "Life · T.B.L.P.", with 7 lines (5 under the ghost). There is no Notes box
+  and no Guilds.
+- **Immunities/Resistances:** the doll's table holds 12 rows (17 compact), or 20 (26 compact) in the
+  ghost's column. The rest continue on page 2, which holds 48 more.
+
+**Page 2** has the name banner (no Class(es)/Race(s) line) and footer, then fixed tables with 4 mm
+rows: Immunities/Resistances (continued, 48 rows), Regeneration Powers (7 rows, text plus a short
+value), Damage Grades (12), Notes (11 ruled lines; this is the same `notes` field), Damage Reductions
+(10) and Additional Resistances (17). The footers read "Page 1 of 2" and "Page 2 of 2".
+
+- **Shared options:** paper dolls, sheet colours, watermarks, ink-saver, compact rows, LTM, Casting
+  Stam and Combat Wary all work on both pages. Print / PDF prints two A4 pages, and the preview shows
+  page 2 under page 1.
+- **Its own settings:** they're in `twoPage` in `config/schema.json`: limits, T.B.L.P. lines per doll,
+  page-2 row counts and the ghost's page-1 rows. The board's own data is in the character's `twoPage`
+  object, and every list has its full, fixed number of slots.
+- **Switching:**
+  - Fields both boards share carry straight across.
+  - Matching fields are copied into empty places: the Power box goes to Power 1 and the first pool to
+    Power 2. Going back, Power 1 goes to the Power box (its name becomes the power type when it is one)
+    and Power 2 goes to the first pool.
+  - Nothing the other board doesn't show is deleted. Consumables, Guilds, pools, layout, the page-2
+    tables and so on are kept, unprinted, and come back when you switch back.
+  - If the board has anything typed into it, the user is first shown a list of what changes, including
+    any filled rows that won't fit (for example more than 31 innates, or Immunities beyond the one-page
+    limit), and can cancel.
+  - A blank board switches without asking. New keeps the current format.
+- **Import and export:** exported files record `format`. Importing a two-page file switches the
+  toggle to 2 Page 15k+ nutjobs, and importing a one-page file (or any older file) switches it to Normal,
+  whichever was showing before. Older copies of the site import two-page files as one-page boards and
+  list `format` and `twoPage` as ignored fields.
+
 ### Layouts
 
-`layout` picks the arrangement of the left-hand column. Each layout's settings are in
+`layout` picks the arrangement of the left-hand column of the one-page board (the two-page board
+has its own; the layout is kept for switching back). Each layout's settings are in
 `config/schema.json` under `layouts`: line counts, row heights in mm, row limits and default rows.
 
 | Layout | `layout` value | T.B.L.P. lines | Power lines | Innates | Consumables |
@@ -311,7 +361,7 @@ Exported files are meant to keep working as the site evolves.
 - **Upgrading the site:** a board saved in the browser by an older version loads in the new one with
   every field intact.
 
-Compatibility tests for RC 1.11.0:
+Compatibility tests for RC 2.0.0:
 
 - **Older versions:** files exported from RC 1.0 to RC 1.4 import with every field preserved. The only
   exception is a Social/Professional/Political entry longer than today's 50-character limit, which
@@ -335,7 +385,7 @@ When adding features in future versions:
 The generator is also available as a Windows app that opens in its own window, with no browser,
 no command window and no PHP.
 
-- **Downloads:** `LabyrintheBattleboard-Setup-1.11.0.exe` is an installer that needs no
+- **Downloads:** `LabyrintheBattleboard-Setup-2.0.0.exe` is an installer that needs no
   administrator rights and adds Start-menu and desktop shortcuts and an uninstaller. A portable
   zip is also available: keep `LabyrintheBattleboard.exe` and `WebView2Loader.dll` together.
 - **How it works:** the app is built with Tauri. It shows this web app in a native window using

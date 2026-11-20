@@ -170,6 +170,22 @@ html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 #pname-rleg{left:45mm;top:177.60000000000002mm;width:19mm}
 #chip-torso{left:27mm;top:36.2mm}
 #pname-torso{left:24.5mm;top:107.0mm;width:39mm}
+.sheet[data-format="twoPage"] #chip-larm{left:-0.6mm;top:37.7mm}
+.sheet[data-format="twoPage"] #pname-larm{left:-2.3mm;top:93.8mm;width:24.8mm}
+.sheet[data-format="twoPage"] #chip-chest{left:27mm;top:36.2mm}
+.sheet[data-format="twoPage"] #pname-chest{left:24.5mm;top:67.0mm;width:39mm}
+.sheet[data-format="twoPage"] #chip-rarm{left:67.2mm;top:37.7mm}
+.sheet[data-format="twoPage"] #pname-rarm{left:65.5mm;top:93.8mm;width:26.0mm}
+.sheet[data-format="twoPage"] #chip-abdomen{left:27mm;top:76.7mm}
+.sheet[data-format="twoPage"] #pname-abdomen{left:24.5mm;top:101.0mm;width:39mm}
+.sheet[data-format="twoPage"] #chip-lleg{left:25.6mm;top:110.2mm}
+.sheet[data-format="twoPage"] #pname-lleg{left:24mm;top:171.60000000000002mm;width:19mm}
+.sheet[data-format="twoPage"] #chip-rleg{left:46.6mm;top:110.2mm}
+.sheet[data-format="twoPage"] #pname-rleg{left:45mm;top:171.60000000000002mm;width:19mm}
+.sheet[data-format="twoPage"] #chip-torso{left:27mm;top:36.2mm}
+.sheet[data-format="twoPage"] #pname-torso{left:24.5mm;top:101.0mm;width:39mm}
+.sheet:not([data-format="twoPage"]) .piece.tp{display:none}
+.sheet[data-format="twoPage"] :is(#piece-larm,#piece-chest,#piece-rarm,#piece-abdomen,#piece-lleg,#piece-rleg,#piece-torso){display:none}
 
 /* ---------- app additions ---------- */
 .sheet .fit{display:block;overflow:hidden;white-space:nowrap;min-width:0}
@@ -213,8 +229,8 @@ html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .pool .pv{flex:0 0 7.5mm;height:5.6mm;border:.25mm solid var(--ink);border-radius:.6mm;background:#fff;display:flex;align-items:center;justify-content:center;font:700 3.2mm var(--label-font);padding:0 .4mm}
 .pool .pv .fit{text-align:center;width:100%}
 /* paper doll variants */
-.sheet[data-doll="snowflake"] :is(#piece-chest,#piece-abdomen,#chip-chest,#chip-abdomen,#pname-chest,#pname-abdomen){display:none}
-.sheet:not([data-doll="snowflake"]) :is(#piece-torso,#chip-torso,#pname-torso){display:none}
+.sheet[data-doll="snowflake"] :is(#piece-chest,#piece-abdomen,#piece-chest-tp,#piece-abdomen-tp,#chip-chest,#chip-abdomen,#pname-chest,#pname-abdomen){display:none}
+.sheet:not([data-doll="snowflake"]) :is(#piece-torso,#piece-torso-tp,#chip-torso,#pname-torso){display:none}
 /* "Woo I'm a ghost": no locations, no T.B.L.P. box; one ghost area; tables rearranged for more rows */
 .sheet:not([data-doll="ghost"]) #piece-ghost{display:none}
 .sheet[data-doll="ghost"] #sheet-tblp,
@@ -307,3 +323,55 @@ html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .mini.immune-over{left:0;right:auto}
 /* Compact Immunities/Resistances rows (optional): shorter lines, same text size */
 .sheet[data-imm="compact"] .mini.immune tbody td,.sheet[data-imm="compact"] .mini.immune tbody th{height:4mm}
+
+/* =====================================================================================
+ * "2 Page 15k+ nutjobs" format (data-format="twoPage" on both sheets). Page 1 keeps the normal header,
+ * footer, shields, doll and side tables, but:
+ *   left column   Powers box (two named powers, Total Heal Innate, True Believer), then Innates
+ *                 down to Res Chance, which also shows Points; no Power box, pools or Consumables
+ *   right column  smaller shields, a 6 mm shorter doll (TP_PIECES), and the T.B.L.P. box under the
+ *                 doll (app.js moves it there); no Notes box, no Guilds
+ * Page 2 (#sheet-p2) has the name banner and footer, Immunities/Resistances (continued),
+ * Regeneration Powers, Damage Grades, Notes, Damage Reductions and Additional Resistances.
+ * ===================================================================================== */
+.sheet[hidden]{display:none !important}
+.sheet:not([data-format="twoPage"]) .tp-only{display:none !important}
+.sheet[data-format="twoPage"] :is(#sheet-power,.pools,[data-section="consumables"],#sheet-notes,.immune-over,.ghost-stats){display:none !important}
+.sheet[data-format="twoPage"] .armour .shield{zoom:.72}
+.sheet[data-format="twoPage"]:not([data-doll="ghost"]) .doll{--doll-h:176mm}
+.sheet[data-format="twoPage"]:not([data-doll="ghost"]) :is(.mini.resist,.mini.immune){top:100.5mm}
+.sheet[data-format="twoPage"] #sheet-tblp{display:block;flex:1 1 auto;min-height:0;overflow:hidden}
+.sheet[data-format="twoPage"] #sheet-tblp .row{height:4.4mm}
+/* Powers box: each power is a heading row (name | value | free space) with its own lines */
+.tp-powers{flex:none}
+.tp-powers .ph{height:5.6mm}
+.tp-powers .ph + .row,.tp-powers .row + .ph{margin-top:0}
+.tp-powers .row + .ph{border-top:.35mm solid var(--ink)}
+.tp-powers .ph .k{flex:0 0 49mm;min-width:0;justify-content:flex-start;overflow:hidden;font-size:3.1mm;letter-spacing:.3mm}
+.tp-powers .ph .k .fit{flex:0 1 auto;min-width:0}
+.tp-powers .row{height:4.6mm}
+.tp-powers .row .fill{font:italic 3mm var(--label-font)}
+.tp-powers .ph .box .fit{font-size:3.4mm}
+/* Res Chance + Points share the bottom box */
+.res-row .tp-only.k{margin-left:auto}
+.sheet[data-format="twoPage"] .res-row .res-box{flex:0 0 14mm}
+/* "Page 1 of 2" / "Page 2 of 2" at the right of the footer */
+.foot{position:relative}
+.foot .pg{position:absolute;right:2mm;bottom:.6mm;font:600 2.3mm var(--label-font);letter-spacing:.3mm;text-transform:uppercase;color:var(--ink-2)}
+/* ---------- page 2 ---------- */
+.preview-scale .sheet + .sheet{margin-top:8mm}
+.sheet-p2 .head{height:21mm}
+.sheet-p2 .body{grid-template-columns:92mm minmax(0,1fr);gap:3.5mm}
+.sheet-p2 .col{gap:3.4mm}
+.sheet-p2 .panel{flex:none;overflow:hidden}
+.sheet-p2 .p2-row{height:4mm;padding:0 1.6mm}
+.sheet-p2 .p2-row .fill{font:3mm var(--label-font);min-width:0}
+.sheet-p2 .vrow{padding-right:0}
+.sheet-p2 .vrow .vb{flex:0 0 9mm;align-self:stretch;border-left:.25mm solid var(--ink);display:flex;align-items:center;justify-content:center;font:700 2.8mm var(--label-font);min-width:0}
+.sheet-p2 .vrow .vb .fit{text-align:center;width:100%}
+.sheet-p2 .p2-imm .ph .k.sep{flex:0 0 9mm;justify-content:center;padding:0;letter-spacing:.3mm}
+.sheet-p2 .p2-imm .ph .k.sep::before,.sheet-p2 .p2-imm .ph .k.sep::after{content:none}
+.sheet-p2 .p2-notes .p2-lines{position:relative;margin:0 1.6mm;background:repeating-linear-gradient(to bottom,transparent 0 3.8mm,var(--rule) 3.8mm 4mm)}
+.sheet-p2 .p2-notes .fill{display:block;height:100%;overflow:hidden;white-space:pre-wrap;font:3mm/4mm var(--label-font);padding-top:.5mm}
+.sheet-p2 .p2-fill{flex:1 1 auto}
+.sheet-p2 .p2-notes .p2-lines{height:44mm}

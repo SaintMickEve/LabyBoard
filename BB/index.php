@@ -73,19 +73,29 @@ $text = static function (string $path, int $max, string $label, string $placehol
 <link rel="preload" href="<?= e(url('assets/fonts/chorus-mediumitalic.woff')) ?>" as="font" type="font/woff" crossorigin>
 <link rel="preload" href="<?= e(url('assets/fonts/pagella-regular.woff')) ?>" as="font" type="font/woff" crossorigin>
 <!-- The ?v= number changes with each release so browsers fetch the new files instead of old cached ones. -->
-<link rel="stylesheet" href="<?= e(url('assets/css/board.css?v=63')) ?>">
-<link rel="stylesheet" href="<?= e(url('assets/css/app.css?v=63')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/board.css?v=68')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/app.css?v=68')) ?>">
 <!-- The whole schema as data (not code), so the browser applies exactly the same limits as the server. -->
 <script type="application/json" id="bb-schema"><?= json_encode($schema, $jsonFlags) ?></script>
-<script src="<?= e(url('assets/js/app.js?v=63')) ?>" defer></script>
+<script src="<?= e(url('assets/js/app.js?v=68')) ?>" defer></script>
 </head>
 <body>
 <a class="skip" href="#editor">Skip to editor</a>
 
 <!-- Top bar: New / Import / Export / Print. app.js handles each button by its data-action. -->
 <header class="topbar">
-  <a class="brand" href="<?= e(url()) ?>" title="Home"><span class="brand-mark" aria-hidden="true">&#9670;</span> <span class="brand-name">Labyrinthe Battleboard Generator</span> <span class="brand-rc">RC 1.11.0</span></a>
+  <a class="brand" href="<?= e(url()) ?>" title="Home"><span class="brand-mark" aria-hidden="true">&#9670;</span> <span class="brand-name">Labyrinthe Battleboard Generator</span> <span class="brand-rc">RC 2.0.0</span></a>
   <nav class="actions" aria-label="Board actions">
+    <?php /* Board format toggle: the normal one-page board or the "2 Page 15k+ nutjobs" two-page board (app.js applyFormat). */ ?>
+    <div class="fmt-toggle" role="group" aria-label="Board format">
+      <?php foreach ($schema['formats'] as $key => $label): ?>
+        <button type="button" class="btn fmt" data-format="<?= e($key) ?>" aria-pressed="<?= $key === $schema['formatDefault'] ? 'true' : 'false' ?>" title="<?= e($key === 'twoPage' ? $label . ', two A4 pages: ' . $schema['twoPage']['description'] : 'The one-page battleboard') ?>"<?= $key === 'twoPage' ? ' aria-label="' . e($label) . '"' : '' ?>><?php
+          // The two-page label is split over two lines ("2 Page" / "15k+ nutjobs") to keep the button small.
+          $words = explode(' ', $label);
+          if ($key === 'twoPage' && count($words) > 2): ?><span class="l1"><?= e($words[0] . ' ' . $words[1]) ?></span><span class="l2"><?= e(implode(' ', array_slice($words, 2))) ?></span><?php
+          else: ?><?= e($label) ?><?php endif; ?></button>
+      <?php endforeach; ?>
+    </div>
     <button type="button" class="btn" data-action="new" title="Start a blank board">New</button>
     <button type="button" class="btn" data-action="import" title="Load a JSON file">Import</button>
     <button type="button" class="btn" data-action="export" title="Save your board as a JSON file">Export</button>
@@ -151,7 +161,7 @@ $text = static function (string $path, int $max, string $label, string $placehol
       </div>
     </details>
 
-    <fieldset class="sec picker" data-sec="layout">
+    <fieldset data-format-show="normal" class="sec picker" data-sec="layout">
       <legend>Board layout</legend>
       <?php foreach ($schema['layouts'] as $key => $cfg): ?>
         <label class="pick">
@@ -161,7 +171,7 @@ $text = static function (string $path, int $max, string $label, string $placehol
       <?php endforeach; ?>
     </fieldset>
 
-    <details class="sec" data-sec="power">
+    <details data-format-show="normal" class="sec" data-sec="power">
       <summary>Power</summary>
       <p class="hint warn" id="power-layout-note"></p>
       <div class="grid">
@@ -184,7 +194,30 @@ $text = static function (string $path, int $max, string $label, string $placehol
       </div>
     </details>
 
-    <details class="sec" data-sec="pools">
+    <?php /* 2 Page 15k+ nutjobs only: the Powers box at the top of page 1. */ ?>
+    <details data-format-show="twoPage" class="sec" data-sec="tpPowers">
+      <summary>Powers</summary>
+      <p class="hint">The Powers box at the top of page 1: two named powers (for example Mana or Spirits) with a value from 0 to 999 and three lines each, then Total Heal Innate and True Believer with a value and one line each.</p>
+      <?php for ($n = 0; $n < $schema['twoPage']['powers']; $n++): ?>
+        <div class="grid">
+          <label class="field">Power <?= $n + 1 ?> name <?= $text("twoPage.powers.$n.name", $t['tpPowerName'], 'Power ' . ($n + 1) . ' name', 'Power ' . ($n + 1)) ?></label>
+          <label class="field">Value <?= $num("twoPage.powers.$n.value", $int['poolValue'], 'Power ' . ($n + 1) . ' value') ?></label>
+        </div>
+        <div class="stack">
+          <?php for ($i = 0; $i < $schema['twoPage']['powerLines']; $i++): ?>
+            <?= $text("twoPage.powers.$n.lines.$i", $t['powerLine'], 'Power ' . ($n + 1) . ' line ' . ($i + 1), 'Line ' . ($i + 1)) ?>
+          <?php endfor; ?>
+        </div>
+      <?php endfor; ?>
+      <?php foreach (['totalHeal' => 'Total Heal Innate', 'trueBeliever' => 'True Believer'] as $key => $label): ?>
+        <div class="grid">
+          <label class="field"><?= e($label) ?> <?= $num("twoPage.$key.value", $int['poolValue'], "$label value") ?></label>
+          <label class="field">Line <?= $text("twoPage.$key.line", $t['powerLine'], "$label line", 'Line') ?></label>
+        </div>
+      <?php endforeach; ?>
+    </details>
+
+    <details data-format-show="normal" class="sec" data-sec="pools">
       <summary>Pools</summary>
       <label class="check"><input type="checkbox" data-path="poolsShow" data-kind="bool"> Show the three pools on this board, between Power and Innates</label>
       <p class="hint" id="pools-note"></p>
@@ -210,11 +243,12 @@ $text = static function (string $path, int $max, string $label, string $placehol
       <summary>Innates <span class="count" data-count="innates"></span></summary>
       <button type="button" class="btn sort" data-sort="innates" title="Sort the innates into alphabetical order by name">Sort A&ndash;Z</button>
       <p class="hint">Name each innate, then tap how many uses it has (1–8). Tap the same number again to clear it.</p>
+      <p class="hint" id="tp-innates-note"></p>
       <ol class="list" data-list="innates"></ol>
       <button type="button" class="btn add" data-add="innates">+ Add innate</button>
     </details>
 
-    <details class="sec" data-sec="consumables">
+    <details data-format-show="normal" class="sec" data-sec="consumables">
       <summary>Consumables <span class="count" data-count="consumables"></span></summary>
       <label class="check"><input type="checkbox" data-path="consumablesShow" data-kind="bool"> Show the Consumables table on the sheet (switch off to make room for more innates)</label>
       <p class="hint">Innates and consumables share space: up to <span id="pip-combined"></span> rows in total in this layout.</p>
@@ -290,18 +324,45 @@ $text = static function (string $path, int $max, string $label, string $placehol
     <details class="sec" data-sec="immunities">
       <summary>Immunities/Resistances <span class="count" data-count="immunities"></span></summary>
       <p class="hint">Short text on the left; a number, Y or N on the right. On the Default and Snow(man)flake dolls, rows that don't fit in the main table continue in the space below the Resistance table.</p>
+      <p class="hint" data-format-show="twoPage">On the <?= e($schema['twoPage']['label']) ?> board, rows that don't fit in the table by the paper doll continue on page 2 (up to <?= (int) $schema['twoPage']['page2']['immunities'] ?> more rows).</p>
       <label class="check"><input type="checkbox" data-path="immunitiesCompact" data-kind="bool"> Compact rows: shorter lines, so more rows fit</label>
       <ol class="list" data-list="immunities"></ol>
       <button type="button" class="btn add" data-add="immunities">+ Add row</button>
     </details>
 
+    <?php /* 2 Page 15k+ nutjobs only: the fixed tables on page 2. */ ?>
+    <details data-format-show="twoPage" class="sec" data-sec="tpRegen">
+      <summary>Page 2: Regeneration Powers</summary>
+      <p class="hint">Text on the left, a short value (up to <?= (int) $t['tpRegenValue'] ?> characters) on the right.</p>
+      <div class="stack">
+        <?php for ($i = 0; $i < $schema['twoPage']['page2']['regeneration']; $i++): ?>
+          <div class="item-main pair">
+            <?= $text("twoPage.regeneration.$i.text", $t['tpLine'], 'Regeneration power ' . ($i + 1), 'Regeneration power ' . ($i + 1)) ?>
+            <input class="in small" type="text" autocomplete="off" data-path="twoPage.regeneration.<?= $i ?>.value" data-kind="text" maxlength="<?= e((string) $t['tpRegenValue']) ?>" aria-label="Regeneration power <?= $i + 1 ?> value" placeholder="value">
+          </div>
+        <?php endfor; ?>
+      </div>
+    </details>
+    <?php foreach (['tpDamageGrades' => ['damageGrades', 'Damage Grades'], 'tpDamageReductions' => ['damageReductions', 'Damage Reductions'], 'tpAdditional' => ['additionalResistances', 'Additional Resistances']] as $sec => [$key, $label]): ?>
+    <details data-format-show="twoPage" class="sec" data-sec="<?= e($sec) ?>">
+      <summary>Page 2: <?= e($label) ?></summary>
+      <div class="stack">
+        <?php for ($i = 0; $i < $schema['twoPage']['page2'][$key]; $i++): ?>
+          <?= $text("twoPage.$key.$i", $t['tpLine'], "$label line " . ($i + 1), 'Line ' . ($i + 1)) ?>
+        <?php endfor; ?>
+      </div>
+    </details>
+    <?php endforeach; ?>
+
     <details class="sec" data-sec="notes">
-      <summary>Notes, Points &amp; Guilds</summary>
+      <summary><span data-format-show="normal">Notes, Points &amp; Guilds</span><span data-format-show="twoPage" hidden>Notes &amp; Points</span></summary>
+      <p class="hint" data-format-show="twoPage" hidden>On the <?= e($schema['twoPage']['label']) ?> board, Notes print on page 2 and Points sit beside Res Chance. The Guilds boxes aren't on this board (anything in them is kept).</p>
       <label class="field">Notes
         <textarea class="in" rows="6" data-path="notes" data-kind="multiline" maxlength="<?= e((string) $t['notes']) ?>" aria-describedby="notes-count"></textarea>
       </label>
       <p class="hint" id="notes-count"></p>
       <label class="field inline">Points <?= $num('points', $int['points'], 'Points') ?></label>
+      <div data-format-show="normal">
       <label class="check"><input type="checkbox" data-path="guildsShow" data-kind="bool"> Show the Guilds boxes (Social, Professional, Political) on the sheet (switch off for more room for notes)</label>
       <div id="guild-fields">
       <div class="grid three standing-fields">
@@ -312,6 +373,7 @@ $text = static function (string $path, int $max, string $label, string $placehol
         <?php endforeach; ?>
       </div>
       <p class="hint">Social, Professional and Political print in small type in three boxes under the Notes heading (two short lines, 50 characters each). The box label disappears once you type in it; text that doesn't fit is cut off with "…".</p>
+      </div>
       </div>
     </details>
 

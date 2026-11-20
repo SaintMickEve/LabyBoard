@@ -38,6 +38,24 @@ button,input,select,textarea{font:inherit;color:inherit}
 .btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
 .btn-primary:hover{background:var(--accent-2)}
 .btn[disabled]{opacity:.45;cursor:not-allowed}
+/* Form parts for the other board format (and anything else marked hidden) never show, whatever their display style */
+.editor [hidden]{display:none !important}
+/* Board format toggle (Normal / 2 Page 15k+ nutjobs): a two-part switch to the left of New */
+.fmt-toggle{display:inline-flex;border:1px solid #b79e75;border-radius:8px;overflow:hidden;margin-right:.35rem}
+.fmt-toggle .btn.fmt{border:0;border-radius:0;background:transparent;color:#f3e9d2;font-weight:600;padding:.45rem .7rem}
+.fmt-toggle .btn.fmt + .btn.fmt{border-left:1px solid #b79e75}
+.fmt-toggle .btn.fmt:hover{background:rgba(243,233,210,.12)}
+.fmt-toggle .btn.fmt[aria-pressed="true"]{background:#f3e9d2;color:#2a1c0f;font-weight:700}
+.fmt-toggle .btn.fmt:focus-visible{outline-offset:-3px}
+/* "Normal" is the main choice; "2 Page 15k+ nutjobs" is deliberately small */
+.fmt-toggle{align-items:stretch;align-self:center} /* short: it doesn't stretch to the height of the buttons beside it */
+.fmt-toggle .btn.fmt{min-height:0}
+.fmt-toggle .btn.fmt[data-format="normal"]{font-size:.95rem;font-weight:700;padding:.2rem .85rem;letter-spacing:.02em;line-height:1.2}
+.fmt-toggle .btn.fmt[data-format="twoPage"]{font-size:.6rem;font-weight:600;padding:.1rem .5rem;opacity:.9;line-height:1.05;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.fmt-toggle .btn.fmt[data-format="twoPage"] .l1,.fmt-toggle .btn.fmt[data-format="twoPage"] .l2{display:block;white-space:nowrap}
+.fmt-toggle .btn.fmt[data-format="twoPage"][aria-pressed="true"]{opacity:1}
+/* The two-page board: on wide screens page 2 is reached by scrolling the preview itself */
+@media (min-width:981px){body[data-format="twoPage"] .preview{overflow-y:auto;max-height:calc(100vh - var(--topbar-h,4.6rem) - 1.5rem);max-height:calc(100dvh - var(--topbar-h,4.6rem) - 1.5rem)}}
 
 /* ---------- layout ---------- */
 .tabs{display:none}
@@ -161,6 +179,13 @@ textarea.in{resize:vertical;min-height:7rem;line-height:1.35}
   .layout[data-view="preview"] .editor{display:none}
   .editor{max-height:none;overflow:visible}
   .preview{position:static}
+  /* Phones and tablets: the board-format switch is small and sits below New / Import / Export / Print, which matter more */
+  .actions{flex-wrap:wrap}
+  .actions::after{content:"";order:1;flex-basis:100%;height:0} /* line break: the switch always gets its own row */
+  .fmt-toggle{order:2;margin:0 auto;border-radius:6px}
+  .actions .fmt-toggle .btn.fmt{flex:none;min-height:0}
+  .actions .fmt-toggle .btn.fmt[data-format="normal"]{font-size:.78rem;padding:.1rem .7rem}
+  .actions .fmt-toggle .btn.fmt[data-format="twoPage"]{font-size:.52rem;padding:.05rem .45rem}
 }
 @media (max-width:560px){
   .brand{font-size:1.2rem}
@@ -181,6 +206,8 @@ textarea.in{resize:vertical;min-height:7rem;line-height:1.35}
   .topbar,.tabs,.editor,.toast,.skip{display:none !important}
   .layout{display:block;padding:0}
   .preview,.layout[data-view] .preview{display:block !important;position:static;height:auto !important;width:auto}
-  .preview-scale{transform:none !important;margin:0 !important;width:210mm;height:297mm}
+  .preview-scale{transform:none !important;margin:0 !important;width:210mm;height:auto}
   .preview-scale .sheet{box-shadow:none}
+  /* the two-page board prints page 2 on its own sheet of paper */
+  .preview-scale .sheet + .sheet{margin-top:0 !important;break-before:page}
 }

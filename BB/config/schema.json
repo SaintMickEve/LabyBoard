@@ -15,7 +15,10 @@
         "notes": 800,
         "powLabel": 12,
         "standing": 50,
-        "poolName": 14
+        "poolName": 14,
+        "tpPowerName": 24,
+        "tpLine": 70,
+        "tpRegenValue": 6
     },
     "int": {
         "tblp": [
@@ -194,6 +197,11 @@
         ]
     },
     "layoutDefault": "basic",
+    "formats": {
+        "normal": "Normal",
+        "twoPage": "2 Page 15k+ nutjobs"
+    },
+    "formatDefault": "normal",
     "layouts": {
         "basic": {
             "label": "Basic Layout",
@@ -335,5 +343,46 @@
     "immunitiesMainRows": {
         "normal": 12,
         "compact": 17
+    },
+    "twoPage": {
+        "label": "2 Page 15k+ nutjobs",
+        "description": "Two A4 pages. Page 1: Powers box, Innates, the paper doll with the T.B.L.P. box under it. Page 2: more Immunities/Resistances, Regeneration Powers, Damage Grades, Notes, Damage Reductions and Additional Resistances.",
+        "tblpRows": {
+            "default": 7,
+            "snowflake": 7,
+            "ghost": 5
+        },
+        "powerRows": 0,
+        "power": false,
+        "pools": false,
+        "innateRowMm": 4.8,
+        "consumableRowMm": 4.8,
+        "innates": [
+            0,
+            31
+        ],
+        "consumables": [
+            0,
+            0
+        ],
+        "pipRowsCombined": 31,
+        "defaultInnates": 16,
+        "defaultConsumables": 0,
+        "fill": "innates",
+        "innatesSolo": 31,
+        "powers": 2,
+        "powerLines": 3,
+        "page2": {
+            "immunities": 48,
+            "regeneration": 7,
+            "damageGrades": 12,
+            "notes": 11,
+            "damageReductions": 10,
+            "additionalResistances": 17
+        },
+        "ghostImmunities": {
+            "normal": 20,
+            "compact": 26
+        }
     }
 }

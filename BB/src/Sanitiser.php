@@ -98,6 +98,11 @@ final class Sanitiser
         // Layout and paper doll come first, because they decide how many rows other lists may have.
         // $L is the chosen layout's settings block from the schema.
 
+        // Board format: "normal" (one page) or "twoPage" (2 Page 15k+ nutjobs). The two-page board has its own
+        // left column ($s['twoPage']), so it sets the innate limit; the one-page layout is kept for switching back.
+        $format = $this->enum($input['format'] ?? $s['formatDefault'], array_keys($s['formats']), 'Board format') ?: $s['formatDefault'];
+        $TP = $s['twoPage'];
+        $twoPage = $format === 'twoPage';
         $layout = $this->enum($input['layout'] ?? $s['layoutDefault'], array_keys($s['layouts']), 'Layout') ?: $s['layoutDefault'];
         $L = $s['layouts'][$layout];
         $doll = $this->enum($input['doll'] ?? $s['dollDefault'], array_keys($s['dolls']), 'Paper doll') ?: $s['dollDefault'];
@@ -110,10 +115,17 @@ final class Sanitiser
         $maxImmune = $immCompact
             ? ($s['immunitiesCompact']['limits'][$doll] ?? $r['immunities'][1])
             : ($s['dollLimits'][$doll]['immunities'] ?? $r['immunities'][1]);
+        if ($twoPage) {
+            // Page 1 holds the doll's main table (the ghost's whole column); the rest continue on page 2.
+            $page1 = $doll === 'ghost' ? $TP['ghostImmunities'][$immCompact ? 'compact' : 'normal'] : $s['immunitiesMainRows'][$immCompact ? 'compact' : 'normal'];
+            $maxImmune = $page1 + $TP['page2']['immunities'];
+        }
+        $innatesMax = $twoPage ? $TP['innates'][1] : ($conShow ? $L['innates'][1] : $L['innatesSolo']);
 
         // The clean character, built field by field. The order of keys here is the order they appear
         // in exported files, and must match the JavaScript twin.
         $data = [
+            'format'  => $format,
             'layout'  => $layout,
             'doll'    => $doll,
             'theme'   => $this->enum($input['theme'] ?? $s['themeDefault'], array_keys($s['themes']), 'Sheet colour') ?: $s['themeDefault'],
@@ -147,7 +159,7 @@ final class Sanitiser
             'consumablesShow' => $conShow,
             'immunitiesCompact' => $immCompact,
             'pools'       => $this->pools($input['pools'] ?? []),
-            'innates'     => $this->pipRows($input['innates'] ?? [], $conShow ? $L['innates'][1] : $L['innatesSolo'], $t['innateName'], 'Innate'),
+            'innates'     => $this->pipRows($input['innates'] ?? [], $innatesMax, $t['innateName'], 'Innate'),
             'consumables' => $this->pipRows($input['consumables'] ?? [], $L['consumables'][1], $t['consumableName'], 'Consumable'),
             'armour'      => [],
             'locations'   => [],
@@ -166,11 +178,13 @@ final class Sanitiser
             'professional' => $this->text($input['professional'] ?? '', $t['standing'], 'Professional'),
             'political'    => $this->text($input['political'] ?? '', $t['standing'], 'Political'),
             'points' => $this->int($input['points'] ?? null, $i['points'], 'Points'),
+            'twoPage' => $this->twoPageData(is_array($input['twoPage'] ?? null) ? $input['twoPage'] : []),
         ];
 
         // Innates + consumables share the same space on the sheet.
         $combined = $L['pipRowsCombined'];
-        if ($conShow && count($data['innates']) + count($data['consumables']) > $combined) {
+        // (Consumables aren't on the two-page board, so they don't share its innate column.)
+        if (!$twoPage && $conShow && count($data['innates']) + count($data['consumables']) > $combined) {
             $keep = max(0, $combined - count($data['innates']));
             $data['consumables'] = array_slice($data['consumables'], 0, $keep);
             $this->warn("Innates and consumables are limited to {$combined} rows in total; extra rows were dropped.");
@@ -399,6 +413,62 @@ final class Sanitiser
             ];
         }
         return $out;
+    }
+
+    /**
+     * The parts only the two-page board uses (kept, unprinted, while the one-page board is shown):
+     * two named powers with three lines each, Total Heal Innate and True Believer (a value and a line
+     * each), and the page-2 tables. Every list always has its full, fixed number of slots.
+     *
+     * @param array<mixed> $tp
+     * @return array<string, mixed>
+     */
+    private function twoPageData(array $tp): array
+    {
+        $s = $this->schema;
+        $t = $s['text'];
+        $TP = $s['twoPage'];
+        $p2 = $TP['page2'];
+        $obj = fn (mixed $v): array => is_array($v) ? $v : [];
+        $list = fn (mixed $v): array => is_array($v) ? array_values($v) : [];
+        $powersIn = $list($tp['powers'] ?? []);
+        $regenIn = $list($tp['regeneration'] ?? []);
+        if (count($regenIn) > $p2['regeneration']) {
+            $this->warn("Regeneration Powers rows: only {$p2['regeneration']} fit, extra rows were dropped.");
+        }
+        $extra = fn (string $key, string $label): array => [
+            'value' => $this->int($obj($tp[$key] ?? null)['value'] ?? null, $s['int']['poolValue'], "{$label} value"),
+            'line'  => $this->text($obj($tp[$key] ?? null)['line'] ?? '', $t['powerLine'], "{$label} line"),
+        ];
+        $powers = [];
+        for ($n = 0; $n < $TP['powers']; $n++) {
+            $row = $obj($powersIn[$n] ?? null);
+            $label = 'Power ' . ($n + 1);
+            $powers[] = [
+                'name'  => $this->text($row['name'] ?? $label, $t['tpPowerName'], "{$label} name"),
+                'value' => $this->int($row['value'] ?? null, $s['int']['poolValue'], "{$label} value"),
+                'lines' => $this->fixedLines($row['lines'] ?? [], $TP['powerLines'], $t['powerLine'], "{$label} line"),
+            ];
+        }
+        $totalHeal = $extra('totalHeal', 'Total Heal Innate');
+        $trueBeliever = $extra('trueBeliever', 'True Believer');
+        $regen = [];
+        for ($n = 0; $n < $p2['regeneration']; $n++) {
+            $row = $obj($regenIn[$n] ?? null);
+            $regen[] = [
+                'text'  => $this->text($row['text'] ?? '', $t['tpLine'], 'Regeneration Powers ' . ($n + 1)),
+                'value' => $this->text($row['value'] ?? '', $t['tpRegenValue'], 'Regeneration Powers ' . ($n + 1) . ' value'),
+            ];
+        }
+        return [
+            'powers' => $powers,
+            'totalHeal' => $totalHeal,
+            'trueBeliever' => $trueBeliever,
+            'regeneration' => $regen,
+            'damageGrades' => $this->fixedLines($tp['damageGrades'] ?? [], $p2['damageGrades'], $t['tpLine'], 'Damage Grades line'),
+            'damageReductions' => $this->fixedLines($tp['damageReductions'] ?? [], $p2['damageReductions'], $t['tpLine'], 'Damage Reductions line'),
+            'additionalResistances' => $this->fixedLines($tp['additionalResistances'] ?? [], $p2['additionalResistances'], $t['tpLine'], 'Additional Resistances line'),
+        ];
     }
 
     /** The right-hand cell of an Immunities/Resistances row: "Y", "N", a number in range, or blank. */
