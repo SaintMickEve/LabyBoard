@@ -182,6 +182,10 @@ final class Sanitiser
             'political'    => $this->text($input['political'] ?? '', $t['standing'], 'Political'),
             'points' => $this->int($input['points'] ?? null, $i['points'], 'Points'),
             'twoPage' => $this->twoPageData($tpIn, $tpLayout),
+            'damageSheet' => ($dmg = $this->damageSheetData(is_array($input['damageSheet'] ?? null) ? $input['damageSheet'] : [])),
+            // Kit and Equipment (on the Damage Sheet page): as many rows as fit under its table.
+            'kit' => $this->pipRows($input['kit'] ?? [], $this->kitMax(count($dmg['rows'])), $t['kitName'], 'Kit'),
+            'equipment' => $this->pipRows($input['equipment'] ?? [], $this->kitMax(count($dmg['rows'])), $t['kitName'], 'Equipment'),
         ];
 
         // Innates + consumables share the same space on the sheet.
@@ -526,6 +530,60 @@ final class Sanitiser
             'damageReductions' => $this->fixedLines($tp['damageReductions'] ?? [], $p2['damageReductions'], $t['tpLine'], 'Damage Reductions line'),
             'additionalResistances' => $this->fixedLines($tp['additionalResistances'] ?? [], $p2['additionalResistances'], $t['tpLine'], 'Additional Resistances line'),
         ];
+    }
+
+    /**
+     * The optional last page's Damage Sheet table: a corner heading, 1–8 column headings (bold, up to
+     * 40 characters) and 1–13 rows, each a bold heading (up to 15 characters) and one 0–99 value per
+     * column. Older files and files without it get the example table (switched off). Matches app.js.
+     *
+     * @param array<mixed> $ds
+     * @return array{show: bool, corner: string, columns: list<string>, rows: list<array{label: string, values: list<int|null>}>}
+     */
+    private function damageSheetData(array $ds): array
+    {
+        $D = $this->schema['damageSheet'];
+        $t = $this->schema['text'];
+        $cols = is_array($ds['columns'] ?? null) ? array_values($ds['columns']) : $D['columnsDefault'];
+        if (count($cols) > $D['columns'][1]) {
+            $this->warn("Damage Sheet columns: only {$D['columns'][1]} fit, extra columns were dropped.");
+            $cols = array_slice($cols, 0, $D['columns'][1]);
+        }
+        $corner = $this->text($ds['corner'] ?? $D['corner'], $t['dmgLabel'], 'Damage Sheet corner heading');
+        $columns = [];
+        foreach ($cols as $n => $c) {
+            $columns[] = $this->text($c ?? '', $t['dmgHead'], 'Damage Sheet column ' . ($n + 1) . ' heading');
+        }
+        if (!$columns) {
+            $columns[] = '';
+        }
+        $rowsIn = is_array($ds['rows'] ?? null)
+            ? $this->rows($ds['rows'], $D['rows'][1], 'Damage Sheet')
+            : array_map(fn (string $label): array => ['label' => $label], $D['rowsDefault']);
+        $rows = [];
+        foreach ($rowsIn as $n => $row) {
+            $label = $this->text($row['label'] ?? '', $t['dmgLabel'], 'Damage Sheet row ' . ($n + 1) . ' heading');
+            $vals = is_array($row['values'] ?? null) ? array_values($row['values']) : [];
+            if (count($vals) > count($columns)) {
+                $this->warn('Damage Sheet row ' . ($n + 1) . ': values beyond column ' . count($columns) . ' were dropped.');
+            }
+            $values = [];
+            foreach ($columns as $c => $_) {
+                $values[] = $this->int($vals[$c] ?? null, $this->schema['int']['dmgValue'], 'Damage Sheet row ' . ($n + 1) . ', column ' . ($c + 1));
+            }
+            $rows[] = ['label' => $label, 'values' => $values];
+        }
+        if (!$rows) {
+            $rows[] = ['label' => '', 'values' => array_fill(0, count($columns), null)];
+        }
+        return ['show' => $this->bool($ds['show'] ?? false), 'corner' => $corner, 'columns' => $columns, 'rows' => $rows];
+    }
+
+    /** Kit and Equipment rows that fit under a Damage Sheet table of $rows rows (schema damageSheet.kitFit). Same sum in app.js. */
+    private function kitMax(int $rows): int
+    {
+        $f = $this->schema['damageSheet']['kitFit'];
+        return max(0, intdiv($f['heightMm10'] - $rows * $f['dmgRowMm10'], $f['kitRowMm10']));
     }
 
     /** The right-hand cell of an Immunities/Resistances row: "Y", "N", a number in range, or blank. */

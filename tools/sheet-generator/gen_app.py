@@ -289,6 +289,26 @@ css = css.strip() + "\n\n/* ---------- paper-doll positions ---------- */\n" + "
 /* "Page 1 of 2" / "Page 2 of 2" at the right of the footer */
 .foot{position:relative}
 .foot .pg{position:absolute;right:2mm;bottom:.6mm;font:600 2.3mm var(--label-font);letter-spacing:.3mm;text-transform:uppercase;color:var(--ink-2)}
+/* ---------- last page: Damage Sheet, Kit and Equipment (optional, either format) ---------- */
+.sheet-dmg .body{display:flex;flex-direction:column;gap:3.4mm}
+.sheet-dmg .dmg .ph{justify-content:center;height:7.2mm}
+.sheet-dmg .dmg .ph .k{font-size:3.8mm;letter-spacing:.55mm}
+.sheet-dmg .dmg .ph .k::before,.sheet-dmg .dmg .ph .k::after{font-size:2mm}
+.dmg-table{display:grid}
+.dmg-table > span{display:flex;align-items:center;justify-content:center;min-width:0;overflow:hidden;color:var(--ink);border-right:.2mm solid var(--line);border-bottom:.2mm solid var(--line)}
+.dmg-table > .c-last{border-right:0}
+.dmg-table > .r-last{border-bottom:0}
+.dmg-table .hc{height:22mm;box-sizing:border-box;align-items:flex-end;padding:1mm .8mm 1.2mm;font-weight:700;font-size:3.5mm;line-height:1.12;text-align:center;overflow-wrap:anywhere;border-bottom:.35mm solid var(--ink)}
+.dmg-table .h0,.dmg-table .rl{justify-content:flex-start;padding-left:1.6mm;border-right:.35mm solid var(--ink);text-align:left}
+.dmg-table .h0{font-size:3.9mm}
+.dmg-table .rl .fit{flex:1 1 auto}
+.dmg-table .rl{height:7.4mm;font-weight:700;font-size:4.2mm;white-space:nowrap}
+.dmg-table .v{height:7.4mm;font-weight:600;font-size:5.2mm}
+.kit-head{display:flex;align-items:center;gap:3mm;height:7mm;margin-bottom:-1.8mm;color:var(--ink);font-weight:700;font-size:4.6mm;letter-spacing:.06em;text-transform:uppercase}
+.kit-head::before,.kit-head::after{content:"";flex:1;border-top:.35mm solid var(--ink);opacity:.7}
+.kit-cols{display:grid;grid-template-columns:1fr 1fr;gap:3.4mm;align-items:start}
+.kit-cols .panel:has(> div:empty){visibility:hidden}
+.kit-cols .pip-row{--row-h:4.3mm;height:4.3mm;align-items:center}
 /* ---------- page 2 ---------- */
 .preview-scale .sheet + .sheet{margin-top:8mm}
 .sheet-p2 .head{height:21mm}
@@ -405,6 +425,33 @@ def page2():
    </main>
    <footer class="foot"><span class="orn"></span><span class="dia">&#9670;</span>
      <span class="name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span><span class="dia">&#9670;</span><span class="orn"></span><span class="pg">Page 2 of 2</span></footer>
+  </div>
+ </div>
+</div>"""
+
+
+def page3():
+    """The optional last page, "Damage Sheet, Kit and Equipment", after the board on either format."""
+    return f"""<?php /* LAST PAGE (optional, damageSheet.show): same banner and footer, then the Damage Sheet table (app.js
+       builds its cells from state.damageSheet) and the Kit and Equipment lists (pip rows, like Consumables). */ ?>
+<div class="sheet sheet-p2 sheet-dmg" id="sheet-dmg" data-theme="parchment" aria-label="Damage Sheet, Kit and Equipment page preview" hidden>
+ <div class="frame">
+  {corners}
+  <div class="frame-in">
+   <svg class="wm" id="sheet-wm-3" viewBox="0 0 194 281" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false" hidden><use width="194" height="281"></use></svg>
+   <header class="head">
+     <div class="title-wrap" data-section="identity">{build.BANNER}<h1 class="char-name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span></h1></div>
+   </header>
+   <main class="body">
+      <div class="panel dmg" data-section="damageSheet"><div class="ph"><span class="k">Damage Sheet</span></div><div class="dmg-table" id="sheet-dmg-table"></div></div>
+      <div class="kit-head" data-section="damageSheet"><span>Kit and Equipment</span></div>
+      <div class="kit-cols">
+        <div class="panel" data-section="damageSheet"><div id="sheet-kit"></div></div>
+        <div class="panel" data-section="damageSheet"><div id="sheet-equipment"></div></div>
+      </div>
+   </main>
+   <footer class="foot"><span class="orn"></span><span class="dia">&#9670;</span>
+     <span class="name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span><span class="dia">&#9670;</span><span class="orn"></span><span class="pg"></span></footer>
   </div>
  </div>
 </div>"""
@@ -535,11 +582,12 @@ use function Battleboard\\e;
 
    <?php /* FOOTER: the character's name and alignment again, at the bottom of the page. */ ?>
    <footer class="foot"><span class="orn"></span><span class="dia">&#9670;</span>
-     <span class="name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span><span class="dia">&#9670;</span><span class="orn"></span><span class="pg tp-only">Page 1 of 2</span></footer>
+     <span class="name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span><span class="dia">&#9670;</span><span class="orn"></span><span class="pg" hidden></span></footer>
   </div>
  </div>
 </div>
 {page2()}
+{page3()}
 """
 (APP / "templates/board.php").write_text(template, encoding="utf-8")
 print("generated")

@@ -18,7 +18,10 @@
         "poolName": 14,
         "tpPowerName": 24,
         "tpLine": 70,
-        "tpRegenValue": 6
+        "tpRegenValue": 6,
+        "dmgHead": 40,
+        "dmgLabel": 15,
+        "kitName": 48
     },
     "int": {
         "tblp": [
@@ -88,6 +91,10 @@
         "tpRegenRows": [
             0,
             7
+        ],
+        "dmgValue": [
+            0,
+            99
         ]
     },
     "rows": {
@@ -413,5 +420,46 @@
             "gapMm10": 34,
             "rowMm10": 40
         }
+    },
+    "damageSheet": {
+        "label": "Damage Sheet, Kit and Equipment",
+        "columns": [
+            1,
+            8
+        ],
+        "rows": [
+            1,
+            13
+        ],
+        "kitDefault": 10,
+        "kitFit": {
+            "heightMm10": 1964,
+            "dmgRowMm10": 74,
+            "kitRowMm10": 43
+        },
+        "corner": "Grade",
+        "columnsDefault": [
+            "AC12 12 off 25% off 1/3 off Base",
+            "33% off rage or undead",
+            "66% off Rage",
+            "1/2 off upper leg miracle",
+            "3/4 off upper arm miracle",
+            "33% off 1/2 off",
+            "66% off 3/4 off"
+        ],
+        "rowsDefault": [
+            "Triple",
+            "Quad",
+            "Quin",
+            "Six",
+            "Seven",
+            "Eight",
+            "Nine",
+            "Ten",
+            "",
+            "Loc Zero",
+            "Sever",
+            "TOD"
+        ]
     }
 }

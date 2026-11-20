@@ -55,7 +55,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .fmt-toggle .btn.fmt[data-format="twoPage"] .l1,.fmt-toggle .btn.fmt[data-format="twoPage"] .l2{display:block;white-space:nowrap}
 .fmt-toggle .btn.fmt[data-format="twoPage"][aria-pressed="true"]{opacity:1}
 /* The two-page board: on wide screens page 2 is reached by scrolling the preview itself */
-@media (min-width:981px){body[data-format="twoPage"] .preview{overflow-y:auto;max-height:calc(100vh - var(--topbar-h,4.6rem) - 1.5rem);max-height:calc(100dvh - var(--topbar-h,4.6rem) - 1.5rem)}}
+@media (min-width:981px){body:not([data-pages="1"]) .preview{overflow-y:auto;max-height:calc(100vh - var(--topbar-h,4.6rem) - 1.5rem);max-height:calc(100dvh - var(--topbar-h,4.6rem) - 1.5rem)}}
 
 /* ---------- layout ---------- */
 .tabs{display:none}
@@ -120,6 +120,23 @@ textarea.in{resize:vertical;min-height:7rem;line-height:1.35}
 .imm-val .small{width:4.2rem}
 .btn.icon{min-width:42px;padding:.35rem;font-size:1.3rem;line-height:1}
 .btn.add{display:block;margin-top:.6rem;width:calc(100% - 1.8rem)}
+/* Damage Sheet, Kit and Equipment page: the table editor scrolls sideways when it is wider than the form */
+.sub{margin:1.1rem 0 .2rem;font-size:1rem}
+.sub2{margin:.9rem 0 0;font-size:.92rem;font-weight:600}
+.dmg-form[hidden]{display:none}
+.dmg-scroll{overflow-x:auto;margin-top:.5rem;padding-bottom:.3rem}
+.dmg-grid{border-collapse:collapse}
+.dmg-grid td,.dmg-grid th{padding:2px;vertical-align:bottom}
+.dmg-grid .in{min-height:34px;padding:.3rem .35rem;font-size:.92rem}
+.dmg-grid .h .in{width:5.4rem;font-weight:700;font-size:.82rem}
+.dmg-grid .h textarea.in{min-height:4.4rem;resize:none;line-height:1.2}
+.dmg-grid .lab .in{width:6.6rem;font-weight:700}
+.dmg-grid .val .in{width:3.1rem;text-align:center}
+.dmg-grid .in.bad{border-color:#b3261e;background:#fdecea}
+.dmg-grid .x{display:block;margin:0 auto 2px;min-height:26px;min-width:26px;padding:0 .3rem;font-size:1rem;line-height:1}
+.dmg-grid td.rx{vertical-align:middle}
+.dmg-btns{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-top:.4rem}
+.dmg-btns .btn.add{display:inline-block;width:auto;margin-top:0}
 /* "Sort A–Z" button at the top of a list (Innates) */
 .btn.sort{display:block;margin-top:.8rem;min-height:34px;padding:.3rem .8rem;font-size:.85rem}
 .pip-pick{display:flex;gap:.25rem}

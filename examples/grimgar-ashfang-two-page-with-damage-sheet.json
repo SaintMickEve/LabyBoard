@@ -1,0 +1,794 @@
+{
+  "app": "battleboard",
+  "version": 1,
+  "generator": "Labyrinthe Battleboard Generator (RC 2.0.0)",
+  "character": {
+    "format": "twoPage",
+    "doll": "snowflake",
+    "theme": "red",
+    "watermark": "fire",
+    "immunitiesCompact": true,
+    "name": "Grimgar Ashfang",
+    "alignment": "NC",
+    "classes": "Berserker (12), Warlord (4), Blood Champion, Ivory Warrior, Guardian of Fury, Pit Fighter",
+    "races": "Half-Orc (Ashen Clan)",
+    "tblp": 312,
+    "ltm": {
+      "show": true,
+      "value": 420
+    },
+    "castingStam": {
+      "show": false,
+      "value": null
+    },
+    "tblpLines": [
+      "Rage: +40 TBLP while raging",
+      "Blood Champion: +3 per kill this battle",
+      "Unstoppable: ignore first Death's Door",
+      "Thick Hide: +25 (racial)",
+      "Battle Trance: +15 for 5 min",
+      "",
+      "",
+      ""
+    ],
+    "powB": {
+      "label": "Rage",
+      "value": 48
+    },
+    "resChance": 30,
+    "points": 24675,
+    "innates": [
+      {
+        "name": "Battle Cry",
+        "count": 4
+      },
+      {
+        "name": "Berserk",
+        "count": 3
+      },
+      {
+        "name": "Blood Frenzy",
+        "count": 2
+      },
+      {
+        "name": "Bone Breaker",
+        "count": 3
+      },
+      {
+        "name": "Charge",
+        "count": 4
+      },
+      {
+        "name": "Cleave",
+        "count": 4
+      },
+      {
+        "name": "Crushing Blow",
+        "count": 3
+      },
+      {
+        "name": "Disarm",
+        "count": 2
+      },
+      {
+        "name": "Endure Pain",
+        "count": 4
+      },
+      {
+        "name": "Feat of Strength",
+        "count": 2
+      },
+      {
+        "name": "Fury of the Ancestors",
+        "count": 1
+      },
+      {
+        "name": "Grapple",
+        "count": 3
+      },
+      {
+        "name": "Ground Shaker",
+        "count": 2
+      },
+      {
+        "name": "Headbutt",
+        "count": 4
+      },
+      {
+        "name": "Hamstring",
+        "count": 3
+      },
+      {
+        "name": "Intimidate",
+        "count": 4
+      },
+      {
+        "name": "Iron Will",
+        "count": 2
+      },
+      {
+        "name": "Leap",
+        "count": 3
+      },
+      {
+        "name": "Mighty Throw",
+        "count": 2
+      },
+      {
+        "name": "Rally the Clan",
+        "count": 1
+      },
+      {
+        "name": "Rend Armour",
+        "count": 3
+      },
+      {
+        "name": "Second Wind",
+        "count": 2
+      },
+      {
+        "name": "Shatter Shield",
+        "count": 3
+      },
+      {
+        "name": "Shrug Off",
+        "count": 4
+      },
+      {
+        "name": "Stagger",
+        "count": 4
+      },
+      {
+        "name": "Sunder",
+        "count": 2
+      },
+      {
+        "name": "Thunder Stomp",
+        "count": 2
+      },
+      {
+        "name": "Unbreakable",
+        "count": 1
+      },
+      {
+        "name": "War Cry: Ashfang!",
+        "count": 3
+      },
+      {
+        "name": "Whirlwind",
+        "count": 2
+      },
+      {
+        "name": "Wrath of the Pit",
+        "count": 1
+      }
+    ],
+    "armour": {
+      "pac": 24,
+      "dac": 4,
+      "sac": 0,
+      "mac": 0,
+      "nac": 6
+    },
+    "locations": {
+      "head": {
+        "hits": 9,
+        "ac": 4
+      },
+      "larm": {
+        "hits": 12,
+        "ac": 6
+      },
+      "rarm": {
+        "hits": 12,
+        "ac": 6
+      },
+      "chest": {
+        "hits": 18,
+        "ac": null
+      },
+      "abdomen": {
+        "hits": 14,
+        "ac": null
+      },
+      "lleg": {
+        "hits": 13,
+        "ac": 6
+      },
+      "rleg": {
+        "hits": 13,
+        "ac": 6
+      },
+      "torso": {
+        "hits": 32,
+        "ac": 10
+      }
+    },
+    "resist": {
+      "epower": 4,
+      "magic": 3,
+      "neuronic": 12,
+      "physical": 16,
+      "spirits": 4
+    },
+    "reductions": {
+      "numerical": "-4",
+      "percentile": "",
+      "fractional": "1/2"
+    },
+    "combatWary": {
+      "show": true,
+      "value": "1/4"
+    },
+    "colourResist": [
+      {
+        "text": "Red",
+        "fraction": "3/4"
+      },
+      {
+        "text": "Orange",
+        "fraction": "1/2"
+      },
+      {
+        "text": "Brown",
+        "fraction": "1/2"
+      },
+      {
+        "text": "Grey",
+        "fraction": "1/4"
+      },
+      {
+        "text": "Black",
+        "fraction": "1/4"
+      },
+      {
+        "text": "Green",
+        "fraction": "1/4"
+      }
+    ],
+    "immunities": [
+      {
+        "text": "Fear",
+        "value": "Y"
+      },
+      {
+        "text": "Stun",
+        "value": "Y"
+      },
+      {
+        "text": "Knockdown",
+        "value": 8
+      },
+      {
+        "text": "Bleed",
+        "value": 10
+      },
+      {
+        "text": "Pain",
+        "value": "Y"
+      },
+      {
+        "text": "Fatigue",
+        "value": "Y"
+      },
+      {
+        "text": "Poison",
+        "value": 6
+      },
+      {
+        "text": "Daze",
+        "value": "Y"
+      },
+      {
+        "text": "Slow",
+        "value": 5
+      },
+      {
+        "text": "Root",
+        "value": 4
+      },
+      {
+        "text": "Taunt",
+        "value": "Y"
+      },
+      {
+        "text": "Morale Break",
+        "value": "Y"
+      },
+      {
+        "text": "Crush",
+        "value": 6
+      },
+      {
+        "text": "Sunder (self)",
+        "value": 4
+      },
+      {
+        "text": "Weakness",
+        "value": 7
+      },
+      {
+        "text": "Hold Person",
+        "value": 3
+      },
+      {
+        "text": "Command",
+        "value": "Y"
+      },
+      {
+        "text": "Sleep",
+        "value": "Y"
+      },
+      {
+        "text": "Confusion",
+        "value": 5
+      },
+      {
+        "text": "Berserk (enemy)",
+        "value": "N"
+      },
+      {
+        "text": "Fire",
+        "value": 4
+      },
+      {
+        "text": "Burning",
+        "value": 6
+      },
+      {
+        "text": "Smoke",
+        "value": "Y"
+      },
+      {
+        "text": "Ash Lung",
+        "value": "Y"
+      },
+      {
+        "text": "Petrify",
+        "value": 2
+      },
+      {
+        "text": "Disease",
+        "value": 5
+      },
+      {
+        "text": "Shock",
+        "value": 3
+      },
+      {
+        "text": "Frost",
+        "value": 2
+      },
+      {
+        "text": "Acid",
+        "value": 3
+      },
+      {
+        "text": "Sonic",
+        "value": 4
+      },
+      {
+        "text": "Disarm",
+        "value": 6
+      },
+      {
+        "text": "Grapple",
+        "value": 5
+      },
+      {
+        "text": "Trip",
+        "value": 6
+      },
+      {
+        "text": "Charge (enemy)",
+        "value": 4
+      }
+    ],
+    "notes": "Rage lasts 5 minutes; cannot use innates that need concentration while raging. After rage: -20 TBLP until rested.\n\nOwes a blood-debt to the Ashen Clan chief. Wears the Fang of Grimvar (a war trophy): +1 damage grade when the clan is outnumbered.",
+    "twoPage": {
+      "powers": [
+        {
+          "name": "Rage",
+          "value": 48,
+          "lines": [
+            "+1 per hit taken, max 48",
+            "Spend 12: Berserk; 6: Second Wind",
+            "Drains to 0 an hour after battle"
+          ]
+        },
+        {
+          "name": "Spirits",
+          "value": 12,
+          "lines": [
+            "Ancestor spirits of the Ashen Clan",
+            "Fury of the Ancestors costs all 12",
+            ""
+          ]
+        }
+      ],
+      "totalHeal": {
+        "value": 45,
+        "line": "Only after 10 minutes of rest by a fire"
+      },
+      "trueBeliever": {
+        "value": 1,
+        "line": "Refuses to fall while the clan banner stands"
+      },
+      "regeneration": [
+        {
+          "text": "Troll-blood: regrow limbs (not head)",
+          "value": "1/2m"
+        },
+        {
+          "text": "Battle regeneration while raging",
+          "value": "1/20s"
+        },
+        {
+          "text": "Ash poultice (after battle)",
+          "value": "1/5m"
+        },
+        {
+          "text": "Blood Frenzy: regain on kill",
+          "value": "+3"
+        },
+        "",
+        "",
+        ""
+      ],
+      "damageGrades": [
+        "Double base (two-handed axe)",
+        "Triple when raging",
+        "Quad on Charge (needs 5m run-up)",
+        "Crushing Blow: Quad Crush, 3 per day",
+        "Whirlwind: Double to all within reach",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "damageReductions": [
+        "-4 Numerical (hide and chain)",
+        "1/2 Fractional vs Physical when raging",
+        "Combat Wary: 1/4 against first blow each fight",
+        "Shrug Off: ignore one blow, 4 per day",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "additionalResistances": [
+        "Physical 16 (Thick Hide + Iron Will)",
+        "Neuronic 12 (Ashen Clan training)",
+        "Fire: immune to normal flame, 4 vs magical",
+        "Smoke and ash: fully immune",
+        "Resist Morale effects automatically",
+        "+4 vs Knockdown while holding a shield",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    "damageSheet": {
+      "show": true,
+      "corner": "Grade",
+      "columns": [
+        "AC12 12 off 25% off 1/3 off Base",
+        "33% off rage or undead",
+        "66% off Rage",
+        "1/2 off upper leg miracle",
+        "3/4 off upper arm miracle",
+        "33% off 1/2 off",
+        "66% off 3/4 off",
+        "Champion's Blessing"
+      ],
+      "rows": [
+        {
+          "label": "Triple",
+          "values": [
+            12,
+            9,
+            5,
+            6,
+            3,
+            8,
+            4,
+            3
+          ]
+        },
+        {
+          "label": "Quad",
+          "values": [
+            16,
+            12,
+            6,
+            8,
+            4,
+            11,
+            5,
+            4
+          ]
+        },
+        {
+          "label": "Quin",
+          "values": [
+            20,
+            15,
+            7,
+            10,
+            5,
+            14,
+            6,
+            5
+          ]
+        },
+        {
+          "label": "Six",
+          "values": [
+            24,
+            18,
+            9,
+            12,
+            6,
+            16,
+            7,
+            6
+          ]
+        },
+        {
+          "label": "Seven",
+          "values": [
+            28,
+            21,
+            10,
+            14,
+            7,
+            19,
+            8,
+            7
+          ]
+        },
+        {
+          "label": "Eight",
+          "values": [
+            32,
+            24,
+            11,
+            16,
+            8,
+            22,
+            9,
+            8
+          ]
+        },
+        {
+          "label": "Nine",
+          "values": [
+            36,
+            27,
+            13,
+            18,
+            9,
+            25,
+            10,
+            9
+          ]
+        },
+        {
+          "label": "Ten",
+          "values": [
+            40,
+            30,
+            14,
+            20,
+            10,
+            28,
+            11,
+            10
+          ]
+        },
+        {
+          "label": "",
+          "values": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "label": "Loc Zero",
+          "values": [
+            48,
+            36,
+            17,
+            24,
+            12,
+            33,
+            13,
+            12
+          ]
+        },
+        {
+          "label": "Sever",
+          "values": [
+            60,
+            45,
+            21,
+            30,
+            15,
+            41,
+            16,
+            15
+          ]
+        },
+        {
+          "label": "TOD",
+          "values": [
+            72,
+            54,
+            25,
+            36,
+            18,
+            49,
+            19,
+            18
+          ]
+        },
+        {
+          "label": "Double TOD",
+          "values": [
+            96,
+            72,
+            33,
+            48,
+            24,
+            64,
+            25,
+            24
+          ]
+        }
+      ]
+    },
+    "kit": [
+      {
+        "name": "Healing Potion",
+        "count": 3
+      },
+      {
+        "name": "Antidote",
+        "count": 2
+      },
+      {
+        "name": "Bandages",
+        "count": 8
+      },
+      {
+        "name": "Cure Disease",
+        "count": 1
+      },
+      {
+        "name": "Herb pouch",
+        "count": 5
+      },
+      {
+        "name": "Torch",
+        "count": 4
+      },
+      {
+        "name": "Lockpicks",
+        "count": 2
+      },
+      {
+        "name": "Rope (30ft)",
+        "count": 1
+      },
+      {
+        "name": "Scroll: Shield",
+        "count": 1
+      },
+      {
+        "name": "Holy water",
+        "count": 2
+      },
+      {
+        "name": "",
+        "count": null
+      },
+      {
+        "name": "",
+        "count": null
+      },
+      {
+        "name": "",
+        "count": null
+      },
+      {
+        "name": "",
+        "count": null
+      },
+      {
+        "name": "",
+        "count": null
+      }
+    ],
+    "equipment": [
+      {
+        "name": "Longsword (+1)",
+        "count": null
+      },
+      {
+        "name": "Shield (wooden)",
+        "count": null
+      },
+      {
+        "name": "Chainmail hauberk",
+        "count": null
+      },
+      {
+        "name": "Ring of Warding",
+        "count": 3
+      },
+      {
+        "name": "Amulet of Spirits",
+        "count": 2
+      },
+      {
+        "name": "Cloak of Shadows",
+        "count": 1
+      },
+      {
+        "name": "Boots of Speed",
+        "count": 1
+      },
+      {
+        "name": "Belt pouch",
+        "count": null
+      },
+      {
+        "name": "Wand of Sparks",
+        "count": 6
+      },
+      {
+        "name": "",
+        "count": null
+      },
+      {
+        "name": "",
+        "count": null
+      },
+      {
+        "name": "",
+        "count": null
+      },
+      {
+        "name": "",
+        "count": null
+      },
+      {
+        "name": "",
+        "count": null
+      },
+      {
+        "name": "",
+        "count": null
+      }
+    ]
+  }
+}

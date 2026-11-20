@@ -73,18 +73,18 @@ $text = static function (string $path, int $max, string $label, string $placehol
 <link rel="preload" href="<?= e(url('assets/fonts/chorus-mediumitalic.woff')) ?>" as="font" type="font/woff" crossorigin>
 <link rel="preload" href="<?= e(url('assets/fonts/pagella-regular.woff')) ?>" as="font" type="font/woff" crossorigin>
 <!-- The ?v= number changes with each release so browsers fetch the new files instead of old cached ones. -->
-<link rel="stylesheet" href="<?= e(url('assets/css/board.css?v=71')) ?>">
-<link rel="stylesheet" href="<?= e(url('assets/css/app.css?v=71')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/board.css?v=74')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/app.css?v=74')) ?>">
 <!-- The whole schema as data (not code), so the browser applies exactly the same limits as the server. -->
 <script type="application/json" id="bb-schema"><?= json_encode($schema, $jsonFlags) ?></script>
-<script src="<?= e(url('assets/js/app.js?v=71')) ?>" defer></script>
+<script src="<?= e(url('assets/js/app.js?v=74')) ?>" defer></script>
 </head>
 <body>
 <a class="skip" href="#editor">Skip to editor</a>
 
 <!-- Top bar: New / Import / Export / Print. app.js handles each button by its data-action. -->
 <header class="topbar">
-  <a class="brand" href="<?= e(url()) ?>" title="Home"><span class="brand-mark" aria-hidden="true">&#9670;</span> <span class="brand-name">Labyrinthe Battleboard Generator</span> <span class="brand-rc">RC 2.1.0</span></a>
+  <a class="brand" href="<?= e(url()) ?>" title="Home"><span class="brand-mark" aria-hidden="true">&#9670;</span> <span class="brand-name">Labyrinthe Battleboard Generator</span> <span class="brand-rc">RC 3.0.0</span></a>
   <nav class="actions" aria-label="Board actions">
     <?php /* Board format toggle: the normal one-page board or the "2 Page 15k+ nutjobs" two-page board (app.js applyFormat). */ ?>
     <div class="fmt-toggle" role="group" aria-label="Board format">
@@ -396,6 +396,29 @@ $text = static function (string $path, int $max, string $label, string $placehol
       </div>
       <p class="hint">Social, Professional and Political print in small type in three boxes under the Notes heading (two short lines, 50 characters each). The box label disappears once you type in it; text that doesn't fit is cut off with "…".</p>
       </div>
+      </div>
+    </details>
+
+    <details class="sec" data-sec="damageSheet">
+      <summary><?= e($schema['damageSheet']['label']) ?></summary>
+      <label class="check"><input type="checkbox" data-path="damageSheet.show" data-kind="bool"> Add a <?= e($schema['damageSheet']['label']) ?> page (always printed last, in the same colours)</label>
+      <div class="dmg-form" id="dmg-form">
+        <h3 class="sub">Damage Sheet</h3>
+        <p class="hint">Headings are bold: up to <?= (int) $t['dmgHead'] ?> characters across the top and <?= (int) $t['dmgLabel'] ?> down the side. Every other box takes a whole number from 0 to 99 (or leave it blank for pen). Up to <?= (int) $schema['damageSheet']['columns'][1] ?> columns after the first and <?= (int) $schema['damageSheet']['rows'][1] ?> rows; the table always fills the width of the page.</p>
+        <div class="dmg-scroll"><table class="dmg-grid" id="dmg-grid"></table></div>
+        <div class="dmg-btns">
+          <button type="button" class="btn add" data-dmg="addCol">+ Add column</button>
+          <button type="button" class="btn add" data-dmg="addRow">+ Add row</button>
+          <span class="count" id="dmg-count"></span>
+        </div>
+        <h3 class="sub">Kit and Equipment</h3>
+        <p class="hint" id="kit-note"></p>
+        <h4 class="sub2">Left-hand list <span class="count" data-count="kit"></span></h4>
+        <ol class="list" data-list="kit"></ol>
+        <button type="button" class="btn add" data-add="kit">+ Add row</button>
+        <h4 class="sub2">Right-hand list <span class="count" data-count="equipment"></span></h4>
+        <ol class="list" data-list="equipment"></ol>
+        <button type="button" class="btn add" data-add="equipment">+ Add row</button>
       </div>
     </details>
 

@@ -1,4 +1,4 @@
-# Labyrinthe Battleboard Generator (RC 2.1.0)
+# Labyrinthe Battleboard Generator (RC 3.0.0)
 
 A single page app for filling in a fantasy LARP battleboard, then printing it or saving it as a PDF.
 Built for PHP 8.2 on Fasthosts Linux hosting. It works on desktop, tablet and phone and has no
@@ -112,7 +112,7 @@ Keep row maximums within what fits on the A4 sheet.
 {
   "app": "battleboard",
   "version": 1,
-  "generator": "Labyrinthe Battleboard Generator (RC 2.1.0)",
+  "generator": "Labyrinthe Battleboard Generator (RC 3.0.0)",
   "exportedAt": "2026-11-14T20:30:00.000Z",
   "character": {
     "format": "normal",
@@ -152,7 +152,10 @@ Keep row maximums within what fits on the A4 sheet.
     "professional": "Guild smith, journeyman",
     "political": "Loyalist",
     "points": 1250,
-    "twoPage": { "show": { "power2": true, "totalHeal": true, "trueBeliever": true, "innatesCont": false }, "rows": { "immunities": 40, "regeneration": 7 }, "powers": [{ "name": "Power 1", "value": null, "lines": ["", "…11 lines"] }, "…"], "totalHeal": { "value": null, "line": "" }, "…": {} }
+    "twoPage": { "show": { "power2": true, "totalHeal": true, "trueBeliever": true, "innatesCont": false }, "rows": { "immunities": 40, "regeneration": 7 }, "powers": [{ "name": "Power 1", "value": null, "lines": ["", "…11 lines"] }, "…"], "totalHeal": { "value": null, "line": "" }, "…": {} },
+    "damageSheet": { "show": true, "corner": "Grade", "columns": ["AC12 12 off 25% off 1/3 off Base", "…"], "rows": [{ "label": "Triple", "values": [12, 9, null, "…"] }, "…"] },
+    "kit": [{ "name": "Rope (30ft)", "count": 1 }],
+    "equipment": [{ "name": "Longsword", "count": null }]
   }
 }
 ```
@@ -226,6 +229,32 @@ value), Damage Grades (12), Notes (11 ruled lines; this is the same `notes` fiel
   toggle to 2 Page 15k+ nutjobs, and importing a one-page file (or any older file) switches it to Normal,
   whichever was showing before. Older copies of the site import two-page files as one-page boards and
   list `format` and `twoPage` as ignored fields.
+
+### Damage Sheet, Kit and Equipment page
+
+An optional extra page, switched on with the tick box in the **Damage Sheet, Kit and Equipment**
+section (`damageSheet.show`, default off). It works with either board and always prints last: page 2
+of 2 after the Normal board, or page 3 of 3 after the two-page board. It uses the same colour, watermark
+and ink-saver setting, and repeats the name/alignment banner and footer. When there is more than one
+page, every footer shows "Page n of N"; a single Normal page still has no page number.
+
+- **Damage Sheet:** a table across the full width of the page, larger than the other sheets' tables
+  (7.4 mm rows, 5 mm numbers). The corner and the first column hold bold headings of up to 15
+  characters (`corner`, `rows[].label`); the first row holds bold column headings of up to 40
+  characters, wrapping onto up to five lines (`columns`). Every other cell is a whole number from 0
+  to 99, or `null` for pen. There are 1–8 columns after the first and 1–13 rows. A new page starts
+  with the example table: Grade; 7 columns from "AC12 12 off 25% off 1/3 off Base" to "66% off 3/4
+  off"; rows Triple to Ten, a blank row, Loc Zero, Sever and TOD. In the form, × removes a column or
+  row (asking first if it has anything in it).
+- **Kit and Equipment:** under that heading, two lists side by side with no sub-headings (`kit` and
+  `equipment`). Like Consumables, each row is a name plus how many of the 8 use boxes are usable,
+  but the rows are a little shorter (4.3 mm). Each list starts with 10 blank rows. You can add rows
+  until the page is full: `floor((1964 − table rows × 74) / 43)` with the figures in
+  `damageSheet.kitFit`, which is 25 rows each under a 12-row table and 23 under a 13-row table. Adding
+  a table row trims blank kit rows, and asks first if filled ones would be lost.
+- **Files:** older files import with the page off and the example table. Switching the page off keeps
+  everything on it. Older copies of the site list `damageSheet`, `kit` and `equipment` as ignored
+  fields.
 
 ### Layouts
 
@@ -375,7 +404,7 @@ Exported files are meant to keep working as the site evolves.
 - **Upgrading the site:** a board saved in the browser by an older version loads in the new one with
   every field intact.
 
-Compatibility tests for RC 2.1.0:
+Compatibility tests for RC 3.0.0:
 
 - **Older versions:** files exported from RC 1.0 to RC 1.4 import with every field preserved. The only
   exception is a Social/Professional/Political entry longer than today's 50-character limit, which
@@ -399,7 +428,7 @@ When adding features in future versions:
 The generator is also available as a Windows app that opens in its own window, with no browser,
 no command window and no PHP.
 
-- **Downloads:** `LabyrintheBattleboard-Setup-2.1.0.exe` is an installer that needs no
+- **Downloads:** `LabyrintheBattleboard-Setup-3.0.0.exe` is an installer that needs no
   administrator rights and adds Start-menu and desktop shortcuts and an uninstaller. A portable
   zip is also available: keep `LabyrintheBattleboard.exe` and `WebView2Loader.dll` together.
 - **How it works:** the app is built with Tauri. It shows this web app in a native window using

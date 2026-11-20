@@ -50,6 +50,9 @@
   const INK_KEY = 'battleboard.inkSaver';
   const MAX_IMPORT_BYTES = 131072;
   const PIP_LIST_KEYS = ['innates', 'consumables'];
+  // Kit and Equipment, on the optional last page: pip rows like Consumables, in their own space.
+  const KIT_KEYS = ['kit', 'equipment'];
+  const isPipList = (key) => PIP_LIST_KEYS.includes(key) || KIT_KEYS.includes(key);
   const COL_GAP_MM = 3.4; // gap between panels in the left column
 
   /* ---- Tiny DOM helpers ---- */
@@ -80,6 +83,11 @@
    * Immunities/Resistances and Regeneration Powers rows (schema twoPage.page2Col, tenths of a mm).
    * A table with 0 rows isn't shown, so its heading and gap are freed too. Same sums in PHP.
    */
+  /** Kit and Equipment rows that fit under a Damage Sheet table of `rows` rows (schema damageSheet.kitFit). Same sum in PHP. */
+  const kitMax = (rows) => {
+    const f = schema.damageSheet.kitFit;
+    return Math.max(0, Math.floor((f.heightMm10 - rows * f.dmgRowMm10) / f.kitRowMm10));
+  };
   const innatesContRows = (TP, imm, regen) => {
     const c = TP.page2Col;
     let panels = 1;
@@ -184,6 +192,7 @@
     const conShow = [true, 1, '1', 'true'].includes(input.consumablesShow ?? true);
     // Two-page board switches and page-2 line counts (read now: they decide the innate and Immunities limits).
     const tpLayout = twoPageLayout(sub('twoPage'), TP);
+    let dmg; // the Damage Sheet table (set in data below; Kit and Equipment's limits follow its rows)
     let maxImmune = immCompact
       ? (schema.immunitiesCompact.limits[doll] ?? R.immunities[1])
       : (schema.dollLimits[doll]?.immunities ?? R.immunities[1]);
@@ -251,6 +260,10 @@
       political: text(input.political ?? '', T.standing, 'Political'),
       points: int(input.points ?? null, I.points, 'Points'),
       twoPage: twoPageData(sub('twoPage'), tpLayout),
+      damageSheet: (dmg = damageSheetData(sub('damageSheet'))),
+      // Kit and Equipment (on the Damage Sheet page): as many rows as fit under its table.
+      kit: pipRows(input.kit, kitMax(dmg.rows.length), T.kitName, 'Kit'),
+      equipment: pipRows(input.equipment, kitMax(dmg.rows.length), T.kitName, 'Equipment'),
     };
     // (Consumables aren't on the two-page board, so they don't share its innate column.)
     if (!twoPage && conShow && data.innates.length + data.consumables.length > L.pipRowsCombined) {
@@ -339,6 +352,32 @@
         damageReductions: fixedLines(tp.damageReductions, TP.page2.damageReductions, T.tpLine, 'Damage Reductions line'),
         additionalResistances: fixedLines(tp.additionalResistances, TP.page2.additionalResistances, T.tpLine, 'Additional Resistances line'),
       };
+    }
+    /**
+     * The optional last page's Damage Sheet table: a corner heading, 1–8 column headings (bold, up to
+     * 40 characters) and 1–13 rows, each a bold heading (up to 15 characters) and one 0–99 value per
+     * column. Older files and files without it get the example table (switched off). Matches PHP.
+     */
+    function damageSheetData(ds) {
+      const D = schema.damageSheet;
+      const listOrNull = (v) => (Array.isArray(v) || isObj(v) ? asList(v) : null);
+      let cols = listOrNull(ds.columns) ?? D.columnsDefault;
+      if (cols.length > D.columns[1]) {
+        warn(`Damage Sheet columns: only ${D.columns[1]} fit, extra columns were dropped.`);
+        cols = cols.slice(0, D.columns[1]);
+      }
+      const corner = text(ds.corner ?? D.corner, T.dmgLabel, 'Damage Sheet corner heading');
+      const columns = cols.map((c, n) => text(c ?? '', T.dmgHead, `Damage Sheet column ${n + 1} heading`));
+      if (!columns.length) columns.push('');
+      const rowsIn = listOrNull(ds.rows) === null ? D.rowsDefault.map((label) => ({ label })) : rows(ds.rows, D.rows[1], 'Damage Sheet');
+      const out = rowsIn.map((row, n) => {
+        const label = text(row.label ?? '', T.dmgLabel, `Damage Sheet row ${n + 1} heading`);
+        const vals = asList(row.values);
+        if (vals.length > columns.length) warn(`Damage Sheet row ${n + 1}: values beyond column ${columns.length} were dropped.`);
+        return { label, values: columns.map((_, c) => int(vals[c] ?? null, I.dmgValue, `Damage Sheet row ${n + 1}, column ${c + 1}`)) };
+      });
+      if (!out.length) out.push({ label: '', values: columns.map(() => null) });
+      return { show: [true, 1, '1', 'true'].includes(ds.show ?? false), corner, columns, rows: out };
     }
     const unknown = Object.keys(input).filter((k) => !Object.prototype.hasOwnProperty.call(data, k));
     if (unknown.length) {
@@ -511,6 +550,7 @@
       if (path === 'consumablesShow') { setPath(state, path, !input.checked); applyConsumablesShow(input.checked, input); return; }
       if (path === 'immunitiesCompact') { setPath(state, path, !input.checked); applyImmunitiesCompact(input.checked, input); return; }
       if (path === 'poolsShow') { updateLayoutForm(); renderSheet(); refill(); scheduleSave(); return; }
+      if (path === 'damageSheet.show') { applyDamageSheetShow(input.checked); return; }
     } else if (kind === 'int') {
       const { value, error } = readInt(input, +input.dataset.min, +input.dataset.max);
       setError(input, error);
@@ -625,6 +665,8 @@
     get consumables() { return layoutCfg().consumables[1]; },
     get colourResist() { return tableLimit('colourResist'); },
     get immunities() { return tableLimit('immunities'); },
+    get kit() { return kitMax(state.damageSheet.rows.length); },
+    get equipment() { return kitMax(state.damageSheet.rows.length); },
   };
   /** Innates allowed: more when the Consumables table is switched off. */
   const innateMax = (cfg = layoutCfg(), conShow = conShown()) => (cfg === schema.twoPage
@@ -642,7 +684,7 @@
   }
   /** A new empty row of the right shape for each list. */
   function blankRow(key) {
-    if (PIP_LIST_KEYS.includes(key)) return { name: '', count: null };
+    if (isPipList(key)) return { name: '', count: null };
     if (key === 'colourResist') return { text: '', fraction: '' };
     return { text: '', value: '' };
   }
@@ -657,6 +699,7 @@
         note += ' · sheet full';
       }
       if (key === 'consumables' && !conShown()) note += isTP() ? ' · not on the two-page board' : ' · hidden';
+      if (KIT_KEYS.includes(key) && !state.damageSheet.show) note += ' · page off';
       $(`[data-count="${key}"]`).textContent = note;
     }
   }
@@ -675,14 +718,14 @@
    * 1–8 "uses" buttons; Colour Resist checks the fraction; Immunities choose Y, N or a number.
    */
   function buildItem(key, row, i) {
-    const tplId = PIP_LIST_KEYS.includes(key) ? 'tpl-pip-row' : key === 'colourResist' ? 'tpl-colour-row' : 'tpl-immunity-row';
+    const tplId = isPipList(key) ? 'tpl-pip-row' : key === 'colourResist' ? 'tpl-colour-row' : 'tpl-immunity-row';
     const li = $(`#${tplId}`).content.firstElementChild.cloneNode(true);
-    const label = { innates: 'Innate', consumables: 'Consumable', colourResist: 'Colour resist', immunities: 'Immunity/resistance' }[key];
+    const label = { innates: 'Innate', consumables: 'Consumable', colourResist: 'Colour resist', immunities: 'Immunity/resistance', kit: 'Kit item', equipment: 'Equipment item' }[key];
     li.querySelector('.remove').setAttribute('aria-label', `Remove ${label.toLowerCase()} ${i + 1}`);
 
-    if (PIP_LIST_KEYS.includes(key)) {
+    if (isPipList(key)) {
       const name = li.querySelector('[data-field="name"]');
-      const max = key === 'innates' ? schema.text.innateName : schema.text.consumableName;
+      const max = key === 'innates' ? schema.text.innateName : KIT_KEYS.includes(key) ? schema.text.kitName : schema.text.consumableName;
       name.maxLength = max;
       name.placeholder = `${label} name`;
       name.setAttribute('aria-label', `${label} ${i + 1} name`);
@@ -810,7 +853,11 @@
   const sheet = $('#sheet');
   // Page 2 of the "2 Page 15k+ nutjobs" board (hidden on the one-page board). Both pages share data-bind.
   const sheet2 = $('#sheet-p2');
-  const pages = [sheet, sheet2];
+  // The optional last page, "Damage Sheet, Kit and Equipment" (damageSheet.show), after either board.
+  const sheet3 = $('#sheet-dmg');
+  const pages = [sheet, sheet2, sheet3];
+  /** How many A4 pages print: 1 or 2 for the board, plus the Damage Sheet page when it is on. */
+  const pageCount = () => (isTP() ? 2 : 1) + (state.damageSheet.show ? 1 : 0);
   const pxPerMm = 96 / 25.4;
 
   /**
@@ -825,6 +872,15 @@
   function renderSheet() {
     const tp = isTP();
     sheet2.hidden = !tp;
+    sheet3.hidden = !state.damageSheet.show;
+    // Page numbers in the footers: none on a single page; otherwise "Page n of N" on every page.
+    const total = pageCount();
+    const pg1 = $('.foot .pg', sheet);
+    pg1.hidden = total === 1;
+    pg1.textContent = `Page 1 of ${total}`;
+    $('.foot .pg', sheet2).textContent = `Page 2 of ${total}`;
+    $('.foot .pg', sheet3).textContent = `Page ${total} of ${total}`;
+    renderDamageTable();
     pages.flatMap((page) => $$('[data-bind]', page)).forEach((node) => {
       const v = getPath(state, node.dataset.bind);
       let text = v == null ? '' : String(v);
@@ -862,6 +918,7 @@
       const rest = state.innates.slice(p1Innates);
       pipLists.push(['innates', '#sheet-p2-innates', Array.from({ length: Math.max(contRows, rest.length) }, (_, n) => rest[n] || { name: '', count: null })]);
     }
+    pipLists.push(['kit', '#sheet-kit', state.kit], ['equipment', '#sheet-equipment', state.equipment]);
     for (const [, sel, rows] of pipLists) {
       const holder = $(sel);
       holder.replaceChildren(...rows.map((row) => {
@@ -1438,6 +1495,162 @@
     scheduleSave();
   }
 
+  /* ===================================================================
+   * Damage Sheet, Kit and Equipment (the optional last page)
+   * =================================================================== */
+  /** Builds the Damage Sheet table on the sheet from state.damageSheet (text only, via textContent). */
+  function renderDamageTable() {
+    const ds = state.damageSheet;
+    const g = $('#sheet-dmg-table');
+    const nc = ds.columns.length;
+    const nr = ds.rows.length;
+    g.style.gridTemplateColumns = `31mm repeat(${nc}, minmax(0, 1fr))`;
+    const cells = [];
+    const cell = (cls, t) => { const c = el('span', cls, t); cells.push(c); };
+    cell('hc h0', ds.corner);
+    ds.columns.forEach((c, i) => cell(`hc${i === nc - 1 ? ' c-last' : ''}`, c));
+    ds.rows.forEach((row, r) => {
+      const last = r === nr - 1 ? ' r-last' : '';
+      cell(`rl${last}`, '');
+      cells[cells.length - 1].append(el('span', 'fit', row.label)); // (shrinks to fit a long heading)
+      row.values.forEach((v, i) => cell(`v${last}${i === nc - 1 ? ' c-last' : ''}`, v == null ? '' : String(v)));
+    });
+    g.replaceChildren(...cells);
+  }
+
+  /** True if a Damage Sheet column (heading or any value) or row (heading or any value) has content. */
+  const dmgColUsed = (i) => state.damageSheet.columns[i] !== '' || state.damageSheet.rows.some((r) => r.values[i] != null);
+  const dmgRowUsed = (r) => r.label !== '' || r.values.some((v) => v != null);
+
+  /**
+   * The Damage Sheet editor: a grid of inputs matching the printed table (corner, column headings,
+   * row headings and 0-99 values), with × buttons to remove a column or row. Rebuilt from state.
+   */
+  function renderDamageForm() {
+    const ds = state.damageSheet;
+    const D = schema.damageSheet;
+    const T = schema.text;
+    const grid = $('#dmg-grid');
+    const nc = ds.columns.length;
+    const textIn = (value, max, label, onSet, area = false) => {
+      const inp = el(area ? 'textarea' : 'input', 'in');
+      if (!area) inp.type = 'text';
+      inp.maxLength = max;
+      inp.value = value;
+      inp.setAttribute('aria-label', label);
+      inp.addEventListener('input', () => { onSet(liveText(inp.value, max, false)); changed(); });
+      inp.addEventListener('change', () => { const v = finalText(inp.value, max, false); inp.value = v; onSet(v); changed(); });
+      if (area) inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') e.preventDefault(); });
+      return inp;
+    };
+    const xBtn = (label, disabled, onClick) => {
+      const b = el('button', 'btn icon x', '\u00D7');
+      b.type = 'button';
+      b.setAttribute('aria-label', label);
+      b.disabled = disabled;
+      b.addEventListener('click', onClick);
+      return b;
+    };
+    const head = el('tr', 'h');
+    const corner = el('th', 'lab');
+    corner.append(textIn(ds.corner, T.dmgLabel, 'Damage Sheet corner heading', (v) => { ds.corner = v; }));
+    head.append(corner);
+    ds.columns.forEach((c, i) => {
+      const th = el('th', '');
+      th.append(xBtn(`Remove column ${i + 1}`, nc <= D.columns[0], () => {
+        if (dmgColUsed(i) && !window.confirm(`Remove column ${i + 1}${c ? ` ("${c}")` : ''} and its values?`)) return;
+        ds.columns.splice(i, 1);
+        ds.rows.forEach((r) => r.values.splice(i, 1));
+        renderDamageForm(); changed();
+      }));
+      th.append(textIn(c, T.dmgHead, `Column ${i + 1} heading`, (v) => { ds.columns[i] = v; }, true));
+      head.append(th);
+    });
+    head.append(el('th', ''));
+    const body = ds.rows.map((row, r) => {
+      const tr = el('tr', '');
+      const lab = el('td', 'lab');
+      lab.append(textIn(row.label, T.dmgLabel, `Row ${r + 1} heading`, (v) => { row.label = v; }));
+      tr.append(lab);
+      row.values.forEach((v, i) => {
+        const td = el('td', 'val');
+        const inp = el('input', 'in');
+        inp.type = 'text';
+        inp.inputMode = 'numeric';
+        inp.maxLength = 2;
+        inp.value = v == null ? '' : String(v);
+        inp.setAttribute('aria-label', `${row.label || `Row ${r + 1}`}, ${ds.columns[i] || `column ${i + 1}`}`);
+        inp.addEventListener('input', () => {
+          const [min, max] = schema.int.dmgValue;
+          const { value, error } = readInt(inp, min, max);
+          inp.classList.toggle('bad', !!error);
+          inp.title = error;
+          row.values[i] = value;
+          changed();
+        });
+        td.append(inp);
+        tr.append(td);
+      });
+      const rx = el('td', 'rx');
+      rx.append(xBtn(`Remove row ${r + 1}`, ds.rows.length <= D.rows[0], () => {
+        if (dmgRowUsed(row) && !window.confirm(`Remove row ${r + 1}${row.label ? ` ("${row.label}")` : ''} and its values?`)) return;
+        ds.rows.splice(r, 1);
+        renderDamageForm(); KIT_KEYS.forEach(renderList); changed();
+      }));
+      tr.append(rx);
+      return tr;
+    });
+    grid.replaceChildren(head, ...body);
+    $('[data-dmg="addCol"]').disabled = nc >= D.columns[1];
+    $('[data-dmg="addRow"]').disabled = ds.rows.length >= D.rows[1];
+    $('#dmg-count').textContent = `${nc} / ${D.columns[1]} columns · ${ds.rows.length} / ${D.rows[1]} rows`;
+    const k = kitMax(ds.rows.length);
+    $('#kit-note').textContent = `Two lists side by side under the "Kit and Equipment" heading, with use boxes like Consumables. They start with ${D.kitDefault} rows each; with ${ds.rows.length} Damage Sheet row${ds.rows.length === 1 ? '' : 's'} up to ${k} rows each fit on the page.`;
+  }
+
+  $('[data-dmg="addCol"]').addEventListener('click', () => {
+    const ds = state.damageSheet;
+    if (ds.columns.length >= schema.damageSheet.columns[1]) return;
+    ds.columns.push('');
+    ds.rows.forEach((r) => r.values.push(null));
+    renderDamageForm(); changed();
+    $$('#dmg-grid tr.h textarea').pop()?.focus();
+  });
+  $('[data-dmg="addRow"]').addEventListener('click', () => {
+    const ds = state.damageSheet;
+    if (ds.rows.length >= schema.damageSheet.rows[1]) return;
+    // A taller table leaves less room for Kit and Equipment: trim blank rows, ask before losing filled ones.
+    const max = kitMax(ds.rows.length + 1);
+    const lost = KIT_KEYS.reduce((n, key) => {
+      const list = state[key].slice();
+      while (list.length > max && isBlankRow(list[list.length - 1])) list.pop();
+      return n + list.slice(max).length;
+    }, 0);
+    if (lost && !window.confirm(`Another Damage Sheet row leaves room for ${max} Kit and Equipment rows each, so ${lost} filled row${lost > 1 ? 's' : ''} would be removed. Go ahead?`)) return;
+    for (const key of KIT_KEYS) {
+      while (state[key].length > max && isBlankRow(state[key][state[key].length - 1])) state[key].pop();
+      state[key].length = Math.min(state[key].length, max);
+    }
+    ds.rows.push({ label: '', values: ds.columns.map(() => null) });
+    renderDamageForm(); KIT_KEYS.forEach(renderList); changed();
+    $$('#dmg-grid td.lab input').pop()?.focus();
+  });
+
+  /** Switches the Damage Sheet, Kit and Equipment page on or off (its contents are kept either way). */
+  function applyDamageSheetShow(on) {
+    state.damageSheet.show = on;
+    if (on) {
+      // Kit and Equipment start with blank rows to fill in (never past what fits).
+      const n = Math.min(schema.damageSheet.kitDefault, listLimits.kit);
+      for (const key of KIT_KEYS) while (state[key].length < n) state[key].push(blankRow(key));
+    }
+    renderAll();
+    fitPreview();
+    scheduleSave();
+    const total = pageCount();
+    toast(on ? `${schema.damageSheet.label} added as page ${total} of ${total}: it prints last, in the same colours.` : `${schema.damageSheet.label} page removed (what you typed on it is kept).`);
+  }
+
   /** Redraws everything: the form, every list, the layout-dependent notes and the sheet. */
   function renderAll() {
     fillForm();
@@ -1454,6 +1667,9 @@
     $$('[data-format-show]').forEach((node) => { node.hidden = node.dataset.formatShow !== state.format; });
     $$('[data-format]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.format === state.format)));
     document.body.dataset.format = state.format;
+    document.body.dataset.pages = String(pageCount());
+    $('#dmg-form').hidden = !state.damageSheet.show;
+    renderDamageForm();
     const tblpSel = $('[data-path="tblpRows"]', editor);
     const custom = !tp && cfg.tblpRows == null;
     tblpSel.disabled = !custom;
@@ -1526,7 +1742,8 @@
     scaler.style.transform = `scale(${scale})`;
     scaler.style.marginLeft = `${Math.max(0, (w - SHEET_W * scale) / 2)}px`;
     // The two-page board shows page 2 under page 1 (8 mm apart); the preview scrolls to it.
-    const height = isTP() ? SHEET_H * 2 + 8 * pxPerMm : SHEET_H;
+    const n = pageCount();
+    const height = SHEET_H * n + 8 * pxPerMm * (n - 1);
     preview.style.height = `${height * scale}px`;
   }
   new ResizeObserver(fitPreview).observe(preview);
@@ -1710,7 +1927,8 @@
     refill(); // fill layouts top up blank rows to the space available in this version
     fitPreview();
     scheduleSave();
-    const kind = isTP() ? ` as a ${schema.twoPage.label} (two-page) board` : ' as a one-page board';
+    const kind = (isTP() ? ` as a ${schema.twoPage.label} (two-page) board` : ' as a one-page board')
+      + (state.damageSheet.show ? `, plus the ${schema.damageSheet.label} page` : '');
     const warnings = result.warnings || [];
     if (warnings.length) toast(`Imported ${file.name}${kind} with ${warnings.length} adjustment${warnings.length > 1 ? 's' : ''}:`, warnings);
     else toast(`Imported ${file.name}${kind}.`);

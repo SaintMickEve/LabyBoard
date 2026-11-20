@@ -334,7 +334,7 @@ use function Battleboard\e;
 
    <?php /* FOOTER: the character's name and alignment again, at the bottom of the page. */ ?>
    <footer class="foot"><span class="orn"></span><span class="dia">&#9670;</span>
-     <span class="name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span><span class="dia">&#9670;</span><span class="orn"></span><span class="pg tp-only">Page 1 of 2</span></footer>
+     <span class="name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span><span class="dia">&#9670;</span><span class="orn"></span><span class="pg" hidden></span></footer>
   </div>
  </div>
 </div>
@@ -369,6 +369,35 @@ use function Battleboard\e;
    </main>
    <footer class="foot"><span class="orn"></span><span class="dia">&#9670;</span>
      <span class="name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span><span class="dia">&#9670;</span><span class="orn"></span><span class="pg">Page 2 of 2</span></footer>
+  </div>
+ </div>
+</div>
+<?php /* LAST PAGE (optional, damageSheet.show): same banner and footer, then the Damage Sheet table (app.js
+       builds its cells from state.damageSheet) and the Kit and Equipment lists (pip rows, like Consumables). */ ?>
+<div class="sheet sheet-p2 sheet-dmg" id="sheet-dmg" data-theme="parchment" aria-label="Damage Sheet, Kit and Equipment page preview" hidden>
+ <div class="frame">
+  <svg class="corner tl" viewBox="0 0 20 20" aria-hidden="true"><path d="M1,19 L1,6 Q1,1 6,1 L19,1" class="c1"/><path d="M3.5,19 L3.5,7.5 Q3.5,3.5 7.5,3.5 L19,3.5" class="c2"/><path d="M6,6 m-2.2,0 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0" class="c3"/><path d="M10,6 Q13,3.5 16,6 Q13,8.5 10,6 Z M6,10 Q3.5,13 6,16 Q8.5,13 6,10 Z" class="c4"/></svg><svg class="corner tr" viewBox="0 0 20 20" aria-hidden="true"><path d="M1,19 L1,6 Q1,1 6,1 L19,1" class="c1"/><path d="M3.5,19 L3.5,7.5 Q3.5,3.5 7.5,3.5 L19,3.5" class="c2"/><path d="M6,6 m-2.2,0 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0" class="c3"/><path d="M10,6 Q13,3.5 16,6 Q13,8.5 10,6 Z M6,10 Q3.5,13 6,16 Q8.5,13 6,10 Z" class="c4"/></svg><svg class="corner bl" viewBox="0 0 20 20" aria-hidden="true"><path d="M1,19 L1,6 Q1,1 6,1 L19,1" class="c1"/><path d="M3.5,19 L3.5,7.5 Q3.5,3.5 7.5,3.5 L19,3.5" class="c2"/><path d="M6,6 m-2.2,0 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0" class="c3"/><path d="M10,6 Q13,3.5 16,6 Q13,8.5 10,6 Z M6,10 Q3.5,13 6,16 Q8.5,13 6,10 Z" class="c4"/></svg><svg class="corner br" viewBox="0 0 20 20" aria-hidden="true"><path d="M1,19 L1,6 Q1,1 6,1 L19,1" class="c1"/><path d="M3.5,19 L3.5,7.5 Q3.5,3.5 7.5,3.5 L19,3.5" class="c2"/><path d="M6,6 m-2.2,0 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0" class="c3"/><path d="M10,6 Q13,3.5 16,6 Q13,8.5 10,6 Z M6,10 Q3.5,13 6,16 Q8.5,13 6,10 Z" class="c4"/></svg>
+  <div class="frame-in">
+   <svg class="wm" id="sheet-wm-3" viewBox="0 0 194 281" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false" hidden><use width="194" height="281"></use></svg>
+   <header class="head">
+     <div class="title-wrap" data-section="identity"><svg class="banner" viewBox="0 0 160 22" preserveAspectRatio="none" aria-hidden="true">
+  <path class="b-tail" d="M2,6 L16,6 L16,20 L2,20 L7,13 Z"/>
+  <path class="b-tail" d="M158,6 L144,6 L144,20 L158,20 L153,13 Z"/>
+  <path class="b-fold" d="M16,20 L22,17 L16,17 Z M144,20 L138,17 L144,17 Z"/>
+  <path class="b-main" d="M16,2 Q80,-1 144,2 L144,17 Q80,14 16,17 Z"/>
+  <path class="b-rule" d="M19,4 Q80,1.2 141,4 M19,15 Q80,12.2 141,15"/>
+</svg><h1 class="char-name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span></h1></div>
+   </header>
+   <main class="body">
+      <div class="panel dmg" data-section="damageSheet"><div class="ph"><span class="k">Damage Sheet</span></div><div class="dmg-table" id="sheet-dmg-table"></div></div>
+      <div class="kit-head" data-section="damageSheet"><span>Kit and Equipment</span></div>
+      <div class="kit-cols">
+        <div class="panel" data-section="damageSheet"><div id="sheet-kit"></div></div>
+        <div class="panel" data-section="damageSheet"><div id="sheet-equipment"></div></div>
+      </div>
+   </main>
+   <footer class="foot"><span class="orn"></span><span class="dia">&#9670;</span>
+     <span class="name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span><span class="dia">&#9670;</span><span class="orn"></span><span class="pg"></span></footer>
   </div>
  </div>
 </div>
