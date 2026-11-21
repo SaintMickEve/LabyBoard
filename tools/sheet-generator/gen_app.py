@@ -103,8 +103,17 @@ extra = r"""
 .foot .name{display:block;max-width:120mm;min-width:0}
 .char-name.is-empty{color:var(--ink)}
 /* Class(es)/Race(s) wrap onto up to two lines; the header keeps a fixed height and the banner rides up into the top margin */
-.head{flex:none;height:28mm;justify-content:flex-end}
+.head{flex:none;height:auto;justify-content:flex-start}
 .title-wrap{flex:none}
+/* Header: a full-width ribbon band (the sheet's tint, notched ends, fine inner rules) holding the name
+   and alignment, so long names get the whole page width. */
+.title-wrap{width:auto;align-self:stretch;height:11.5mm;margin:0 -1mm;background:var(--tint-2);
+  border-top:.45mm solid var(--ink);border-bottom:.45mm solid var(--ink);
+  clip-path:polygon(0 0,100% 0,97.5% 50%,100% 100%,0 100%,2.5% 50%)}
+.title-wrap::after{content:"";position:absolute;inset:1.1mm 0;border-top:.15mm solid var(--ink-2);border-bottom:.15mm solid var(--ink-2);pointer-events:none}
+.char-name{left:8mm;right:8mm;top:0;bottom:0;height:auto;font-size:9.5mm}
+.char-name .align{font-size:6.5mm}
+.identity{margin-top:1.6mm}
 .identity{align-items:flex-end;flex:none;align-self:stretch;width:auto}
 .identity label{align-items:flex-end;min-width:0}
 .identity label:first-child{flex:2 1 0}
@@ -311,7 +320,7 @@ css = css.strip() + "\n\n/* ---------- paper-doll positions ---------- */\n" + "
 .kit-cols .pip-row{--row-h:4.3mm;height:4.3mm;align-items:center}
 /* ---------- page 2 ---------- */
 .preview-scale .sheet + .sheet{margin-top:8mm}
-.sheet-p2 .head{height:21mm}
+.sheet-p2 .head{height:auto}
 .sheet-p2 .body{grid-template-columns:92mm minmax(0,1fr);gap:3.5mm}
 .sheet-p2 .col{gap:3.4mm}
 .sheet-p2 .panel{flex:none;overflow:hidden}
@@ -408,7 +417,7 @@ def page2():
   <div class="frame-in">
    <svg class="wm" id="sheet-wm-2" viewBox="0 0 194 281" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false" hidden><use width="194" height="281"></use></svg>
    <header class="head">
-     <div class="title-wrap" data-section="identity">{build.BANNER}<h1 class="char-name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span></h1></div>
+     <div class="title-wrap" data-section="identity"><h1 class="char-name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span></h1></div>
    </header>
    <main class="body">
     <section class="col">
@@ -440,7 +449,7 @@ def page3():
   <div class="frame-in">
    <svg class="wm" id="sheet-wm-3" viewBox="0 0 194 281" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false" hidden><use width="194" height="281"></use></svg>
    <header class="head">
-     <div class="title-wrap" data-section="identity">{build.BANNER}<h1 class="char-name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span></h1></div>
+     <div class="title-wrap" data-section="identity"><h1 class="char-name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span></h1></div>
    </header>
    <main class="body">
       <div class="panel dmg" data-section="damageSheet"><div class="ph"><span class="k">Damage Sheet</span></div><div class="dmg-table" id="sheet-dmg-table"></div></div>
@@ -487,7 +496,7 @@ use function Battleboard\\e;
    <svg class="wm" id="sheet-wm" viewBox="0 0 194 281" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false" hidden><use width="194" height="281"></use></svg>
    <?php /* HEADER: name banner with alignment, then the Class(es) and Race(s) lines. */ ?>
    <header class="head">
-     <div class="title-wrap" data-section="identity">{build.BANNER}<h1 class="char-name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span></h1></div>
+     <div class="title-wrap" data-section="identity"><h1 class="char-name"><span class="fit" data-bind="name" data-placeholder="Character Name"></span><span class="align" data-bind="alignment" data-wrap="brackets" data-placeholder="(Alignment)"></span></h1></div>
      <div class="identity" data-section="identity">
        <label><span class="k">Class(es)</span><span class="fill fit-lines" data-bind="classes"></span></label>
        <label><span class="k">Race(s)</span><span class="fill fit-lines" data-bind="races"></span></label>

@@ -1728,6 +1728,51 @@
   const desktopMq = window.matchMedia('(min-width: 981px)');
 
   /**
+   * Pinch zoom (phones and tablets). Zooming enlarges the whole page, so the sticky top bar and the
+   * Edit/Preview tabs would grow with it and slide partly off screen. While zoomed, they are moved to
+   * the top of the zoomed-in view and scaled back by 1/zoom, so they stay full width, normal size and
+   * fixed at the top while the form or sheet underneath zooms. Notices at the bottom follow the view too.
+   * Uses the Visual Viewport API; with no zoom (or on desktop, where browser zoom works differently)
+   * nothing is changed.
+   */
+  (function keepBarsOnZoom() {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const bar = $('.topbar');
+    const tabs = $('.tabs');
+    const toastBox = $('#toast');
+    const root = document.documentElement;
+    let raf = 0;
+    const apply = () => {
+      raf = 0;
+      const s = vv.scale;
+      const zoomed = s > 1.01 || vv.offsetLeft > 0.5 || vv.offsetTop > 0.5;
+      if (!zoomed) {
+        bar.style.transform = '';
+        if (tabs) tabs.style.transform = '';
+        toastBox.style.removeProperty('--vx'); toastBox.style.removeProperty('--vy'); toastBox.style.removeProperty('--vs');
+        return;
+      }
+      const k = 1 / s;
+      const x = vv.offsetLeft;
+      const y = vv.offsetTop;
+      bar.style.transform = `translate(${x}px, ${y}px) scale(${k})`;
+      if (tabs && getComputedStyle(tabs).position === 'sticky') {
+        const h = bar.offsetHeight; // the tabs stick just under the bar, which is now 1/zoom as tall
+        tabs.style.transform = `translate(${x}px, ${y + h * k - h}px) scale(${k})`;
+      }
+      toastBox.style.setProperty('--vx', `${x + vv.width / 2 - root.clientWidth / 2}px`);
+      toastBox.style.setProperty('--vy', `${y + vv.height - root.clientHeight}px`);
+      toastBox.style.setProperty('--vs', String(k));
+    };
+    const schedule = () => { if (!raf) raf = requestAnimationFrame(apply); };
+    vv.addEventListener('resize', schedule);
+    vv.addEventListener('scroll', schedule);
+    window.addEventListener('scroll', schedule, { passive: true });
+    schedule();
+  })();
+
+  /**
    * Scales the A4 sheet to fit the preview panel (and, on desktop, the window height) using a CSS
    * transform. Printing ignores this and uses the sheet at its real size.
    */
@@ -1867,13 +1912,25 @@
     print() {
       document.activeElement?.blur?.();
       renderSheet();
+      toast(`For the biggest print: A4, Margins "None" (or "Default"), Scale 100% and "Headers and footers" off.`);
       setTimeout(() => { fitAll(); window.print(); }, 50);
     },
   };
   $$('[data-action]').forEach((b) => b.addEventListener('click', () => actions[b.dataset.action]()));
   // Board format toggle (top bar): Normal / 2 Page 15k+ nutjobs.
   $$('[data-format]').forEach((b) => b.addEventListener('click', () => applyFormat(b.dataset.format)));
-  window.addEventListener('beforeprint', fitAll);
+  // While printing, the page title becomes the character's name: it names the saved PDF ("Save as PDF")
+  // and is all a browser shows if it still prints its own header.
+  let titleBeforePrint = null;
+  window.addEventListener('beforeprint', () => {
+    fitAll();
+    if (titleBeforePrint === null) titleBeforePrint = document.title;
+    document.title = `${state.name.trim() || 'Character'} - Battleboard`;
+  });
+  window.addEventListener('afterprint', () => {
+    if (titleBeforePrint !== null) document.title = titleBeforePrint;
+    titleBeforePrint = null;
+  });
 
   /**
    * Decodes an imported file. Handles files saved by Windows Notepad and similar editors:

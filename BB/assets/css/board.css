@@ -195,8 +195,17 @@ html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .foot .name{display:block;max-width:120mm;min-width:0}
 .char-name.is-empty{color:var(--ink)}
 /* Class(es)/Race(s) wrap onto up to two lines; the header keeps a fixed height and the banner rides up into the top margin */
-.head{flex:none;height:28mm;justify-content:flex-end}
+.head{flex:none;height:auto;justify-content:flex-start}
 .title-wrap{flex:none}
+/* Header: a full-width ribbon band (the sheet's tint, notched ends, fine inner rules) holding the name
+   and alignment, so long names get the whole page width. */
+.title-wrap{width:auto;align-self:stretch;height:11.5mm;margin:0 -1mm;background:var(--tint-2);
+  border-top:.45mm solid var(--ink);border-bottom:.45mm solid var(--ink);
+  clip-path:polygon(0 0,100% 0,97.5% 50%,100% 100%,0 100%,2.5% 50%)}
+.title-wrap::after{content:"";position:absolute;inset:1.1mm 0;border-top:.15mm solid var(--ink-2);border-bottom:.15mm solid var(--ink-2);pointer-events:none}
+.char-name{left:8mm;right:8mm;top:0;bottom:0;height:auto;font-size:9.5mm}
+.char-name .align{font-size:6.5mm}
+.identity{margin-top:1.6mm}
 .identity{align-items:flex-end;flex:none;align-self:stretch;width:auto}
 .identity label{align-items:flex-end;min-width:0}
 .identity label:first-child{flex:2 1 0}
@@ -384,7 +393,7 @@ html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .kit-cols .pip-row{--row-h:4.3mm;height:4.3mm;align-items:center}
 /* ---------- page 2 ---------- */
 .preview-scale .sheet + .sheet{margin-top:8mm}
-.sheet-p2 .head{height:21mm}
+.sheet-p2 .head{height:auto}
 .sheet-p2 .body{grid-template-columns:92mm minmax(0,1fr);gap:3.5mm}
 .sheet-p2 .col{gap:3.4mm}
 .sheet-p2 .panel{flex:none;overflow:hidden}

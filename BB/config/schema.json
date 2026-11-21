@@ -86,7 +86,7 @@
         ],
         "tpImmRows": [
             0,
-            48
+            50
         ],
         "tpRegenRows": [
             0,
@@ -388,12 +388,12 @@
         "powers": 2,
         "powerLines": 11,
         "page2": {
-            "immunities": 48,
+            "immunities": 50,
             "regeneration": 7,
             "damageGrades": 12,
             "notes": 11,
             "damageReductions": 10,
-            "additionalResistances": 17
+            "additionalResistances": 19
         },
         "ghostImmunities": {
             "normal": 20,
@@ -411,11 +411,11 @@
             "innatesCont": false
         },
         "p2RowsDefault": {
-            "immunities": 40,
+            "immunities": 42,
             "regeneration": 7
         },
         "page2Col": {
-            "heightMm10": 2385,
+            "heightMm10": 2480,
             "panelMm10": 70,
             "gapMm10": 34,
             "rowMm10": 40
@@ -433,7 +433,7 @@
         ],
         "kitDefault": 10,
         "kitFit": {
-            "heightMm10": 1964,
+            "heightMm10": 2059,
             "dmgRowMm10": 74,
             "kitRowMm10": 43
         },

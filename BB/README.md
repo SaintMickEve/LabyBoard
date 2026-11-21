@@ -1,4 +1,4 @@
-# Labyrinthe Battleboard Generator (RC 3.0.0)
+# Labyrinthe Battleboard Generator (RC 3.1.0)
 
 A single page app for filling in a fantasy LARP battleboard, then printing it or saving it as a PDF.
 Built for PHP 8.2 on Fasthosts Linux hosting. It works on desktop, tablet and phone and has no
@@ -71,8 +71,14 @@ Required PHP extensions are `json`, `mbstring` and `session`; these are standard
 - **Import** accepts a `.json` file up to 128 KB. The file is sent to `api.php`, which validates it
   against `schema.json` and returns a clean copy plus a list of anything it had to change. If the
   server can't be reached, the same rules run in the browser.
-- **Print / PDF** opens the browser's print dialog. To get a PDF, choose *Save as PDF*.
-  Use A4, margins *None* and scale 100%.
+- **Print / PDF** opens the browser's print dialog. To get a PDF, choose *Save as PDF*; the file is
+  named after the character. Use A4, margins *None* (or *Default*), scale 100% and headers and
+  footers off; the app reminds you of this when you press the button. The page has no margins of its
+  own, so browsers that follow it have no room for their date, title, address or page-number
+  header and footer. The board is printed as large as the paper allows: its outer frame is
+  enlarged from the 6 mm white edge on screen to about 4.2 mm from the top and bottom of the paper
+  (4.75 mm at the sides), just inside what most printers can reach. It is only scaled, so the
+  print matches the preview exactly.
 
 ## Security measures
 
@@ -112,7 +118,7 @@ Keep row maximums within what fits on the A4 sheet.
 {
   "app": "battleboard",
   "version": 1,
-  "generator": "Labyrinthe Battleboard Generator (RC 3.0.0)",
+  "generator": "Labyrinthe Battleboard Generator (RC 3.1.0)",
   "exportedAt": "2026-11-14T20:30:00.000Z",
   "character": {
     "format": "normal",
@@ -152,7 +158,7 @@ Keep row maximums within what fits on the A4 sheet.
     "professional": "Guild smith, journeyman",
     "political": "Loyalist",
     "points": 1250,
-    "twoPage": { "show": { "power2": true, "totalHeal": true, "trueBeliever": true, "innatesCont": false }, "rows": { "immunities": 40, "regeneration": 7 }, "powers": [{ "name": "Power 1", "value": null, "lines": ["", "…11 lines"] }, "…"], "totalHeal": { "value": null, "line": "" }, "…": {} },
+    "twoPage": { "show": { "power2": true, "totalHeal": true, "trueBeliever": true, "innatesCont": false }, "rows": { "immunities": 42, "regeneration": 7 }, "powers": [{ "name": "Power 1", "value": null, "lines": ["", "…11 lines"] }, "…"], "totalHeal": { "value": null, "line": "" }, "…": {} },
     "damageSheet": { "show": true, "corner": "Grade", "columns": ["AC12 12 off 25% off 1/3 off Base", "…"], "rows": [{ "label": "Triple", "values": [12, 9, null, "…"] }, "…"] },
     "kit": [{ "name": "Rope (30ft)", "count": 1 }],
     "equipment": [{ "name": "Longsword", "count": null }]
@@ -191,20 +197,20 @@ tables and Res Chance. It changes like this:
   under the doll, headed "Life · T.B.L.P.", with 7 lines (5 under the ghost). There is no Notes box
   and no Guilds.
 - **Immunities/Resistances:** the doll's table holds 12 rows (17 compact), or 20 (26 compact) in the
-  ghost's column. The rest continue on page 2, which holds 48 more.
+  ghost's column. The rest continue on page 2, which holds 50 more.
 
-**Page 2** has the name banner (no Class(es)/Race(s) line) and footer, then fixed tables with 4 mm
-rows: Immunities/Resistances (continued, 48 rows), Regeneration Powers (7 rows, text plus a short
+**Page 2** has the name band (no Class(es)/Race(s) line) and footer, then fixed tables with 4 mm
+rows: Immunities/Resistances (continued, 50 rows), Regeneration Powers (7 rows, text plus a short
 value), Damage Grades (12), Notes (11 ruled lines; this is the same `notes` field), Damage Reductions
-(10) and Additional Resistances (17). The footers read "Page 1 of 2" and "Page 2 of 2".
+(10) and Additional Resistances (19). The footers read "Page 1 of 2" and "Page 2 of 2".
 
 - **Innates (continued):** an optional box on page 2 (`twoPage.show.innatesCont`, in the Innates
   section of the form) between Immunities/Resistances and Regeneration Powers, for innates past page 1's
-  31. While it is on, page 2's Immunities/Resistances table can be shortened from 48 to 0 lines
-  (default 40, so the box takes the old bottom 8 lines) and Regeneration Powers from 7 to 0
+  31. While it is on, page 2's Immunities/Resistances table can be shortened from 50 to 0 lines
+  (default 42, so the box takes the old bottom 8 lines) and Regeneration Powers from 7 to 0
   (`twoPage.rows`). A table set to 0 is left off. The box gets whatever is left of the column:
   `floor((height − panels × panel − gaps × gap − shown rows × row) / row)` with the tenths-of-a-mm
-  figures in `twoPage.page2Col` (5 rows by default, 57 with both other tables at 0). Both sanitisers
+  figures in `twoPage.page2Col` (6 rows by default, 60 with both other tables at 0). Both sanitisers
   do the same sum, and the innate and Immunities limits follow it. Hidden Regeneration lines keep
   their text. If a change would leave filled rows without room, the app asks first.
 - **Shared options:** paper dolls, sheet colours, watermarks, ink-saver, compact rows, LTM, Casting
@@ -235,7 +241,7 @@ value), Damage Grades (12), Notes (11 ruled lines; this is the same `notes` fiel
 An optional extra page, switched on with the tick box in the **Damage Sheet, Kit and Equipment**
 section (`damageSheet.show`, default off). It works with either board and always prints last: page 2
 of 2 after the Normal board, or page 3 of 3 after the two-page board. It uses the same colour, watermark
-and ink-saver setting, and repeats the name/alignment banner and footer. When there is more than one
+and ink-saver setting, and repeats the name/alignment band and footer. When there is more than one
 page, every footer shows "Page n of N"; a single Normal page still has no page number.
 
 - **Damage Sheet:** a table across the full width of the page, larger than the other sheets' tables
@@ -249,8 +255,8 @@ page, every footer shows "Page n of N"; a single Normal page still has no page n
 - **Kit and Equipment:** under that heading, two lists side by side with no sub-headings (`kit` and
   `equipment`). Like Consumables, each row is a name plus how many of the 8 use boxes are usable,
   but the rows are a little shorter (4.3 mm). Each list starts with 10 blank rows. You can add rows
-  until the page is full: `floor((1964 − table rows × 74) / 43)` with the figures in
-  `damageSheet.kitFit`, which is 25 rows each under a 12-row table and 23 under a 13-row table. Adding
+  until the page is full: `floor((2059 − table rows × 74) / 43)` with the figures in
+  `damageSheet.kitFit`, which is 27 rows each under a 12-row table and 25 under a 13-row table. Adding
   a table row trims blank kit rows, and asks first if filled ones would be lost.
 - **Files:** older files import with the page off and the example table. Switching the page off keeps
   everything on it. Older copies of the site list `damageSheet`, `kit` and `equipment` as ignored
@@ -375,6 +381,13 @@ boxes" tick box) can switch them off: the boxes leave the sheet, the notes area 
 notes print larger), and the text is kept for when they're switched back on. Older files import with them on. Each box's label shows only while it is empty. Long text shrinks slightly, then is cut at the last whole word that fits, with "…".
 Only the printed sheet is shortened; the saved and exported text is kept in full.
 
+**Name band:** the character's name and alignment sit in a full-width ribbon band at the top of
+every page: the sheet's tint, with notched ends and fine inner rules. Names use the whole page width
+(about 180 mm), so even a 60-character name prints in full; long names shrink to fit. The band takes
+less height than the old banner, which leaves about 5 mm more for the board on page 1 and 9.5 mm on
+the other pages (2 more Immunities/Resistances and Additional Resistances rows on page 2, and 2 more
+Kit and Equipment rows on the Damage Sheet page).
+
 `alignment` is one of `GL, GN, GC, NL, NN, NC, EL, EN, EC`, or `""` when not chosen. It's shown in
 brackets after the name, at the top and bottom of the sheet.
 
@@ -404,7 +417,7 @@ Exported files are meant to keep working as the site evolves.
 - **Upgrading the site:** a board saved in the browser by an older version loads in the new one with
   every field intact.
 
-Compatibility tests for RC 3.0.0:
+Compatibility tests for RC 3.1.0:
 
 - **Older versions:** files exported from RC 1.0 to RC 1.4 import with every field preserved. The only
   exception is a Social/Professional/Political entry longer than today's 50-character limit, which
@@ -428,7 +441,7 @@ When adding features in future versions:
 The generator is also available as a Windows app that opens in its own window, with no browser,
 no command window and no PHP.
 
-- **Downloads:** `LabyrintheBattleboard-Setup-3.0.0.exe` is an installer that needs no
+- **Downloads:** `LabyrintheBattleboard-Setup-3.1.0.exe` is an installer that needs no
   administrator rights and adds Start-menu and desktop shortcuts and an uninstaller. A portable
   zip is also available: keep `LabyrintheBattleboard.exe` and `WebView2Loader.dll` together.
 - **How it works:** the app is built with Tauri. It shows this web app in a native window using

@@ -73,18 +73,18 @@ $text = static function (string $path, int $max, string $label, string $placehol
 <link rel="preload" href="<?= e(url('assets/fonts/chorus-mediumitalic.woff')) ?>" as="font" type="font/woff" crossorigin>
 <link rel="preload" href="<?= e(url('assets/fonts/pagella-regular.woff')) ?>" as="font" type="font/woff" crossorigin>
 <!-- The ?v= number changes with each release so browsers fetch the new files instead of old cached ones. -->
-<link rel="stylesheet" href="<?= e(url('assets/css/board.css?v=74')) ?>">
-<link rel="stylesheet" href="<?= e(url('assets/css/app.css?v=74')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/board.css?v=78')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/app.css?v=78')) ?>">
 <!-- The whole schema as data (not code), so the browser applies exactly the same limits as the server. -->
 <script type="application/json" id="bb-schema"><?= json_encode($schema, $jsonFlags) ?></script>
-<script src="<?= e(url('assets/js/app.js?v=74')) ?>" defer></script>
+<script src="<?= e(url('assets/js/app.js?v=78')) ?>" defer></script>
 </head>
 <body>
 <a class="skip" href="#editor">Skip to editor</a>
 
 <!-- Top bar: New / Import / Export / Print. app.js handles each button by its data-action. -->
 <header class="topbar">
-  <a class="brand" href="<?= e(url()) ?>" title="Home"><span class="brand-mark" aria-hidden="true">&#9670;</span> <span class="brand-name">Labyrinthe Battleboard Generator</span> <span class="brand-rc">RC 3.0.0</span></a>
+  <a class="brand" href="<?= e(url()) ?>" title="Home"><span class="brand-mark" aria-hidden="true">&#9670;</span> <span class="brand-name">Labyrinthe Battleboard Generator</span> <span class="brand-rc">RC 3.1.0</span></a>
   <nav class="actions" aria-label="Board actions">
     <?php /* Board format toggle: the normal one-page board or the "2 Page 15k+ nutjobs" two-page board (app.js applyFormat). */ ?>
     <div class="fmt-toggle" role="group" aria-label="Board format">
