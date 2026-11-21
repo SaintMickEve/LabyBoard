@@ -73,18 +73,18 @@ $text = static function (string $path, int $max, string $label, string $placehol
 <link rel="preload" href="<?= e(url('assets/fonts/chorus-mediumitalic.woff')) ?>" as="font" type="font/woff" crossorigin>
 <link rel="preload" href="<?= e(url('assets/fonts/pagella-regular.woff')) ?>" as="font" type="font/woff" crossorigin>
 <!-- The ?v= number changes with each release so browsers fetch the new files instead of old cached ones. -->
-<link rel="stylesheet" href="<?= e(url('assets/css/board.css?v=78')) ?>">
-<link rel="stylesheet" href="<?= e(url('assets/css/app.css?v=78')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/board.css?v=79')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/app.css?v=79')) ?>">
 <!-- The whole schema as data (not code), so the browser applies exactly the same limits as the server. -->
 <script type="application/json" id="bb-schema"><?= json_encode($schema, $jsonFlags) ?></script>
-<script src="<?= e(url('assets/js/app.js?v=78')) ?>" defer></script>
+<script src="<?= e(url('assets/js/app.js?v=79')) ?>" defer></script>
 </head>
 <body>
 <a class="skip" href="#editor">Skip to editor</a>
 
 <!-- Top bar: New / Import / Export / Print. app.js handles each button by its data-action. -->
 <header class="topbar">
-  <a class="brand" href="<?= e(url()) ?>" title="Home"><span class="brand-mark" aria-hidden="true">&#9670;</span> <span class="brand-name">Labyrinthe Battleboard Generator</span> <span class="brand-rc">RC 3.1.0</span></a>
+  <a class="brand" href="<?= e(url()) ?>" title="Home"><span class="brand-mark" aria-hidden="true">&#9670;</span> <span class="brand-name">Labyrinthe Battleboard Generator</span> <span class="brand-rc">RC 3.2.0</span></a>
   <nav class="actions" aria-label="Board actions">
     <?php /* Board format toggle: the normal one-page board or the "2 Page 15k+ nutjobs" two-page board (app.js applyFormat). */ ?>
     <div class="fmt-toggle" role="group" aria-label="Board format">
@@ -99,7 +99,7 @@ $text = static function (string $path, int $max, string $label, string $placehol
     <button type="button" class="btn" data-action="new" title="Start a blank board">New</button>
     <button type="button" class="btn" data-action="import" title="Load a JSON file">Import</button>
     <button type="button" class="btn" data-action="export" title="Save your board as a JSON file">Export</button>
-    <button type="button" class="btn btn-primary" data-action="print" title="Print, or choose 'Save as PDF'">Print / PDF</button>
+    <button type="button" class="btn btn-primary" data-action="pdf" title="Save the board as an A4 PDF file, ready to print">Save PDF</button>
   </nav>
   <input type="file" id="import-file" accept="application/json,.json" hidden>
 </header>
@@ -445,7 +445,7 @@ $text = static function (string $path, int $max, string $label, string $placehol
       </fieldset>
       <p class="hint">Watermarks print very faintly behind the boxes, in the sheet colour. Ink-saver turns them off.</p>
       <label class="check"><input type="checkbox" id="ink-saver"> Ink-saver (white page, keeps the coloured lines)</label>
-      <p class="hint">Use <strong>Print / PDF</strong>, then choose your printer or <em>Save as PDF</em>. Set paper to A4, margins to <em>None</em> and scale to 100%. Your board is saved automatically; use <strong>Export</strong> to keep a copy.</p>
+      <p class="hint">Use <strong>Save PDF</strong> to save the board as an A4 PDF (every page it uses), then print that at 100% / actual size. Your board is saved automatically; use <strong>Export</strong> to keep a copy you can import later.</p>
     </details>
   </main>
 

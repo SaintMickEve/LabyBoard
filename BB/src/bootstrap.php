@@ -29,7 +29,7 @@ const SCHEMA_PATH = __DIR__ . '/../config/schema.json';
 const BASE_PATH = '/BB/';
 
 /** Shown in the browser tab, the page header and the "generator" line of exported files. */
-const SITE_TITLE = 'Labyrinthe Battleboard Generator (RC 3.1.0)';
+const SITE_TITLE = 'Labyrinthe Battleboard Generator (RC 3.2.0)';
 
 /** Build an absolute URL path inside the app, e.g. url('api.php') → /BB/api.php */
 function url(string $path = ''): string

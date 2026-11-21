@@ -9,7 +9,8 @@
 //! files). This Rust side only adds what a desktop app needs:
 //!   - no console window (the `windows_subsystem` line below),
 //!   - a single copy: opening the app again just brings the existing window to the front,
-//!   - a proper Windows "Save As" dialog for Export (the `save_export` command).
+//!   - a proper Windows "Save As" dialog for Export (the `save_export` command) and for
+//!     Save PDF (the `save_pdf` command, which receives the finished PDF's bytes).
 //! Saved boards live in the app's own WebView2 storage in the user's AppData folder, so they are
 //! still there next time the app is opened.
 
@@ -56,6 +57,51 @@ async fn save_export(app: tauri::AppHandle, file_name: String, contents: String)
     ))
 }
 
+/// The PDF's suggested name: safe characters only, ending in .pdf.
+fn safe_pdf_name(name: &str) -> String {
+    let cleaned: String = name
+        .chars()
+        .filter(|c| c.is_ascii_alphanumeric() || matches!(c, '-' | '_' | '.'))
+        .take(120)
+        .collect();
+    let cleaned = cleaned.trim_start_matches('.').to_string();
+    let base = if cleaned.is_empty() { "character-battleboard".to_string() } else { cleaned };
+    if base.to_lowercase().ends_with(".pdf") { base } else { format!("{base}.pdf") }
+}
+
+/// PDFs are a few megabytes (three pages at 300 dpi); refuse anything absurd.
+const MAX_PDF_BYTES: usize = 64 * 1024 * 1024;
+
+/// Called by Save PDF in assets/js/app.js with the finished PDF as raw bytes (its suggested name in
+/// the `x-file-name` header). Shows the Windows "Save As" dialog and writes the file there.
+#[tauri::command]
+async fn save_pdf(app: tauri::AppHandle, request: tauri::ipc::Request<'_>) -> Result<Option<String>, String> {
+    let tauri::ipc::InvokeBody::Raw(bytes) = request.body() else {
+        return Err("no PDF was received".into());
+    };
+    if bytes.len() > MAX_PDF_BYTES || !bytes.starts_with(b"%PDF-") {
+        return Err("that isn't a battleboard PDF".into());
+    }
+    let name = request
+        .headers()
+        .get("x-file-name")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("character-battleboard.pdf");
+    let chosen = app
+        .dialog()
+        .file()
+        .set_title("Save battleboard PDF")
+        .set_file_name(safe_pdf_name(name))
+        .add_filter("PDF document", &["pdf"])
+        .blocking_save_file();
+    let Some(chosen) = chosen else { return Ok(None) }; // the user pressed Cancel
+    let path = chosen.into_path().map_err(|e| e.to_string())?;
+    std::fs::write(&path, bytes).map_err(|e| e.to_string())?;
+    Ok(Some(
+        path.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default(),
+    ))
+}
+
 fn main() {
     tauri::Builder::default()
         // Opening the app while it's already running focuses the existing window instead.
@@ -66,7 +112,7 @@ fn main() {
             }
         }))
         .plugin(tauri_plugin_dialog::init())
-        .invoke_handler(tauri::generate_handler![save_export])
+        .invoke_handler(tauri::generate_handler![save_export, save_pdf])
         .run(tauri::generate_context!())
         .expect("error while running the Labyrinthe Battleboard Generator");
 }

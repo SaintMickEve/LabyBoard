@@ -222,6 +222,8 @@ textarea.in{resize:vertical;min-height:7rem;line-height:1.35}
 }
 
 /* ---------- print: only the sheet, at true size ---------- */
+/* Save PDF on a phone's Edit tab: the preview is laid out off screen and invisible while the PDF is made */
+body.pdf-layout .preview{display:block !important;position:fixed !important;left:-30000px !important;top:0 !important;visibility:hidden !important;height:auto !important;max-height:none !important}
 @media print{
   html,body{background:#fff !important}
   .topbar,.tabs,.editor,.toast,.skip{display:none !important}

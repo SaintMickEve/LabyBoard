@@ -1909,11 +1909,8 @@
       setTimeout(() => URL.revokeObjectURL(url), 10000);
       toast(`Exported ${a.download}`);
     },
-    print() {
-      document.activeElement?.blur?.();
-      renderSheet();
-      toast(`For the biggest print: A4, Margins "None" (or "Default"), Scale 100% and "Headers and footers" off.`);
-      setTimeout(() => { fitAll(); window.print(); }, 50);
+    pdf() {
+      savePdf();
     },
   };
   $$('[data-action]').forEach((b) => b.addEventListener('click', () => actions[b.dataset.action]()));
@@ -1931,6 +1928,182 @@
     if (titleBeforePrint !== null) document.title = titleBeforePrint;
     titleBeforePrint = null;
   });
+
+  /* ===================================================================
+   * Save PDF: the board as a ready-made A4 PDF file, one page per sheet.
+   * ===================================================================
+   * Each sheet is copied, together with the sheet styles, its fonts (as data: URLs) and its watermark,
+   * into an SVG image (a "foreignObject"), which the browser draws onto a canvas at 300 dpi. Each canvas
+   * becomes a JPEG, and the JPEGs become the pages of a small PDF written here byte by byte (no
+   * library). The board is drawn exactly as the preview shows it, enlarged so its frame sits about
+   * 4.2 mm from the top and bottom of the paper. Nothing leaves the device: the file is saved
+   * straight from the page (or through the Windows "Save As" dialog in the desktop app).
+   */
+  const PDF_DPI = 300;
+  const PDF_FRAME_SCALE = 1.0126; // same as the print stylesheet: frame 4.2 mm from the paper's top and bottom
+  let pdfAssets = null; // board.css with its fonts built in, and the watermark designs (loaded once)
+  let pdfBusy = false;
+
+  const toBase64 = (buf) => {
+    const bytes = new Uint8Array(buf);
+    let bin = '';
+    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    return btoa(bin);
+  };
+
+  async function loadPdfAssets() {
+    if (pdfAssets) return pdfAssets;
+    const cssUrl = new URL($('link[href*="board.css"]').getAttribute('href'), location.href);
+    let css = await (await fetch(cssUrl)).text();
+    // Fonts: replace each url(...) with the font file itself, so the SVG image needs nothing else.
+    const fontUrls = [...new Set([...css.matchAll(/url\(["']?([^"')]+\.woff2?)["']?\)/g)].map((m) => m[1]))];
+    for (const rel of fontUrls) {
+      const buf = await (await fetch(new URL(rel, cssUrl))).arrayBuffer();
+      css = css.split(rel).join(`data:font/woff;base64,${toBase64(buf)}`);
+    }
+    css += `\n.pdf-root{width:210mm;height:297mm;background:#fff}.pdf-root .sheet{box-shadow:none;margin:0}`
+      + `.pdf-root .frame{transform:scale(${PDF_FRAME_SCALE});transform-origin:50% 50%}`;
+    const wmText = await (await fetch(WM_URL)).text();
+    const wmDoc = new DOMParser().parseFromString(wmText, 'image/svg+xml');
+    pdfAssets = { css, wmDoc };
+    return pdfAssets;
+  }
+
+  /** One sheet as an SVG image (data: URL) of an A4 page at 96 CSS pixels per inch. */
+  function sheetSvg(page, assets) {
+    const copy = page.cloneNode(true); // (ids kept: the sheet styles use them; the SVG image is its own document)
+    // The watermark: put the chosen design's drawing straight into the sheet's watermark <svg>.
+    const wm = copy.querySelector('svg.wm');
+    if (wm) {
+      const use = wm.querySelector('use');
+      const id = (use?.getAttribute('href') || '').split('#')[1];
+      const sym = id && assets.wmDoc.getElementById(id);
+      if (use) use.remove();
+      if (sym) for (const child of sym.childNodes) wm.append(document.importNode(child, true));
+    }
+    const root = document.createElement('div');
+    root.className = `pdf-root${document.body.classList.contains('ink-saver') ? ' ink-saver' : ''}`;
+    const style = document.createElement('style');
+    style.textContent = assets.css;
+    root.append(style, copy);
+    const html = new XMLSerializer().serializeToString(root);
+    const w = 793.7;
+    const h = 1122.5;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">`
+      + `<foreignObject x="0" y="0" width="${w}" height="${h}">${html}</foreignObject></svg>`;
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+  }
+
+  /** Draws one sheet onto a 300 dpi canvas and returns it as JPEG bytes. */
+  async function sheetJpeg(page, assets) {
+    const img = new Image();
+    img.src = sheetSvg(page, assets);
+    await img.decode();
+    const cw = Math.round(210 / 25.4 * PDF_DPI);
+    const ch = Math.round(297 / 25.4 * PDF_DPI);
+    const canvas = document.createElement('canvas');
+    canvas.width = cw;
+    canvas.height = ch;
+    const ctx = canvas.getContext('2d');
+    const draw = () => { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cw, ch); ctx.drawImage(img, 0, 0, cw, ch); };
+    draw();
+    await new Promise((r) => setTimeout(r, 120)); // Safari can draw an SVG image before its fonts are ready
+    draw();
+    const blob = await new Promise((res, rej) => {
+      try { canvas.toBlob((b) => (b ? res(b) : rej(new Error('no image'))), 'image/jpeg', 0.92); } catch (e) { rej(e); }
+    });
+    return { bytes: new Uint8Array(await blob.arrayBuffer()), w: cw, h: ch };
+  }
+
+  /** A minimal PDF: one A4 page per JPEG, each image filling its page, with the character as the title. */
+  function makePdf(images, title) {
+    const enc = new TextEncoder();
+    const parts = [];
+    const offsets = [];
+    let length = 0;
+    const add = (x) => { const b = typeof x === 'string' ? enc.encode(x) : x; parts.push(b); length += b.length; };
+    const pdfText = (t) => {
+      let hex = 'FEFF';
+      for (const c of t) {
+        const cp = c.codePointAt(0);
+        const units = cp > 0xffff ? [0xd800 + ((cp - 0x10000) >> 10), 0xdc00 + ((cp - 0x10000) & 0x3ff)] : [cp];
+        for (const u of units) hex += u.toString(16).toUpperCase().padStart(4, '0');
+      }
+      return `<${hex}>`;
+    };
+    const W = 595.28;
+    const H = 841.89;
+    const n = images.length;
+    const pageIds = images.map((_, i) => 4 + i * 3);
+    add('%PDF-1.4\n');
+    add(new Uint8Array([0x25, 0xe2, 0xe3, 0xcf, 0xd3, 0x0a]));
+    const obj = (id, ...body) => { offsets[id] = length; add(`${id} 0 obj\n`); body.forEach(add); add('\nendobj\n'); };
+    obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+    obj(2, `<< /Type /Pages /Count ${n} /Kids [${pageIds.map((p) => `${p} 0 R`).join(' ')}] >>`);
+    obj(3, `<< /Title ${pdfText(title)} /Creator ${pdfText(document.querySelector('meta[name="bb-generator"]').content)} /Producer ${pdfText('Labyrinthe Battleboard Generator')} >>`);
+    images.forEach((im, i) => {
+      const p = pageIds[i];
+      const content = `q ${W} 0 0 ${H} 0 0 cm /Im0 Do Q`;
+      obj(p, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /XObject << /Im0 ${p + 2} 0 R >> >> /Contents ${p + 1} 0 R >>`);
+      obj(p + 1, `<< /Length ${content.length} >>\nstream\n${content}\nendstream`);
+      obj(p + 2, `<< /Type /XObject /Subtype /Image /Width ${im.w} /Height ${im.h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${im.bytes.length} >>\nstream\n`, im.bytes, '\nendstream');
+    });
+    const xref = length;
+    const count = 4 + n * 3;
+    let table = `xref\n0 ${count}\n0000000000 65535 f \n`;
+    for (let id = 1; id < count; id++) table += `${String(offsets[id]).padStart(10, '0')} 00000 n \n`;
+    add(table);
+    add(`trailer\n<< /Size ${count} /Root 1 0 R /Info 3 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
+    return new Blob(parts, { type: 'application/pdf' });
+  }
+
+  /** The "Save PDF" button: builds the PDF of every page the board prints and saves it. */
+  async function savePdf() {
+    if (pdfBusy) return;
+    pdfBusy = true;
+    const btn = $('[data-action="pdf"]');
+    btn.disabled = true;
+    document.activeElement?.blur?.();
+    // On a phone's Edit tab the sheet isn't laid out (it's hidden), so names and text can't be fitted
+    // to their boxes. Lay it out off screen, invisibly, while the PDF is made.
+    const offscreen = !sheet.getClientRects().length;
+    if (offscreen) document.body.classList.add('pdf-layout');
+    try {
+      renderSheet();
+      await new Promise((r) => requestAnimationFrame(() => r()));
+      fitAll();
+      const sheets = pages.filter((pg) => !pg.hidden);
+      toast(`Making your PDF (${sheets.length} page${sheets.length > 1 ? 's' : ''})…`);
+      const assets = await loadPdfAssets();
+      const images = [];
+      for (const pg of sheets) images.push(await sheetJpeg(pg, assets));
+      const name = state.name.trim() || 'Character';
+      const blob = makePdf(images, `${name} - Battleboard`);
+      const fileName = `${slug(state.name)}-battleboard.pdf`;
+      const tauri = window.__TAURI__?.core;
+      if (tauri) {
+        // Desktop app: the Windows "Save As" dialog (save_pdf in src-tauri/src/main.rs writes the bytes).
+        const savedTo = await tauri.invoke('save_pdf', new Uint8Array(await blob.arrayBuffer()), { headers: { 'x-file-name': fileName } });
+        if (savedTo) toast(`Saved ${savedTo}`);
+        return;
+      }
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.append(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
+      toast(`Saved ${fileName} (${Math.max(1, Math.round(blob.size / 1024 / 1024 * 10) / 10)} MB, ${sheets.length} A4 page${sheets.length > 1 ? 's' : ''}). Print it at 100% / actual size.`);
+    } catch (err) {
+      toast(`Sorry, this browser couldn't make the PDF (${err && err.message ? err.message : err}). Use your browser's Print instead (Ctrl+P / ⌘P).`);
+    } finally {
+      if (offscreen) document.body.classList.remove('pdf-layout');
+      pdfBusy = false;
+      btn.disabled = false;
+    }
+  }
 
   /**
    * Decodes an imported file. Handles files saved by Windows Notepad and similar editors:

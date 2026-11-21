@@ -1,4 +1,4 @@
-# Labyrinthe Battleboard Generator (RC 3.1.0)
+# Labyrinthe Battleboard Generator (RC 3.2.0)
 
 A single page app for filling in a fantasy LARP battleboard, then printing it or saving it as a PDF.
 Built for PHP 8.2 on Fasthosts Linux hosting. It works on desktop, tablet and phone and has no
@@ -71,14 +71,18 @@ Required PHP extensions are `json`, `mbstring` and `session`; these are standard
 - **Import** accepts a `.json` file up to 128 KB. The file is sent to `api.php`, which validates it
   against `schema.json` and returns a clean copy plus a list of anything it had to change. If the
   server can't be reached, the same rules run in the browser.
-- **Print / PDF** opens the browser's print dialog. To get a PDF, choose *Save as PDF*; the file is
-  named after the character. Use A4, margins *None* (or *Default*), scale 100% and headers and
-  footers off; the app reminds you of this when you press the button. The page has no margins of its
-  own, so browsers that follow it have no room for their date, title, address or page-number
-  header and footer. The board is printed as large as the paper allows: its outer frame is
-  enlarged from the 6 mm white edge on screen to about 4.2 mm from the top and bottom of the paper
-  (4.75 mm at the sides), just inside what most printers can reach. It is only scaled, so the
-  print matches the preview exactly.
+- **Save PDF** makes the PDF in the browser and saves it as a download (in the Windows app, through
+  the "Save As" dialog), named after the character, for example `grimgar-ashfang-battleboard.pdf`.
+  It has one A4 page for each sheet the board uses (1, 2 or 3) and the character's name as its title.
+  Print it at 100% / "Actual size". How it works (`savePdf()` in `app.js`, no library): each sheet
+  is copied with `board.css`, its fonts (as `data:` URLs) and its watermark into an SVG image
+  (`foreignObject`), drawn onto a canvas at 300 dpi, saved as a JPEG, and the JPEGs are written into
+  a small PDF. The PDF is exactly the preview, enlarged so the frame sits about 4.2 mm from the top
+  and bottom of the paper (4.75 mm at the sides), just inside what most printers can reach. There
+  are no browser headers, footers, dates or addresses. A PDF is about 1–1.5 MB per page. On a phone's
+  Edit tab the sheet is laid out off screen while the PDF is made. If a browser can't make it, the
+  app says so and suggests the browser's own Print (Ctrl+P / ⌘P), which still uses a print
+  stylesheet with the same enlargement and no page margins.
 
 ## Security measures
 
@@ -118,7 +122,7 @@ Keep row maximums within what fits on the A4 sheet.
 {
   "app": "battleboard",
   "version": 1,
-  "generator": "Labyrinthe Battleboard Generator (RC 3.1.0)",
+  "generator": "Labyrinthe Battleboard Generator (RC 3.2.0)",
   "exportedAt": "2026-11-14T20:30:00.000Z",
   "character": {
     "format": "normal",
@@ -214,7 +218,7 @@ value), Damage Grades (12), Notes (11 ruled lines; this is the same `notes` fiel
   do the same sum, and the innate and Immunities limits follow it. Hidden Regeneration lines keep
   their text. If a change would leave filled rows without room, the app asks first.
 - **Shared options:** paper dolls, sheet colours, watermarks, ink-saver, compact rows, LTM, Casting
-  Stam and Combat Wary all work on both pages. Print / PDF prints two A4 pages, and the preview shows
+  Stam and Combat Wary all work on both pages. Save PDF makes two A4 pages, and the preview shows
   page 2 under page 1.
 - **Its own settings:** they're in `twoPage` in `config/schema.json`: limits, T.B.L.P. lines per doll,
   page-2 row counts and the ghost's page-1 rows. The board's own data is in the character's `twoPage`
@@ -417,7 +421,7 @@ Exported files are meant to keep working as the site evolves.
 - **Upgrading the site:** a board saved in the browser by an older version loads in the new one with
   every field intact.
 
-Compatibility tests for RC 3.1.0:
+Compatibility tests for RC 3.2.0:
 
 - **Older versions:** files exported from RC 1.0 to RC 1.4 import with every field preserved. The only
   exception is a Social/Professional/Political entry longer than today's 50-character limit, which
@@ -441,7 +445,7 @@ When adding features in future versions:
 The generator is also available as a Windows app that opens in its own window, with no browser,
 no command window and no PHP.
 
-- **Downloads:** `LabyrintheBattleboard-Setup-3.1.0.exe` is an installer that needs no
+- **Downloads:** `LabyrintheBattleboard-Setup-3.2.0.exe` is an installer that needs no
   administrator rights and adds Start-menu and desktop shortcuts and an uninstaller. A portable
   zip is also available: keep `LabyrintheBattleboard.exe` and `WebView2Loader.dll` together.
 - **How it works:** the app is built with Tauri. It shows this web app in a native window using
